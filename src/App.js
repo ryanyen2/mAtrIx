@@ -15,17 +15,18 @@ function App() {
   const [height, setHeight] = useState(500);
   const [id, setId] = useState("root");
 
-  
-  useEffect(() => {
-    fetch("/api/time")
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setWidth(700);
-        setHeight(500);
-        setId("root");
-      });
-  }, []);
+// Commented out due to compile errors
+
+//  useEffect(() => {
+//    fetch("/api/time")
+//      .then((res) => res.json())
+//      .then((data) => {
+//        setData(data);
+//        setWidth(700);
+//        setHeight(500);
+//        setId("root");
+//      });
+//  }, []);
 
   return (
     <div className="App">
