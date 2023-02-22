@@ -22,13 +22,11 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-// Commented out due to compile errors
-
-//    fetch("/api/time")
-//      .then((res) => res.json())
-//      .then((data) => {
-//        this.setState({ data: data });
-//      });
+    fetch("/api/time")
+      .then((res) => res.json())
+      .then((data) => {
+        this.setState({ data: data });
+      });
   }
 
   render() {
