@@ -254,6 +254,7 @@ function DrawRadarChart(id, data, options) {
         })
         .style("stroke", "white")
         .style("stroke-width", "8px")
+        .style("stroke-linecap", "round")
         .on("mouseover", function (d, i) {
             // REF: https://stackoverflow.com/questions/20641953/how-to-select-parent-element-of-current-element-in-d3-js
             d3.select(this.parentNode).raise();
