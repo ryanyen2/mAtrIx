@@ -1,8 +1,3 @@
-/* bootstrap css */
-@import '~bootstrap/dist/css/bootstrap.min.css';
-
-
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -15,4 +10,22 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+
+#code-block {
+  width: 50vh;
+  margin-top: 5rem;
+}
+
+#code-block .monaco-editor {
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+#code-block .monaco-editor .myHighlightCode {
+  /* highlight line of code */
+  background-color: brown;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
 }

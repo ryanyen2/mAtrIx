@@ -3,8 +3,7 @@ import { BrowserRouter, Link, Switch, Route } from "react-router-dom";
 // import logo from "./logo.svg";
 import "./App.css";
 import Home from "./view/home";
-// bootstrap css
-import "bootstrap/dist/css/bootstrap.min.css";
+import CodeMath from "./view/codeMath";
 
 // create state
 
@@ -37,7 +36,7 @@ function App() {
             </Link>
             &nbsp;|&nbsp;
             <Link className="App-link" to="/page2">
-              Page2
+              CodeMath
             </Link>
           </div>
           <Switch>
@@ -45,7 +44,7 @@ function App() {
               <Home />
             </Route>
             <Route path="/page2">
-              <p>This is page 2!</p>
+              <CodeMath />
             </Route>
           </Switch>
         </BrowserRouter>

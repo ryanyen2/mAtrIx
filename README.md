@@ -6,7 +6,7 @@
     - serve the frontend static page in `build` by **Flask**
 - Container: **Docker** & **docker-compose**
 - Visualization: **d3.js**
-- Frontend Framework: [React Bootstrap](https://react-bootstrap.github.io/)
+- Frontend UI Tools: [MUI](https://mui.com/)
 
 
 

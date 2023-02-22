@@ -1,15 +1,18 @@
 {
-  "name": "react-flask-app",
+  "name": "mAtrIx",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@monaco-editor/react": "^4.4.6",
+    "@mui/material": "^5.11.10",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.1.2",
-    "bootstrap": "^5.2.3",
     "d3": "^7.8.2",
+    "mathjax-react": "^2.0.1",
     "react": "^16.13.1",
-    "react-bootstrap": "^2.7.2",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1"
