@@ -1,7 +1,8 @@
 // react template for d3
 import React from "react";
 import * as d3 from "d3";
-import BarChart from "../components/home/barChart";
+// import BarChart from "../components/home/barChart";
+import RadarChart from "../components/home/radarChart";
 
 // import { Container, Row, Col } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
@@ -32,7 +33,7 @@ class Home extends React.Component {
         <Container>
           <Row>
             <Col id="barchart">
-              <BarChart
+              <RadarChart
                 data={this.state.data}
                 width={this.state.width}
                 height={this.state.height}
