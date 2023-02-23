@@ -8,74 +8,115 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
-const Post = ({post}) => {
 
-  // data
-  var postInfo = {
-    userName: "Lucy Wang",
-    avatar: "LW",
-    avatarColor: {
-      "bgcolor": "#235656",
-    },
-    date: "February 20, 2023",
-    imgSrc: "images/contentImg.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
-    numOfLikes: 19,
-  };
+import {Swipe, Position} from "react-swipe-component"
 
-  // like button
-  const [likeButtonColor, setLikeButtonColor] = React.useState({color:"#C6C6C6"}); // #C6C6C6 and #E91E63
-  const [numOfLikes, setNumOfLikes] = React.useState(postInfo.numOfLikes);
-  const [liked, setLiked] = React.useState(false);
-  const handleLikeButton = () => {
-    if(liked) {
-      setLikeButtonColor({color:"#C6C6C6"});
-      setNumOfLikes(numOfLikes - 1);
-      setLiked(!liked);
+class Post extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      likeButtonColor: {color: "#C6C6C6"},
+      numOfLikes: props.postInfo.numOfLikes,
+      liked: false,
+      swipingUp: false,
+    };
+
+
+  }
+
+  // using the module for detecting swiping
+  // from https://www.npmjs.com/package/react-swipe-component
+  onSwipeEnd = () => {
+    if(this.state.swipingUp) {
+        console.log("Swiped Up")
+        // TODO passing data back to parent
+    }
+    this.setState({swipingUp: false})
+//     console.log("Swipe Ended")
+  }
+  onSwipeLeftListener = () => {
+    console.log("Swiped left")
+  }
+  onSwipeRightListener = () => {
+    console.log("Swiped right")
+  }
+  onSwipeUpListener = () => {
+    this.setState({swipingUp: true});
+  }
+  onSwipeDownListener = () => {
+    console.log("Swiped down")
+  }
+  onSwipeListener = (p) => {
+    if (p.x !== 0) {
+      console.log(`Swipe x: ${p.x}`)
+    }
+    if (p.y !== 0) {
+      console.log(`Swipe y: ${p.y}`)
+    }
+  }
+
+
+  // like button handler
+  handleLikeButton = (e) => {
+    if(this.state.liked) {
+      this.setState({
+        likeButtonColor: {color: "#C6C6C6"},
+        numOfLikes: this.state.numOfLikes - 1,
+        liked: !this.state.liked
+      });
     }
     else {
-      setLikeButtonColor({color:"#E91E63"});
-      setNumOfLikes(numOfLikes + 1);
-      setLiked(!liked);
+      this.setState({
+        likeButtonColor: {color: "#E91E63"},
+        numOfLikes: this.state.numOfLikes + 1,
+        liked: !this.state.liked
+      });
     }
-  };
+  }
 
-  // styles
-  const styles = {
-    card: {
-      "maxWidth": "300px",
-    },
-    cardHeader: {
-      "textAlign": "left",
-    },
-    cardMedia: {
-      "height": "300px",
-    },
-  };
 
-  const test = {"bgcolor": "#235656"};
+  // preventing dragging images
+  // from https://stackoverflow.com/questions/49898749/how-can-i-prevent-drag-and-drop-images-in-a-react-app
+  preventDragHandler = (e) => {
+    e.preventDefault();
+  }
 
-  return (
-    <Card sx={styles.card}>
-      <CardHeader className="userProfile" sx={styles.cardHeader}
-        avatar={
-          <Avatar sx={styles.avatarColor} aria-label="user avatar">
-            {postInfo.avatar}
-          </Avatar>
-        }
-        title={postInfo.userName}
-        subheader={postInfo.date}
-      />
-      <CardMedia component="img" image={postInfo.imgSrc} sx={styles.cardMedia} />
-      <CardActions disableSpacing >
-        <IconButton size="large" aria-label="like this post" onClick={handleLikeButton}>
-          <FavoriteIcon sx={likeButtonColor} />
-        </IconButton>
-        <Typography variant="body2" color="text.secondary">
-          {numOfLikes} likes
-        </Typography>
-      </CardActions>
-    </Card>
-  );
+
+  render() {
+    return (
+      <Card sx={{"maxWidth": "300px"}}>
+        <Swipe
+          nodeName="div"
+          onSwipeEnd={this.onSwipeEnd}
+//           onSwipedLeft={this.onSwipeLeftListener}
+//           onSwipedRight={this.onSwipeRightListener}
+//           onSwipedDown={this.onSwipeDownListener}
+          onSwipedUp={this.onSwipeUpListener}
+//           onSwipe={this.onSwipeListener}
+          >
+          <CardHeader className="userProfile" sx={{"user-select": "none", "textAlign": "left"}}
+            avatar={
+              <Avatar sx={this.props.postInfo.avatarColor} aria-label="user avatar">
+                {this.props.postInfo.avatar}
+              </Avatar>
+            }
+            title={this.props.postInfo.userName}
+            subheader={this.props.postInfo.date}
+          />
+          <CardMedia component="img" image={this.props.postInfo.imgSrc} sx={{"height": "300px"}} onDragStart={this.preventDragHandler}/>
+          <CardActions disableSpacing >
+            <IconButton size="large" aria-label="like this post" onClick={this.handleLikeButton}>
+              <FavoriteIcon sx={this.state.likeButtonColor} />
+            </IconButton>
+            <Typography variant="body2" color="text.secondary" sx={{"user-select": "none"}}>
+              {this.state.numOfLikes} likes
+            </Typography>
+          </CardActions>
+        </Swipe>
+      </Card>
+    );
+  }
 };
 
 export default Post;
