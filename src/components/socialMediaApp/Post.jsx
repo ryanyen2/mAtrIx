@@ -21,8 +21,6 @@ class Post extends React.Component {
       liked: false,
       swipingUp: false,
     };
-
-
   }
 
   // using the module for detecting swiping
@@ -30,9 +28,10 @@ class Post extends React.Component {
   onSwipeEnd = () => {
     if(this.state.swipingUp) {
         console.log("Swiped Up")
-        // TODO passing data back to parent
+        // passing data back to parent
     }
     this.setState({swipingUp: false})
+    this.props.onUserAction(0.0)
 //     console.log("Swipe Ended")
   }
   onSwipeLeftListener = () => {
@@ -59,6 +58,7 @@ class Post extends React.Component {
 
   // like button handler
   handleLikeButton = (e) => {
+    // dislike the post
     if(this.state.liked) {
       this.setState({
         likeButtonColor: {color: "#C6C6C6"},
@@ -66,12 +66,16 @@ class Post extends React.Component {
         liked: !this.state.liked
       });
     }
+    // like the post
     else {
       this.setState({
         likeButtonColor: {color: "#E91E63"},
         numOfLikes: this.state.numOfLikes + 1,
         liked: !this.state.liked
       });
+      // TODO wait for x seconds
+
+      this.props.onUserAction(1.0);
     }
   }
 

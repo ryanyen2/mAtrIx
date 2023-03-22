@@ -49,7 +49,7 @@ class SocialMediaApp extends React.Component {
         imgSrc: "images/contentImg5.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
         numOfLikes: 2,
       },
-
+      liked: 0.0
 //       postInfo: {
 //         userName: "ryan632",
 //         avatar: "R",
@@ -60,8 +60,24 @@ class SocialMediaApp extends React.Component {
 //         imgSrc: "images/contentImg3.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
 //         numOfLikes: 557,
 //       },
+
+
     };
   }
+
+  // handling users' action
+  // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs
+  handleUserAction = (likedValue) => {
+    //save user's action 
+    this.setState({liked: likedValue});
+
+    // TODO: generate a new post
+
+    //TODO: pass this data to Kris
+
+  }
+
+
 
   render() {
     return (
@@ -72,12 +88,14 @@ class SocialMediaApp extends React.Component {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" component="div" sx={{"user-select": "none", flexGrow: 1 }}>
-              Fakebook
+              Fakebook {this.state.liked}
             </Typography>
           </Toolbar>
         </AppBar>
         <Grid style={{ margin: 12 }} container spacing={1}>
-          <Post style={{ margin: 12 }} postInfo={this.state.postInfo} test={this.state.testText}
+          <Post style={{ margin: 12 }} 
+            postInfo={this.state.postInfo} 
+            onUserAction = {this.handleUserAction}
           />
         </Grid>
       </Card>
