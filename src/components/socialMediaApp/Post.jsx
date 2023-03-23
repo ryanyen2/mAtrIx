@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -23,15 +24,33 @@ class Post extends React.Component {
     };
   }
 
+  // reset the page
+  resetPost = () => {
+    this.setState({
+      likeButtonColor: {color: "#C6C6C6"},
+      numOfLikes: this.props.postInfo.numOfLikes,
+      liked: false,
+    }, () => {
+      console.log("done resetting");
+    });
+  }
+
   // using the module for detecting swiping
   // from https://www.npmjs.com/package/react-swipe-component
   onSwipeEnd = () => {
     if(this.state.swipingUp) {
-        console.log("Swiped Up")
-        // passing data back to parent
+      console.log("Swiped Up")
+
+      // this.setState({
+      //   numOfLikes: this.props.postInfo.numOfLikes+(this.state.liked?1:0),
+      // });
+
+      // TODO wait for x seconds
+
+      // passing data back to parent
+      this.props.onUserAction(this.state.liked?1.0:0.0)
     }
     this.setState({swipingUp: false})
-    this.props.onUserAction(0.0)
 //     console.log("Swipe Ended")
   }
   onSwipeLeftListener = () => {
@@ -55,6 +74,7 @@ class Post extends React.Component {
     }
   }
 
+  
 
   // like button handler
   handleLikeButton = (e) => {
@@ -62,7 +82,7 @@ class Post extends React.Component {
     if(this.state.liked) {
       this.setState({
         likeButtonColor: {color: "#C6C6C6"},
-        numOfLikes: this.state.numOfLikes - 1,
+        numOfLikes: this.props.postInfo.numOfLikes,
         liked: !this.state.liked
       });
     }
@@ -70,12 +90,19 @@ class Post extends React.Component {
     else {
       this.setState({
         likeButtonColor: {color: "#E91E63"},
-        numOfLikes: this.state.numOfLikes + 1,
+        numOfLikes: this.props.postInfo.numOfLikes + 1,
         liked: !this.state.liked
       });
+      
       // TODO wait for x seconds
 
-      this.props.onUserAction(1.0);
+      // this.props.onUserAction(1.0);
+
+      // TODO: reset the page
+      // this.setState({
+      //   likeButtonColor: {color: "#C6C6C6"},
+      //   liked: false,
+      // });
     }
   }
 
@@ -108,7 +135,7 @@ class Post extends React.Component {
             title={this.props.postInfo.userName}
             subheader={this.props.postInfo.date}
           />
-          <CardMedia component="img" image={this.props.postInfo.imgSrc} sx={{"height": "300px"}} onDragStart={this.preventDragHandler}/>
+          <CardMedia component="img" image={this.props.postInfo.imgSrc} sx={{"height": "300px", "width": "300px"}} onDragStart={this.preventDragHandler}/>
           <CardActions disableSpacing >
             <IconButton size="large" aria-label="like this post" onClick={this.handleLikeButton}>
               <FavoriteIcon sx={this.state.likeButtonColor} />
