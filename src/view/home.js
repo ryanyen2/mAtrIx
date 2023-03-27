@@ -7,11 +7,15 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
+
 import { useRecoilState, useRecoilValue } from "recoil";
 
 import { barChartData } from "../state/atoms";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
+
+// social media app component
+import SocialMediaApp from "../components/socialMediaApp/SocialMediaApp.jsx";
 
 import { RegretPlot } from "../components/home/regretPlot";
 // import {timeRegretSelector} from '../state/selector';
@@ -30,9 +34,10 @@ function Home(props) {
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Item>
             Fake Social Media
+            <SocialMediaApp />
             <p>t: {window.localStorage.getItem("t")}</p>
             {/* {Object.keys(window.localStorage.getItem("regret")).map((key) => {
               return (
