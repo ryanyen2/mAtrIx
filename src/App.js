@@ -15,14 +15,6 @@ import Sample from "./view/sample";
 
 
 function App() {
-  useEffect(() => {
-    fetch("/api/time")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
-  }, []);
-
   return (
     <div className="App">
       <BrowserRouter>
