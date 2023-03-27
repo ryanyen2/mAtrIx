@@ -3,16 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@material-ui/core": "^4.12.4",
+    "@mui/icons-material": "^5.11.11",
+    "@mui/material": "^5.11.14",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^5.2.3",
     "d3": "^7.8.2",
+    "mathjax-react": "^2.0.1",
+    "nouislider": "^15.7.0",
     "react": "^16.13.1",
     "react-bootstrap": "^2.7.2",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "recoil": "^0.7.7"
   },
   "scripts": {
     "start": "react-scripts start",
