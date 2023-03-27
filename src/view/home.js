@@ -2,6 +2,7 @@
 import React from "react";
 import * as d3 from "d3";
 import BarChart from "../components/home/barChart";
+import AlgGraph from "../components/home/AlgGraph";
 
 // import { Container, Row, Col } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
@@ -38,7 +39,9 @@ class Home extends React.Component {
                 height={this.state.height}
               />
             </Col>
-            <Col>2 of 3</Col>
+            <Col>
+              <AlgGraph></AlgGraph>
+            </Col>
             <Col>3 of 3</Col>
           </Row>
         </Container>
