@@ -1,30 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as d3 from "d3";
+import { useRecoilState } from "recoil";
+import { barChartData } from "../../state/atoms";
 
-class BarChart extends React.Component {
 
-  componentDidMount() {
-    this.drawChart();
+export function BarChart (props) {
+  const [data, setData] = useRecoilState(barChartData);
+  const editBarChartData = (event) => {
+    setData(event.target.value.split(","))
   }
 
-  drawChart() {
-    const data = this.props.data;
+  useEffect(() => {
+    drawChart();
+    console.log(data);
+  }, [data]);
+
+  const drawChart = () => {
+
+    // clear the previous chart
+    d3.select("#barchart").selectAll("svg").remove();
+
     const svg = d3
       .select("#barchart")
       .append("svg")
-      .attr("width", this.props.width)
-      .attr("height", this.props.height);
+      .attr("width", props.width)
+      .attr("height", props.height);
 
-    const h = this.props.height;
-
+    const h = props.height;
+    
     svg
       .selectAll("rect")
       .data(data)
       .enter()
       .append("rect")
-      .attr("x", (d, i) => i * 70)
+      .attr("x", (d, i) => i *20)
       .attr("y", (d, i) => h - 10 * d)
-      .attr("width", 65)
+      .attr("width", 15)
       .attr("height", (d, i) => d * 10)
       .attr("fill", "green");
 
@@ -34,13 +45,16 @@ class BarChart extends React.Component {
       .enter()
       .append("text")
       .text((d) => d)
-      .attr("x", (d, i) => i * 70)
-      .attr("y", (d, i) => h - 10 * d - 3);
+      .attr("x", (d, i) => i * 20)
+      .attr("y", (d, i) => h - (10 * d) - 3);
   }
 
-  render() {
-    return <div></div>;
-  }
+
+  return (
+    <div id='barchart'>
+      <input type="text" value={data} onChange={editBarChartData} />
+    </div>
+  )
 }
 
 export default BarChart;
