@@ -44,7 +44,7 @@ source venv/bin/activate
 using yarn for package manage
 ```bash
 # chechk your node version, using 16 is better
-nvm use node16
+nvm use 16
 
 # install yarn gloabally
 npm i -g yarn
@@ -68,7 +68,7 @@ yarn start-api
 ```
 
 
-Build Static website in `Pulbic`
+Build Static website in `Public`
 ```bash
 yarn build
 # "build": "react-scripts build"
