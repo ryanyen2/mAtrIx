@@ -34,10 +34,10 @@ function Home(props) {
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Item>
-            <SocialMediaApp />
             Fake Social Media
+            <SocialMediaApp />
             <p>t: {window.localStorage.getItem("t")}</p>
             {/* {Object.keys(window.localStorage.getItem("regret")).map((key) => {
               return (
