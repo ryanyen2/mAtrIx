@@ -1,18 +1,22 @@
-import React, { useEffect, useState, useRef } from "react";
-import * as d3 from "d3";
+import React, { useEffect, useState } from "react";
+// import * as d3 from "d3";
 import { Container } from "@material-ui/core";
 import { EvaluationApplet } from "../../utils/bandits";
-import Button from "@mui/material/Button";
+// import Button from "@mui/material/Button";
 
 import { MathComponent } from "mathjax-react";
-import Slider from "@mui/material/Slider";
+// import Slider from "@mui/material/Slider";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Typography from "@mui/material/Typography";
 
 import { useRecoilState } from "recoil";
-import { regretPlotParam, regretPlotData, allRegretPlotData } from "../../state/atoms";
+import {
+  regretPlotParam,
+  regretPlotData,
+  allRegretPlotData,
+} from "../../state/atoms";
 
 import ToggleButton from "@mui/material/ToggleButton";
 import IconButton from "@mui/material/IconButton";
@@ -28,8 +32,6 @@ export function RegretPlot(props) {
 
   const [allRegretPlotDataValue, setAllRegretPlotData] =
     useRecoilState(allRegretPlotData);
-
-  
 
   const [play, setPlay] = useState(true);
   // const [time, setTime] = useState(0);
@@ -56,7 +58,8 @@ export function RegretPlot(props) {
     var aw = Math.floor(
       dw > 1200 ? 800 : dw > 900 ? 0.8 * dw : dw < 600 ? 0.95 * dw : 0.9 * dw
     );
-    var ah = Math.min(aw, 350);
+    aw = 450;
+    var ah = Math.min(aw, 250);
     evalApp.init(0.95 * aw, ah);
 
     // window.onstorage = () => {
@@ -73,26 +76,21 @@ export function RegretPlot(props) {
   }, [regretPlotParamValue]);
 
   useEffect(() => {
-    console.log("regretPlotDataValue", regretPlotDataValue);
+    // console.log("regretPlotDataValue", regretPlotDataValue);
     setAllRegretPlotData({
-      times: [...allRegretPlotDataValue.times, regretPlotDataValue.current_time],
+      times: [
+        ...allRegretPlotDataValue.times,
+        regretPlotDataValue.current_time,
+      ],
       regrets: [
         ...allRegretPlotDataValue.regrets,
         regretPlotDataValue.current_regret,
       ],
-    })
+    });
   }, [regretPlotDataValue]);
 
   return (
     <Container id="regretplot">
-      <p>t: {regretPlotDataValue.current_time}</p>
-      {/* {Object.keys(regret).map((key) => {
-        return (
-          <p key={key}>
-            {key}: {regret[key]}
-          </p>
-        );
-      })} */}
       <div id="eval-control">
         <Box
           component="form"
@@ -100,6 +98,7 @@ export function RegretPlot(props) {
             "& .MuiTextField-root": { m: 1 },
           }}
           autoComplete="off"
+          style={{ fontSize: "1rem" }}
         >
           <div>
             <TextField
@@ -144,11 +143,28 @@ export function RegretPlot(props) {
                 ),
               }}
             />
-          </div>
-          <div>
-            <Typography id="non-linear-slider" gutterBottom>
+            <TextField
+              label="Repetitions"
+              id="var-repeat"
+              size="small"
+              variant="standard"
+              value={regretPlotParamValue.repeats}
+              onChange={(e) => {
+                setRegretPlotParam({
+                  ...regretPlotParamValue,
+                  repeats: e.target.value,
+                });
+              }}
+              sx={{ m: 1, width: "8ch" }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">r=</InputAdornment>
+                ),
+              }}
+            />
+            <p id="non-linear-slider" gutterBottom>
               ThompsonSampling
-            </Typography>
+            </p>
             <TextField
               id="var-m"
               label={<MathComponent tex={String.raw`m_a`} />}
@@ -205,31 +221,11 @@ export function RegretPlot(props) {
               }}
               sx={{ m: 1, width: "4ch" }}
             />
-          </div>
-          <div>
-            <TextField
-              label="Repetitions"
-              id="var-repeat"
-              size="small"
-              variant="standard"
-              value={regretPlotParamValue.repeats}
-              onChange={(e) => {
-                setRegretPlotParam({
-                  ...regretPlotParamValue,
-                  repeats: e.target.value,
-                });
-              }}
-              sx={{ m: 1, width: "8ch" }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">r=</InputAdornment>
-                ),
-              }}
-            />
             <ToggleButton
               id="eval-btn-toggle"
               aria-label="Play"
               value="check"
+              size="small"
               onClick={() => setPlay(!play)}
             >
               {play ? <PlayArrowIcon /> : <PauseIcon />}
@@ -246,6 +242,9 @@ export function RegretPlot(props) {
       </div>
       <div id="eval-graph-wrap">
         <div id="eval-graph" className="graph" />
+        {/* to the right most within the wrap */}
+        <span style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {regretPlotDataValue.current_time}</span>
       </div>
     </Container>
   );

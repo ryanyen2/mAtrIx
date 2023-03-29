@@ -38,3 +38,14 @@ export const allRegretPlotData = atom({
         regrets: []
     }
 });
+
+
+export const currentAlgorithm = atom({
+    key: "currentAlgorithm",
+    default: {
+        name: "ucb",
+        code: "",
+        math: "",
+    }
+});
+
