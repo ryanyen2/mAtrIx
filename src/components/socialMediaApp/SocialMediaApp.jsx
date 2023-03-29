@@ -5,14 +5,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 
+import { createApi } from 'unsplash-js';
 
 import Post from "./Post.jsx";
 
 class SocialMediaApp extends React.Component {
-// export default function SocialMediaApp() {
-
-// const SocialMediaApp = ({}) => {
-//
   constructor(props) {
     super(props);
     
@@ -20,28 +17,6 @@ class SocialMediaApp extends React.Component {
     this.child = React.createRef();
     
     this.state = {
-//       postInfo: {
-//         userName: "lucy674",
-//         avatar: "LW",
-//         avatarColor: {
-//           "bgcolor": "#64A2FA",
-//         },
-//         date: "February 20, 2023",
-//         imgSrc: "images/contentImg2.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
-//         numOfLikes: 19,
-//       },
-
-//       postInfo: {
-//         userName: "ken222",
-//         avatar: "K",
-//         avatarColor: {
-//           "bgcolor": "#FAAB4D",
-//         },
-//         date: "February 22, 2023",
-//         imgSrc: "images/contentImg4.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
-//         numOfLikes: 87,
-//       },
-
       postInfo: {
         userName: "kris425",
         avatar: "KF",
@@ -53,6 +28,15 @@ class SocialMediaApp extends React.Component {
         numOfLikes: 2,
       },
       liked: 0.0,
+      imageUrls: this.getImageUrls(["cat", "dog", "beach", "dessert"]), // hard-coded order need to match tagDict
+      // imageUrls: this.getImageUrls(["cat", "dog"]),
+      tagDict: {
+        "cat": 0,
+        "dog": 1,
+        "beach": 2, 
+        "dessert": 3
+      }, // hard-coded
+      maxNumPhoto: 30, // hard-coded TODO: 120
 //       postInfo: {
 //         userName: "ryan632",
 //         avatar: "R",
@@ -64,6 +48,45 @@ class SocialMediaApp extends React.Component {
 //         numOfLikes: 557,
 //       },
     };
+  }
+
+  //https://github.com/unsplash/unsplash-js
+  getImageUrls = (tagList) => {
+    var urlList = new Array();
+
+    const unsplash = createApi({
+      accessKey: 'Wyflmp2deACsYqKVFilDp1mydmddKwh09_68n_QysE0',
+    });
+
+    // for each tag
+    for (var i = 0; i < tagList.length; i++) {
+      // for each page (unsplash allows max 30 photos in one page)
+      for (var j = 1; j <= 1 ; j++) { // hard-coded, this.state.maxNumPhoto/30 TODO 5
+        
+        // request images
+        unsplash.search.getPhotos({
+          query: tagList[i],
+          page: j,
+          perPage: 30,
+        }).then(result => {
+          if (result.errors) {
+            // handle error here
+            console.log('error occurred: ', result.errors[0]);
+          } else {
+            const feed = result.response;
+        
+            // extract total and results array from response
+            const { total, results } = feed;
+            
+            // for each image, save the url
+            for (var k = 0; k < results.length; k++) {
+              urlList.push(results[k].urls.small);
+            }    
+          }
+        });
+      }
+    }
+    return urlList;
   }
 
   // handling users' action
@@ -78,7 +101,6 @@ class SocialMediaApp extends React.Component {
       var newTag = this.randomTag();
       console.log("get the new tag: "+ newTag);
 
-
       //generate a new post
       this.generateRandomPost(newTag);
     });
@@ -87,7 +109,7 @@ class SocialMediaApp extends React.Component {
 
   // random tag (TODO: for testing only)
   randomTag = () => {
-    const tags = ["dog","cat", "dessert", "beach"]
+    const tags = ["dog","cat", "beach", "dessert"]
     return tags[Math.floor(Math.random() * tags.length)];
   }
 
@@ -110,7 +132,16 @@ class SocialMediaApp extends React.Component {
 
   //TODO: random image source without repeating
   randomImg = (tag) => {
-    const src = "images/"+ tag + Math.floor(Math.random() * 8) + ".jpg"; // TODO: need to change this num later
+    // console.log("====++++====");
+    // console.log(this.state.imageUrls);
+
+    const randomNum = Math.floor(Math.random() * this.state.maxNumPhoto) + 
+      this.state.tagDict[tag] * this.state.maxNumPhoto;
+    // console.log(`${tag} : ${randomNum}`);
+    const src = this.state.imageUrls[randomNum]; // TODO: need to change this num later
+
+    
+    // const src = "images/"+ tag + Math.floor(Math.random() * 8) + ".jpg"; // TODO: need to change this num later
     // console.log(src);
     return src;
   }
