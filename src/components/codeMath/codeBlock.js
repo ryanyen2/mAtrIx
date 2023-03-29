@@ -78,18 +78,6 @@ class CodeBlock extends React.Component {
   render() {
     return (
       <div>
-        {/* <Button
-          variant="contained"
-          onClick={() => this.handleHighlightLine("import seaborn as sns")}
-        >
-          Highlight Line
-        </Button> */}
-        <span
-          style={{ fontSize: "1rem", fontStyle: "italic", marginLeft: "10px" }}
-        >
-          {" "}
-          import seaborn as sns
-        </span>
         <Editor
           onMount={(editor, monaco) => {
             this.editorRef.current = editor;
@@ -99,6 +87,17 @@ class CodeBlock extends React.Component {
           defaultLanguage={this.state.language}
           defaultValue={this.state.code}
           theme="vs-dark"
+            options={{ 
+                minimap: { enabled: false },
+                lineNumbers: "off",
+                lineDecorationsWidth: 0,
+                lineNumbersMinChars: 3,
+                folding: false,
+                scrollBeyondLastLine: false,
+                readOnly: true,
+                automaticLayout: true,
+                wordWrap: "off",
+            }}
         />
       </div>
     );

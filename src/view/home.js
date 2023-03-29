@@ -22,6 +22,7 @@ import { RegretPlot } from "../components/home/regretPlot";
 
 import MathBlock from '../components/codeMath/mathBlock';
 import CodeBlock from "../components/codeMath/codeBlock";
+import CodeFlow from "../components/codeMath/codeFlow";
 
 function Home(props) {
   const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
@@ -80,7 +81,9 @@ function Home(props) {
             <Item>Radar Chart</Item>
           </Grid>
           <Grid item xs={12}>
-            <Item>Settings</Item>
+          <Item style={{ height: "300px", width: "100%" }}>
+            <CodeFlow algorithm={currentAlgorithm} />
+          </Item>
           </Grid>
         </Grid>
 
