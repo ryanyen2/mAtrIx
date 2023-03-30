@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^5.2.3",
     "d3": "^7.8.2",
+    "jstat": "^1.9.6",
     "mathjax-react": "^2.0.1",
     "nouislider": "^15.7.0",
     "react": "^16.13.1",

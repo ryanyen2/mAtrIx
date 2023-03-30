@@ -51,7 +51,7 @@ function Home(props) {
           <Grid item xs={12}>
             <Item>
               <RegretPlot width={500} height={150} />
-              <AlgGraph></AlgGraph>
+              <div id="alggraphparent"><AlgGraph></AlgGraph></div>
             </Item>
           </Grid>
           <Grid container>
