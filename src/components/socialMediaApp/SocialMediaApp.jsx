@@ -6,6 +6,7 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 
 import Post from "./Post.jsx";
+// import {GenerateNewBandit} from '../../utils/bandits.js';
 
 class SocialMediaApp extends React.Component {
   // export default function SocialMediaApp() {
@@ -64,6 +65,27 @@ class SocialMediaApp extends React.Component {
       //       },
     };
   }
+
+  // useEffect(() => {
+  //   const newBandit = new GenerateNewBandit();
+  //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
+  //     console.log(newSteps);
+  //     setStep(newSteps);
+  //   });
+  // }, []);
+
+  // componentDidMount() {
+  //   const newBandit = new GenerateNewBandit();
+  //   newBandit.startGenerate(
+  //     "new",
+  //     "thompson-sampling",
+  //     { alpha: 1, beta: 1 },
+  //     (newSteps) => {
+  //       console.log('from class component: ', newSteps);
+  //       this.setState({ step: newSteps });
+  //     }
+  //   );
+  // }
 
   // handling users' action
   // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs

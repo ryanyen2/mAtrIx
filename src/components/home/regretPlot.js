@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 // import * as d3 from "d3";
 import { Container } from "@material-ui/core";
 import { EvaluationApplet } from "../../utils/bandits";
@@ -34,8 +34,31 @@ export function RegretPlot(props) {
     useRecoilState(allRegretPlotData);
 
   const [play, setPlay] = useState(true);
+  
+  const evalAppRef = useRef(null);
   // const [time, setTime] = useState(0);
   // const [regret, setRegret] = useState({});
+
+  // const evalApp = new EvaluationApplet(
+  //   "#eval-graph",
+  //   {
+  //     epsilon: "var-epsilon",
+  //     c: "var-c",
+  //     m: "var-m",
+  //     nu: "var-nu",
+  //     alpha: "var-alpha",
+  //     beta: "var-beta",
+  //     repeats: "var-repeat",
+  //     toggle: "eval-btn-toggle",
+  //     reset: "eval-btn-reset",
+  //   },
+  //   setRegretPlotData
+  // );
+  
+  // const regret = evalApp.regret;
+  // useEffect(() => {
+  //   console.log("regret", regret);
+  // }, [regret]);
 
   useEffect(() => {
     const evalApp = new EvaluationApplet(
@@ -73,7 +96,7 @@ export function RegretPlot(props) {
       // window.onstorage = null;
       // window.localStorage.clear();
     };
-  }, [regretPlotParamValue]);
+  }, []);
 
   useEffect(() => {
     // console.log("regretPlotDataValue", regretPlotDataValue);

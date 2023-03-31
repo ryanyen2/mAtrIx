@@ -1,5 +1,5 @@
 // react template for d3
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import * as d3 from "d3";
 // import BarChart from "../components/home/barChart";
 import Container from "@mui/material/Container";
@@ -24,8 +24,11 @@ import MathBlock from "../components/codeMath/mathBlock";
 import CodeFlow from "../components/codeMath/codeFlow";
 import TimeController from "../components/timeController/timeController";
 
+// import {GenerateNewBandit} from '../utils/bandits';
+
 function Home(props) {
   const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
+  // const [step, setStep] = useState(0);
 
   const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
@@ -36,6 +39,16 @@ function Home(props) {
     textAlign: "center",
     color: theme.palette.text.secondary,
   }));
+
+  // useEffect(() => {
+  //   const newBandit = new GenerateNewBandit();
+  //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
+  //     console.log(newSteps);
+  //     setStep(newSteps);
+  //   });
+  // }, []);
+
+
 
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
