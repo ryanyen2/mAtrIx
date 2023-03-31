@@ -1,27 +1,27 @@
 import React from 'react';
-import { MarkerType, Position } from 'reactflow';
+// import { MarkerType, Position } from 'reactflow';
 
 export const nodes = [
   {
     id: '1',
-    type: 'input',
     data: {
-      label: 'Input Node',
+      label: 'class: Thompson Sampling',
     },
-    position: { x: 250, y: 0 },
+    className: 'ts-class',
+    position: { x: 100, y: 100 },
   },
   {
     id: '2',
     data: {
-      label: 'Default Node',
+      label: 'class: BernoulliBandit',
     },
-    position: { x: 100, y: 100 },
+    className: 'bb-class',
+    position: { x: 200, y: 100 },
   },
   {
-    id: '3',
-    type: 'output',
+    id: '1a',
     data: {
-      label: 'Output Node',
+      label: 'init',
     },
     position: { x: 400, y: 100 },
   }

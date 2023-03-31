@@ -49,3 +49,14 @@ export const currentAlgorithm = atom({
     }
 });
 
+
+export const currentStep = atom({
+    key: "currentStep",
+    default: {
+        step: 0,
+        regretPlotData: {},
+        distributionPlotData: {},
+        startCodeFlow: false,
+        mathBlock: {},
+    }
+});

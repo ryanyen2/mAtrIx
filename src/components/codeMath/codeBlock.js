@@ -6,28 +6,32 @@ class CodeBlock extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      language: "python",
       algorithm: props.algorithm,
-      code: `var sigma2_a, mu_a;
-      var aprime = null;
-      var muprime = -Infinity;
-      for (let a=0; a<this.nBandits; a++) {
-          sigma2_a = this._draw_ig(
-              0.5 * this.N[a] + this.alpha_a,
-              this.beta_t_a[a]
-          );
-          this.latest_zeta[a] = sigma2_a / (this.N[a] + this.v_a);
-
-          mu_a = this._draw_normal(
-              this.rho[a],
-              this.latest_zeta[a]
-          );
-
-          if (mu_a > muprime) {
-              aprime = a;
-              muprime = mu_a;
-          }
-      }
-      return aprime;`
+      code: `class ThompsonSampling(Solver):
+      def __init__(self, bandit, init_a=1, init_b=1):
+          """
+          init_a (int): initial value of a in Beta(a, b).
+          init_b (int): initial value of b in Beta(a, b).
+          """
+          super(ThompsonSampling, self).__init__(bandit)
+  
+          self._as = [init_a] * self.bandit.n
+          self._bs = [init_b] * self.bandit.n
+  
+      @property
+      def estimated_probas(self):
+          return [self._as[i] / (self._as[i] + self._bs[i]) for i in range(self.bandit.n)]
+  
+      def run_one_step(self):
+          samples = [np.random.beta(self._as[x], self._bs[x]) for x in range(self.bandit.n)]
+          i = max(range(self.bandit.n), key=lambda x: samples[x])
+          r = self.bandit.generate_reward(i)
+  
+          self._as[i] += r
+          self._bs[i] += (1 - r)
+  
+          return i`
     };
 
     this.editorRef = React.createRef();
@@ -83,10 +87,10 @@ class CodeBlock extends React.Component {
             this.editorRef.current = editor;
             this.monacoRef.current = monaco;
           }}
-          height="30vh"
+          height="70vh"
           defaultLanguage={this.state.language}
           defaultValue={this.state.code}
-          theme="vs-dark"
+          theme="atom"
             options={{ 
                 minimap: { enabled: false },
                 lineNumbers: "off",
@@ -94,7 +98,7 @@ class CodeBlock extends React.Component {
                 lineNumbersMinChars: 3,
                 folding: false,
                 scrollBeyondLastLine: false,
-                readOnly: true,
+                readOnly: false,
                 automaticLayout: true,
                 wordWrap: "off",
             }}
