@@ -47,8 +47,17 @@ class Post extends React.Component {
 
       // TODO wait for x seconds
 
-      // passing data back to parent
-      this.props.onUserAction(this.state.liked?1.0:0.0)
+      if(this.props.postInfo.userName == "mAtrIx") {
+        this.props.onUserAction(-100.0);
+      }
+      else {
+          if(this.state.liked) {
+            this.props.onUserAction(1.0);
+          }
+          else {
+            this.props.onUserAction(0.0);
+          }
+      }      
     }
     this.setState({swipingUp: false})
 //     console.log("Swipe Ended")
