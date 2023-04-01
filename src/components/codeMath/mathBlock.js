@@ -45,7 +45,10 @@ class MathBlock extends React.Component {
     return (
         <div>
           <MathComponent
-            tex={String.raw`A_t = \underset{a \in \mathcal{A}}{arg max} \; \bar{x}_{t,a}+ c\sqrt{\frac{\ln(t)}{N_t(a)}}.`}
+            tex={String.raw`A_t = \underset{a \in \mathcal{A}}{arg max} \;`}
+          />
+          <MathComponent
+            tex={String.raw` \bar{x}_{t,a}+ c\sqrt{\frac{\ln(t)}{N_t(a)}}.`}
           />
       </div>
     );

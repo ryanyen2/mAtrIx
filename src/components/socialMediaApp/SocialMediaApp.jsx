@@ -1,106 +1,127 @@
 import React, { createRef, useState } from "react";
-import AppBar from '@mui/material/AppBar';
-import Typography from '@mui/material/Typography';
-import Toolbar from '@mui/material/Toolbar';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-
+import AppBar from "@mui/material/AppBar";
+import Typography from "@mui/material/Typography";
+import Toolbar from "@mui/material/Toolbar";
+import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
 
 import Post from "./Post.jsx";
+// import {GenerateNewBandit} from '../../utils/bandits.js';
 
 class SocialMediaApp extends React.Component {
-// export default function SocialMediaApp() {
+  // export default function SocialMediaApp() {
 
-// const SocialMediaApp = ({}) => {
-//
+  // const SocialMediaApp = ({}) => {
+  //
   constructor(props) {
     super(props);
-    
+
     // Create the child instance using react createRef
     this.child = React.createRef();
-    
-    this.state = {
-//       postInfo: {
-//         userName: "lucy674",
-//         avatar: "LW",
-//         avatarColor: {
-//           "bgcolor": "#64A2FA",
-//         },
-//         date: "February 20, 2023",
-//         imgSrc: "images/contentImg2.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
-//         numOfLikes: 19,
-//       },
 
-//       postInfo: {
-//         userName: "ken222",
-//         avatar: "K",
-//         avatarColor: {
-//           "bgcolor": "#FAAB4D",
-//         },
-//         date: "February 22, 2023",
-//         imgSrc: "images/contentImg4.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
-//         numOfLikes: 87,
-//       },
+    this.state = {
+      //       postInfo: {
+      //         userName: "lucy674",
+      //         avatar: "LW",
+      //         avatarColor: {
+      //           "bgcolor": "#64A2FA",
+      //         },
+      //         date: "February 20, 2023",
+      //         imgSrc: "images/contentImg2.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
+      //         numOfLikes: 19,
+      //       },
+
+      //       postInfo: {
+      //         userName: "ken222",
+      //         avatar: "K",
+      //         avatarColor: {
+      //           "bgcolor": "#FAAB4D",
+      //         },
+      //         date: "February 22, 2023",
+      //         imgSrc: "images/contentImg4.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
+      //         numOfLikes: 87,
+      //       },
 
       postInfo: {
         userName: "kris425",
         avatar: "KF",
         avatarColor: {
-          "bgcolor": "#D6452D",
+          bgcolor: "#D6452D",
         },
         date: "February 04, 2023",
         imgSrc: "images/dog1.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
         numOfLikes: 2,
       },
       liked: 0.0,
-//       postInfo: {
-//         userName: "ryan632",
-//         avatar: "R",
-//         avatarColor: {
-//           "bgcolor": "#235656",
-//         },
-//         date: "February 19, 2023",
-//         imgSrc: "images/contentImg3.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
-//         numOfLikes: 557,
-//       },
+      //       postInfo: {
+      //         userName: "ryan632",
+      //         avatar: "R",
+      //         avatarColor: {
+      //           "bgcolor": "#235656",
+      //         },
+      //         date: "February 19, 2023",
+      //         imgSrc: "images/contentImg3.jpg", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
+      //         numOfLikes: 557,
+      //       },
     };
   }
+
+  // useEffect(() => {
+  //   const newBandit = new GenerateNewBandit();
+  //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
+  //     console.log(newSteps);
+  //     setStep(newSteps);
+  //   });
+  // }, []);
+
+  // componentDidMount() {
+  //   const newBandit = new GenerateNewBandit();
+  //   newBandit.startGenerate(
+  //     "new",
+  //     "thompson-sampling",
+  //     { alpha: 1, beta: 1 },
+  //     (newSteps) => {
+  //       console.log('from class component: ', newSteps);
+  //       this.setState({ step: newSteps });
+  //     }
+  //   );
+  // }
 
   // handling users' action
   // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs
   handleUserAction = (likedValue) => {
-    //save user's action 
-    this.setState({liked: likedValue}, () => {
+    //save user's action
+    this.setState({ liked: likedValue }, () => {
       console.log("received reward: " + likedValue);
       //TODO: pass this data to Kris
 
       //TODO: get the tag
       var newTag = this.randomTag();
-      console.log("get the new tag: "+ newTag);
-
+      console.log("get the new tag: " + newTag);
 
       //generate a new post
       this.generateRandomPost(newTag);
     });
-
-  }
+  };
 
   // random tag (TODO: for testing only)
   randomTag = () => {
-    const tags = ["dog","cat", "dessert", "beach"]
+    const tags = ["dog", "cat", "dessert", "beach"];
     return tags[Math.floor(Math.random() * tags.length)];
-  }
+  };
 
   // user id generator https://www.codemzy.com/blog/random-unique-id-javascript
   // short random string for ids - not guaranteed to be unique
-  randomId = (length=6) => {
-    return Math.random().toString(36).substring(2, length+2);
+  randomId = (length = 6) => {
+    return Math.random()
+      .toString(36)
+      .substring(2, length + 2);
   };
 
   // random color for the avatar
   //https://css-tricks.com/snippets/javascript/random-hex-color/
   randomColor = () => {
-    return "#".concat(Math.floor(Math.random()*16777215).toString(16));
+    return "#".concat(Math.floor(Math.random() * 16777215).toString(16));
   };
 
   // random number of likes
@@ -110,61 +131,108 @@ class SocialMediaApp extends React.Component {
 
   //TODO: random image source without repeating
   randomImg = (tag) => {
-    const src = "images/"+ tag + Math.floor(Math.random() * 8) + ".jpg"; // TODO: need to change this num later
+    const src = "images/" + tag + Math.floor(Math.random() * 8) + ".jpg"; // TODO: need to change this num later
     // console.log(src);
     return src;
-  }
+  };
 
   // random date
   //https://www.fabiofranchino.com/log/create-a-random-date-with-javascript/
   randomDate = (from, to) => {
-    from = from.getTime()
-    to = to.getTime()
-    const newDate = new Date(from + Math.random() * (to - from))
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const newDateStr = months[newDate.getMonth()]+" "+newDate.getDate()+", "+newDate.getFullYear()
-    return newDateStr
-  }
+    from = from.getTime();
+    to = to.getTime();
+    const newDate = new Date(from + Math.random() * (to - from));
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const newDateStr =
+      months[newDate.getMonth()] +
+      " " +
+      newDate.getDate() +
+      ", " +
+      newDate.getFullYear();
+    return newDateStr;
+  };
 
   generateRandomPost(tag) {
     const tempId = this.randomId(6);
-    this.setState({
-      postInfo: {
-        userName: tempId,
-        avatar: tempId.substring(0,2),
-        avatarColor: {"bgcolor": this.randomColor()},
-        date: this.randomDate(new Date("February 01, 2022"), new Date("April 05, 2022")),
-        imgSrc: this.randomImg(tag), 
-        numOfLikes: this.randomLiks(999),
-      }}, () => {
-        // Call the child method resetPost
-        this.child.current.resetPost() // https://chafikgharbi.com/react-call-child-method/
-      });
+    const sma = document.getElementById("social-media-app-card");
+    // first div under sma
+    const smaDiv = sma.getElementsByTagName("div")[0];
+    smaDiv.classList.add("ease-out");
+
+    // const smaImg = sma.getElementsByTagName("img")[0];
+    // const smaUserProfile = sma.getElementsByClassName("userProfile")[0];
+    // const snaUserAction = sma.getElementsByClassName("userAction")[0];
+
+    // smaImg.classList.add("ease-out");
+    // smaUserProfile.classList.add("ease-out");
+    // snaUserAction.classList.add("ease-out");
+    setTimeout(() => {
+      this.setState(
+        {
+          postInfo: {
+            userName: tempId,
+            avatar: tempId.substring(0, 2),
+            avatarColor: { bgcolor: this.randomColor() },
+            date: this.randomDate(
+              new Date("February 01, 2022"),
+              new Date("April 05, 2022")
+            ),
+            imgSrc: this.randomImg(tag),
+            numOfLikes: this.randomLiks(999),
+          },
+        },
+        () => {
+          console.log("new post generated");
+          // Call the child method resetPost
+          this.child.current.resetPost(); // https://chafikgharbi.com/react-call-child-method/
+        }
+      );
+    }, 400);
   }
 
   render() {
     return (
-      <Card sx={{
-            maxWidth: "325px",
-            alignItems: 'center',
-            }}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{"user-select": "none", flexGrow: 1 }}>
-              Fakebook
-            </Typography>
-          </Toolbar>
+      <Card
+        id="social-media-app"
+        sx={{
+          maxWidth: "350px",
+          alignItems: "center",
+        }}
+      >
+        <AppBar position="static" id="social-media-app-header">
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ "user-select": "none", flexGrow: 1 }}
+          >
+            mAtrIx
+          </Typography>
         </AppBar>
         <Grid style={{ margin: 12 }} container spacing={1}>
-          <Post style={{ margin: 12 }} 
-            postInfo={this.state.postInfo} 
+          <Post
+            style={{ margin: 12 }}
+            key={this.state.postInfo.userName}
+            postInfo={this.state.postInfo}
             ref={this.child}
-            onUserAction = {this.handleUserAction}
+            onUserAction={this.handleUserAction}
           />
         </Grid>
       </Card>
     );
   }
-};
+}
 
 export default SocialMediaApp;
