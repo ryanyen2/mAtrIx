@@ -20,6 +20,7 @@ export function SocialMediaApp(props) {
         imgSrc: "images/tutorial.png", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
         numOfLikes: 0,
     });
+    const [numPostScrolled, setNumPostScrolled] = useState(0);
     const [liked, setLiked] = useState(0.0);
     // initialize a array and fill in with numbers from 0 to n-1
     const initArray = (n) => {
@@ -49,6 +50,7 @@ export function SocialMediaApp(props) {
     // }, []);
 
     useEffect(() => {
+        console.log("in useeffect");
         // skip the first tutorial post
         if (liked != -100.0) {
             //TODO: pass this data to Kris
@@ -59,14 +61,33 @@ export function SocialMediaApp(props) {
         console.log("get the new tag: " + newTag);
 
         //generate a new post
-        generateRandomPost(newTag);
-    }, [liked]);
+        const tempId = randomId(6);
+        const sma = document.getElementById("social-media-app-card");
+        // first div under sma
+        const smaDiv = sma.getElementsByTagName("div")[0];
+        smaDiv.classList.add("ease-out");
+
+        setTimeout(() => {
+            setPostInfo({
+                userName: tempId,
+                avatar: tempId.substring(0, 2),
+                avatarColor: { bgcolor: randomColor() },
+                date: randomDate(
+                    new Date("February 01, 2022"),
+                    new Date("April 05, 2022")
+                ),
+                imgSrc: randomImg(newTag),
+                numOfLikes: randomLikes(999),
+            });
+        }, 400);
+    }, [numPostScrolled]);
 
     // handling users' action
     // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs
     const handleUserAction = (likedValue) => {
         //save user's action
         setLiked(likedValue);
+        setNumPostScrolled(numPostScrolled + 1);
         console.log("received reward: " + likedValue);
     };
 
@@ -150,28 +171,6 @@ export function SocialMediaApp(props) {
             ", " +
             newDate.getFullYear();
         return newDateStr;
-    };
-
-    const generateRandomPost = (tag) => {
-        const tempId = randomId(6);
-        const sma = document.getElementById("social-media-app-card");
-        // first div under sma
-        const smaDiv = sma.getElementsByTagName("div")[0];
-        smaDiv.classList.add("ease-out");
-
-        setTimeout(() => {
-            setPostInfo({
-                userName: tempId,
-                avatar: tempId.substring(0, 2),
-                avatarColor: { bgcolor: randomColor() },
-                date: randomDate(
-                    new Date("February 01, 2022"),
-                    new Date("April 05, 2022")
-                ),
-                imgSrc: randomImg(tag),
-                numOfLikes: randomLikes(999),
-            });
-        }, 400);
     };
 
     useEffect(() => {
