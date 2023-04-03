@@ -15,9 +15,12 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 
+// settgins
 import SettingsIcon from "@mui/icons-material/Settings";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
+import { RadarChart } from "../home/radarChart";
+import ParameterSettings from "../home/parameterSettings";
 
 import { useRecoilState } from "recoil";
 import { currentStep } from "../../state/atoms";
@@ -155,9 +158,14 @@ export default function TimeController() {
             onClose={toggleDrawerWithSettings(false)}
           >
             <Box sx={{ width: 550, padding: "2rem" }} role="presentation">
-              <h4>Settings</h4>
-              {/* general settings */}
-              {/* radar chart */}
+              <h4>General Settings</h4>
+              <div id="parameterSettings" style={{ marginBottom: "2rem" }}>
+                <ParameterSettings />
+              </div>
+              <h4>Target Ouput</h4>
+              <div id="radarChart">
+                <RadarChart />
+              </div>
             </Box>
           </Drawer>
         </Grid>

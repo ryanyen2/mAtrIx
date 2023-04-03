@@ -5,7 +5,7 @@ export function RadarChart(props) {
     useEffect(() => {
         var margin = { top: 100, right: 100, bottom: 100, left: 100 },
         width =
-            Math.min(700, window.innerWidth - 10) -
+            Math.min(500, window.innerWidth - 10) -
             margin.left -
             margin.right,
         height = Math.min(
@@ -13,7 +13,7 @@ export function RadarChart(props) {
             window.innerHeight - margin.top - margin.bottom - 20
         );
 
-    DrawRadarChart("#radarchart", [], {
+    DrawRadarChart("#radarChart", [], {
         w: width,
         h: height,
         margin: margin,
