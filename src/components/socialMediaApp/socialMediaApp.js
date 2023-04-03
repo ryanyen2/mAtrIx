@@ -8,7 +8,7 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 
 import imageUrls from "./urls";
-import { armTags } from "../../state/atoms";
+import { armTags, banditInfo } from "../../state/atoms";
 
 import { Post } from "./post.js";
 
@@ -37,6 +37,7 @@ export function SocialMediaApp(props) {
       alpaca: initArray(120), // hard-coded
     },
     maxNumPhoto = 120; // hard-coded
+  const banditInfoValue = useRecoilValue(banditInfo);
   const child = useRef(null);
 
   // useEffect(() => {
@@ -49,12 +50,22 @@ export function SocialMediaApp(props) {
 
   useEffect(() => {
     if (numPostScrolled > 0) {
+      var newTag = -1;
       if (liked != -100.0) {
         //TODO: pass this data to Kris
+        // newBandit.record(liked, () => {
+        //     newBandit.getArm((retval) => {
+        //       newTag = retval;
+        //     });
+        //   });
+      } else {
+        // get the very first selected arm (done in home.js)
+        newTag = banditInfoValue.cur_arm;
       }
 
       //TODO: get the tag
-      var newTag = randomTag();
+      
+      
       console.log("get the new tag: " + newTag);
 
       //generate a new post
@@ -78,7 +89,7 @@ export function SocialMediaApp(props) {
         });
       }, 400);
     }
-  }, [numPostScrolled]);
+  }, [numPostScrolled, liked]);
 
   // handling users' action
   // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs

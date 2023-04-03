@@ -18,6 +18,7 @@ import { styled } from "@mui/material/styles";
 import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 
 import { RegretPlot } from "../components/home/regretPlot";
+import AlgGraph from "../components/home/AlgGraph";
 // import {timeRegretSelector} from '../state/selector';
 
 // import { RadarChart } from "../components/home/radarChart";
@@ -31,19 +32,10 @@ import TimeController from "../components/timeController/timeController";
 import { GenerateNewBandit } from "../utils/bandits";
 
 function Home(props) {
-  const [banditInfoValue, setBanditInfoValue] = useRecoilState({
-    model: null,
-    model_name: "N/A",
-    model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
-    n_arms: 0, // Number of Arms, we can set at init
-    parameters: {},
-    steps: [],
-    cur_step: 0, // Index of current step
-    cur_arm: 0, // Index tag of current arm
-  });
-  const [step, setStep] = useState(0);
-  const armTags = useRecoilValue(armTags);
-  const modelID = useRecoilValue(modelTypeID);
+  const [banditInfoValue, setBanditInfoValue] = useRecoilState(banditInfo);
+  // const [step, setStep] = useState(0);
+  const armTagsValue = useRecoilValue(armTags);
+  const modelTypeIDValue = useRecoilValue(modelTypeID);
 
   const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
@@ -56,15 +48,33 @@ function Home(props) {
   }));
 
   // EG FN FORWARD
-  useEffect(() => {
-    const newBandit = new GenerateNewBandit();
-    setBanditInfoValue(newBandit.startGenerate(modelID.thompson, Object.keys(armTags).length));
+  useEffect(async () => {
+    const newBandit = new GenerateNewBandit(setBanditInfoValue);
+    // setBanditInfoValue((old) => {
+    //   let o = {...old};
+    //   let n = newBandit.startGenerate(modelTypeIDValue.thompson, Object.keys(armTagsValue).length)
+    //   o.model = n.model;
+    //   o.model_name = n.model_name;
+    //   o.model_id = n.model_id;
+    //   o.n_arms = n.n_arms;
+    //   o.parameters = n.parameters;
+    //   o.steps = n.steps;
+    //   o.cur_step = n.cur_step;
+    //   o.cur_arm = n.cur_arm;
+    //   return o;
+    // });
+    await newBandit.startGenerate(modelTypeIDValue.thompson, Object.keys(armTagsValue).length);
+    // setBanditInfoValue(d);
     newBandit.record(1, () => {
       newBandit.getArm((retval) => {
         console.log("got arm", retval);
       });
     });
   }, []);
+
+  useEffect(() => {
+    console.log(banditInfoValue.n_arms);
+  }, [banditInfoValue])
 
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
