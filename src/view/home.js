@@ -20,7 +20,7 @@ import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 import { RegretPlot } from "../components/home/regretPlot";
 // import {timeRegretSelector} from '../state/selector';
 
-import RadarChart from "../components/home/radarChart";
+import { RadarChart } from "../components/home/radarChart";
 import ParameterSettings from "../components/home/parameterSettings";
 
 import MathBlock from "../components/codeMath/mathBlock";

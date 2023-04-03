@@ -1,44 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as d3 from "d3";
 
-class RadarChart extends React.Component {
-    componentDidMount() {
-        // this.drawChart();
+export function RadarChart(props) {
+    useEffect(() => {
         var margin = { top: 100, right: 100, bottom: 100, left: 100 },
-            width =
-                Math.min(700, window.innerWidth - 10) -
-                margin.left -
-                margin.right,
-            height = Math.min(
-                width,
-                window.innerHeight - margin.top - margin.bottom - 20
-            );
+        width =
+            Math.min(700, window.innerWidth - 10) -
+            margin.left -
+            margin.right,
+        height = Math.min(
+            width,
+            window.innerHeight - margin.top - margin.bottom - 20
+        );
 
-        DrawRadarChart("#radarchart", [], {
-            w: width,
-            h: height,
-            margin: margin,
-            maxValue: 0.5,
-            levels: 5,
-            roundStrokes: true,
-            // color: d3.scaleOrdinal().range(['#EDC951', '#CC333F', '#00A0B0']),
-            axis: [
-                "Battery Life",
-                "Brand",
-                "Contract Cost",
-                "Design And Quality",
-                "Have Internet Connectivity",
-                "Large Screen",
-                "Price Of Device",
-                "To Be A Smartphone",
-            ],
-        });
-    }
-
-    render() {
-        return <div></div>;
-    }
+    DrawRadarChart("#radarchart", [], {
+        w: width,
+        h: height,
+        margin: margin,
+        maxValue: 0.5,
+        levels: 5,
+        roundStrokes: true,
+        // color: d3.scaleOrdinal().range(['#EDC951', '#CC333F', '#00A0B0']),
+        axis: [
+            "Battery Life",
+            "Brand",
+            "Contract Cost",
+            "Design And Quality",
+            "Have Internet Connectivity",
+            "Large Screen",
+            "Price Of Device",
+            "To Be A Smartphone",
+        ],
+    });
+    }, []);
+    return <div></div>;
 }
+
 
 // REF: https://stackoverflow.com/questions/32281168/find-a-point-on-a-line-closest-to-a-third-point-javascript
 function findNearestPointOnLine(px, py, ax, ay, bx, by) {
@@ -514,5 +511,3 @@ function DrawRadarChart(id, data, options) {
         });
     } //wrap
 } //RadarChart
-
-export default RadarChart;
