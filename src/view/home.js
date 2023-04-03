@@ -9,7 +9,7 @@ import Grid from "@mui/material/Grid";
 
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { armTags, barChartData } from "../state/atoms";
+import { armTags, barChartData, modelTypeID } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
@@ -19,10 +19,6 @@ import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 
 import { RegretPlot } from "../components/home/regretPlot";
 // import {timeRegretSelector} from '../state/selector';
-import {
-  armTags, 
-  modelTypeID
-} from "../state/atoms";
 
 import MathBlock from "../components/codeMath/mathBlock";
 // import CodeBlock from "../components/codeMath/codeBlock";

@@ -1159,7 +1159,7 @@ export class GenerateNewBandit {
     model_name: "N/A",
     model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
     n_arms: 3, // Number of Arms, we can set at init
-    parameters: {},
+    parameters: {}, // Parameters for bandit of each arm
     steps: [],
     cur_step: 0, // Index of current step
     cur_arm: 0, // Index tag of current arm
@@ -1187,6 +1187,7 @@ export class GenerateNewBandit {
       var init_bandit = new ThompsonSampling(this.banditInfo.n_arms, 0, 1, 1, 1);
       this.banditInfo.steps.push(init_bandit)
       this.banditInfo.model = init_bandit;
+	  return this.banditInfo;
     }
   }
 

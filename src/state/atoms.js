@@ -79,3 +79,17 @@ export const modelTypeID = atom({
         thompson: 2
     }
 })
+
+export const banditInfo = atom({
+    key: "banditInfo",
+    default: {
+        model: null,
+        model_name: "N/A",
+        model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
+        n_arms: 0, // Number of Arms, we can set at init
+        parameters: {},
+        steps: [],
+        cur_step: 0, // Index of current step
+        cur_arm: 0, // Index tag of current arm
+    }
+})
