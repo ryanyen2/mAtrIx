@@ -318,9 +318,10 @@ export class BanditsApplet {
 }
 
 export class EvaluationApplet {
-  constructor(selector, inputIds, setRegretPlotData) {
+  constructor(selector, inputParams, setRegretPlotData) {
     this.selector = selector;
-    this.inputIds = inputIds;
+    // this.inputIds = inputIds;
+    this.inputParams = inputParams;
     this.nBandits = 10;
     this.graph = null;
 
@@ -375,9 +376,8 @@ export class EvaluationApplet {
   }
 
   get_param() {
-    this.param = {};
-
     var self = this;
+    this.param = {...self.inputParams};
 
     var intFromId = function (x) {
       return parseInt(document.getElementById(self.inputIds[x]).value);
@@ -396,15 +396,17 @@ export class EvaluationApplet {
     };
 
     // extract the parameters from the input fields
-    this.param.repeats = intFromId("repeats");
-    this.param.epsilons = floatsFromId("epsilon").filter(onlyUnique);
-    this.param.cs = floatsFromId("c").filter(onlyUnique).filter(onlyPos);
-    this.param.ms = floatsFromId("m").filter(onlyUnique);
-    this.param.nus = floatsFromId("nu").filter(onlyUnique).filter(onlyPos);
-    this.param.alphas = floatsFromId("alpha")
-      .filter(onlyUnique)
-      .filter(onlyPos);
-    this.param.betas = floatsFromId("beta").filter(onlyUnique).filter(onlyPos);
+    // this.param.repeats = intFromId("repeats");
+    // this.param.epsilons = floatsFromId("epsilon").filter(onlyUnique);
+    // this.param.cs = floatsFromId("c").filter(onlyUnique).filter(onlyPos);
+    // this.param.ms = floatsFromId("m").filter(onlyUnique);
+    // this.param.nus = floatsFromId("nu").filter(onlyUnique).filter(onlyPos);
+    // this.param.alphas = floatsFromId("alpha")
+    //   .filter(onlyUnique)
+    //   .filter(onlyPos);
+    // this.param.betas = floatsFromId("beta").filter(onlyUnique).filter(onlyPos);
+
+    // this.param.repeats = 10;
 
     // construct all bandit configurations (cross product)
     this.param.banditConfig = [];
@@ -443,6 +445,8 @@ export class EvaluationApplet {
       this.banditNames.push(name);
       this.banditConfig[name] = config;
     }
+
+    // console.log('banditNames', this.banditNames, 'config: ', this.banditConfig);
   }
 
   toggle() {
@@ -453,6 +457,7 @@ export class EvaluationApplet {
       this.appletRunning = true;
       // document.getElementById('eval-btn-toggle').className = 'btn-pause';
       this.get_param();
+      console.log(this.banditConfig);
       this.animate();
     }
   }
@@ -533,7 +538,6 @@ export class EvaluationApplet {
           this.envs[name][r].optimal - this.envs[name][r].means[action];
       }
     }
-
     // record the average regret over all repetitions
     // for (name of this.banditNames)
     // 	this.regret[name] += t_regret[name] / this.param.repeats;
