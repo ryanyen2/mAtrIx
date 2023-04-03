@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #ffffff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -38,7 +38,10 @@
   }
 }
 
-
+/* Parameter settings */
+label {
+  color: black;
+}
 
 /* bandits js */
 /* Copyright 2020, G.J.J. van den Burg */
@@ -861,7 +864,7 @@ p[class^="code-Method-Name-"] {
 
 #social-media-app-header {
   background-color: #2f6ab3;
-  z-index: 2;
+  z-index: 1;
   position: relative;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
 }

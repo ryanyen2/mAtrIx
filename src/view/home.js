@@ -9,7 +9,7 @@ import Grid from "@mui/material/Grid";
 
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { armTags, barChartData, modelTypeID } from "../state/atoms";
+import { armTags, banditInfo, modelTypeID } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
@@ -20,15 +20,27 @@ import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 import { RegretPlot } from "../components/home/regretPlot";
 // import {timeRegretSelector} from '../state/selector';
 
+// import { RadarChart } from "../components/home/radarChart";
+// import ParameterSettings from "../components/home/parameterSettings";
+
 import MathBlock from "../components/codeMath/mathBlock";
 // import CodeBlock from "../components/codeMath/codeBlock";
 import CodeFlow from "../components/codeMath/codeFlow";
 import TimeController from "../components/timeController/timeController";
 
-import {GenerateNewBandit} from '../utils/bandits';
+import { GenerateNewBandit } from "../utils/bandits";
 
 function Home(props) {
-  const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
+  const [banditInfoValue, setBanditInfoValue] = useRecoilState({
+    model: null,
+    model_name: "N/A",
+    model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
+    n_arms: 0, // Number of Arms, we can set at init
+    parameters: {},
+    steps: [],
+    cur_step: 0, // Index of current step
+    cur_arm: 0, // Index tag of current arm
+  });
   const [step, setStep] = useState(0);
   const armTags = useRecoilValue(armTags);
   const modelID = useRecoilValue(modelTypeID);
@@ -46,15 +58,13 @@ function Home(props) {
   // EG FN FORWARD
   useEffect(() => {
     const newBandit = new GenerateNewBandit();
-    newBandit.startGenerate(modelID.thompson, Object.keys(armTags).length);
+    setBanditInfoValue(newBandit.startGenerate(modelID.thompson, Object.keys(armTags).length));
     newBandit.record(1, () => {
-      newBandit.getArm( (retval) => {
+      newBandit.getArm((retval) => {
         console.log("got arm", retval);
       });
     });
   }, []);
-
-
 
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
@@ -69,7 +79,9 @@ function Home(props) {
         </Grid>
         <Grid item xs={5}>
           <Grid item xs={12}>
-            <Item>Distribution Grpah</Item>
+            <div id="alggraphparent">
+              <AlgGraph width={500} height={500} />
+            </div>
           </Grid>
           <Grid item xs={12}>
             <Item>
@@ -93,10 +105,6 @@ function Home(props) {
               <MathBlock algorithm={currentAlgorithm} />
             </Item>
           </Grid>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Item>Radar Chart</Item>
         </Grid>
       </Grid>
     </Container>

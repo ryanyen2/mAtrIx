@@ -6,18 +6,18 @@ export const barChartData = atom({
 });
 
 
-export const regretPlotParam = atom({
-    key: "regretPlotParam",
-    default: {
-        epsilon: 0.05,
-        c: 2,
-        m: 0,
-        nu: 1,
-        alpha: [1, 10],
-        beta: 1,
-        repeats: 100
-    }
-});
+// export const regretPlotParam = atom({
+//     key: "regretPlotParam",
+//     default: {
+//         epsilon: 0.05,
+//         c: 2,
+//         m: 0,
+//         nu: 1,
+//         alpha: [1, 10],
+//         beta: 1,
+//         repeats: 100
+//     }
+// });
 
 
 export const regretPlotData = atom({
@@ -91,5 +91,28 @@ export const banditInfo = atom({
         steps: [],
         cur_step: 0, // Index of current step
         cur_arm: 0, // Index tag of current arm
+    }
+})
+
+export const allSettingsParam = atom({
+    key: "allSettingsParam",
+    default: {
+        currentMode: "manual",  //manual, automatic, slow-demo
+        currentAlgorithm: "thompson-sampling",  //ucb, thompson-sampling, epsilon-greedy
+        regretPlotParam: {
+            epsilon: 0.05,
+            c: 2,
+            m: 0,
+            nu: 1,
+            alpha: [1, 10],
+            beta: 1,
+            repeats: 100
+        },
+        targetProbability: {
+            cat: 0.3,
+            dog: 0.7,
+            panda: 0.65,
+            alpaca: 0.45
+        }
     }
 })
