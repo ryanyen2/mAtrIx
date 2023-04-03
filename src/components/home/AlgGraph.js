@@ -80,22 +80,6 @@ export default function AlgGraph(props) {
     // https://stackoverflow.com/questions/53945763/componentdidmount-equivalent-on-a-react-function-hooks-component
     // run only at the start after mounting
     useEffect(() => {
-        console.log("I am in here");
-        // var d3ParentDiv = d3
-        //     .select("#alggraphparent")
-        //     .append("svg")
-        //     .attr("id", "thisisatest")
-        //     .attr("width", w)
-        //     .attr("height", h * 4);
-
-        // REF: https://stackoverflow.com/questions/3746725/how-to-create-an-array-containing-1-n
-        // [...Array(numArms).keys()].forEach(function (n, index) {
-        //     d3ParentDiv.append("svg").attr("id", "graph_" + index);
-        // });
-
-        // for ( var i =0; i < _N; i++ ){
-        // xArray.push( .01*i )
-        // }
         xArray.push(0.0001);
         for (var i = 1; i < _N - 1; i++) {
             xArray.push(0.01 * i);
@@ -148,26 +132,21 @@ export default function AlgGraph(props) {
     }
 
     function update() {
-        console.log(xArray);
         // console.log("In update");
         if(theBandits[numArms] < 0) return;
-        console.log("Update called for index " + theBandits[numArms]);
+        // console.log("Update called for index " + theBandits[numArms]);
         var b = theBandits[theBandits[numArms]];
         var index = theBandits[numArms];
         var alpha = b.alpha;
         var beta = b.beta;
         
         var g = d3.select("#theGraph_" + index);
-        console.log(g);
 
         var theMax = -1;
         var _data = xArray.map(function (x) {
             var y = jStat.beta.pdf(x, alpha, beta);
             theMax = Math.max(y, theMax);
-            // console.log(y);
             return y;
-            //console.log(x + ", " + jStat.beta.pdf(x,alpha,beta));
-            //            return jStat.beta.pdf(x,alpha,beta);
         });
         var y = d3
                 .scaleLinear()
@@ -183,7 +162,7 @@ export default function AlgGraph(props) {
         for (var i = 0; i < _N; i++) {
             d.push([x(xt10[i]), y(_data[i])]);
         }
-        console.log(alpha, beta, xArray, _data, d);
+        // console.log(alpha, beta, xArray, _data, d);
         var line = d3.line();
         
         d3.selectAll("#line_" + index).remove();
@@ -199,15 +178,6 @@ export default function AlgGraph(props) {
         theBandits.forEach(function (b, index) {
             if (index == numArms) return;
             var theId = "graph_" + index;
-            // var w = that.defaultWidth; //400;
-            // var h = that.defaultHeight; //100;
-
-            // console.log(d3.select("#" + theId));
-            // var vis = d3
-            //     .select("#" + theId)
-            //     .append("svg")
-            //     .attr("width", w)
-            //     .attr("height", h);
 
             var g = d3.select("#theGraph_" + index);
 
@@ -218,15 +188,9 @@ export default function AlgGraph(props) {
 
             var _data = xArray.map(function (x) {
                 var y = jStat.beta.pdf(x, alpha, beta);
-                // var y = jStat.beta.pdf(x, 1, 2);
                 theMax = Math.max(y, theMax);
-                // console.log(y);
                 return y;
-                //console.log(x + ", " + jStat.beta.pdf(x,alpha,beta));
-                //            return jStat.beta.pdf(x,alpha,beta);
             });
-            // console.log(_data);
-            // console.log(theMax);
 
             var y = d3
                     .scaleLinear()
@@ -323,7 +287,6 @@ export default function AlgGraph(props) {
                 .attr("stroke-width", "2px")
                 .attr("banditIndex", index)
                 .attr("class", "actualProbabilityLine");
-            console.log(xArray);
         });
     }
 
