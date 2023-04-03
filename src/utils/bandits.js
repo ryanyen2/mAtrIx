@@ -1263,13 +1263,13 @@ export class GenerateNewBandit {
     if (callback) callback(this.banditInfo.cur_arm);
   }
 
-  resetModel = () => {
+  resetModel = (extra_params={}) => {
     this.banditInfo.model.reset();
-    this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms);
+    this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms, extra_params);
   }
 
-  newModel = (new_model_id, callback) => {
-    this.startGenerate(new_model_id, this.banditInfo.n_arms);
+  newModel = (new_model_id, extra_params={}, callback) => {
+    this.startGenerate(new_model_id, this.banditInfo.n_arms, extra_params);
 
     if (callback) callback();
   }
