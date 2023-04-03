@@ -29,11 +29,12 @@ import MathBlock from "../components/codeMath/mathBlock";
 import CodeFlow from "../components/codeMath/codeFlow";
 import TimeController from "../components/timeController/timeController";
 
-// import {GenerateNewBandit} from '../utils/bandits';
+import {GenerateNewBandit} from '../utils/bandits';
 
 function Home(props) {
   const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
-  // const [step, setStep] = useState(0);
+  const [step, setStep] = useState(0);
+
   const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
   const Item = styled(Paper)(({ theme }) => ({
@@ -44,13 +45,16 @@ function Home(props) {
     color: theme.palette.text.secondary,
   }));
 
-  // useEffect(() => {
-  //   const newBandit = new GenerateNewBandit();
-  //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
-  //     console.log(newSteps);
-  //     setStep(newSteps);
-  //   });
-  // }, []);
+  // EG FN FORWARD
+  useEffect(() => {
+    const newBandit = new GenerateNewBandit();
+    newBandit.startGenerate(2, 3,);
+    newBandit.record(1, () => {
+      newBandit.getArm( (retval) => {
+        console.log("got arm", retval);
+      });
+    });
+  }, []);
 
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
