@@ -14,7 +14,7 @@ class RadarChart extends React.Component {
                 window.innerHeight - margin.top - margin.bottom - 20
             );
 
-        DrawRadarChart("#barchart", [], {
+        DrawRadarChart("#radarchart", [], {
             w: width,
             h: height,
             margin: margin,

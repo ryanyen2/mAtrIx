@@ -79,8 +79,7 @@ export default function ParameterSettings(props) {
                 onChange={e => setCurrentAlgorithm(e.target.value)}>
             <option value="0">Epsilon-greedy</option>
             <option value="1">Upper Confidence Bound</option>
-            <option value="2">Beta Thompson Sampling</option>
-            <option value="3">Gaussian Thompson Sampling</option>
+            <option value="2">Thompson Sampling</option>
             </select> 
 
             {parameterHtml}
