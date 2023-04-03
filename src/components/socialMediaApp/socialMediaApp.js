@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useRecoilValue } from "recoil";
 
 import AppBar from "@mui/material/AppBar";
 import Typography from "@mui/material/Typography";
@@ -7,6 +8,8 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 
 import imageUrls from "./urls";
+import { armTags } from "../../state/atoms";
+
 import { Post } from "./post.js";
 
 export function SocialMediaApp(props) {
@@ -26,12 +29,7 @@ export function SocialMediaApp(props) {
     const initArray = (n) => {
         return Array.from(Array(n).keys());
     };
-    const tagDict = {
-            cat: 0,
-            dog: 1,
-            panda: 2,
-            alpaca: 3,
-        }, // hard-coded
+    const tagDict = useRecoilValue(armTags), // hard-coded
         imageTrackingDict = {
             cat: initArray(120), // hard-coded
             dog: initArray(120), // hard-coded
