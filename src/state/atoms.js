@@ -83,7 +83,7 @@ export const modelTypeID = atom({
 export const banditInfo = atom({
     key: "banditInfo",
     default: {
-        model: null,
+        // model: null,
         model_name: "N/A",
         model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
         n_arms: 0, // Number of Arms, we can set at init
@@ -91,7 +91,9 @@ export const banditInfo = atom({
         steps: [],
         cur_step: 0, // Index of current step
         cur_arm: 0, // Index tag of current arm
-    }
+    }, 
+    // I don't like this but oh well
+    dangerouslyAllowMutability: true
 })
 
 export const allSettingsParam = atom({
@@ -116,3 +118,16 @@ export const allSettingsParam = atom({
         }
     }
 })
+
+export const triggerBanditRecord = atom({
+    key: "triggerBanditRecord",
+    default: {
+        trigger: false,
+        rewardToPass: -1
+    }
+})
+
+// export const nextArmReady = atom({
+//     key: "triggerBanditRecord",
+//     default: false
+// })

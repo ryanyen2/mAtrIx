@@ -9,7 +9,12 @@ import Grid from "@mui/material/Grid";
 
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { armTags, banditInfo, modelTypeID } from "../state/atoms";
+import {
+  armTags,
+  banditInfo,
+  modelTypeID,
+  triggerBanditRecord,
+} from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
@@ -31,8 +36,11 @@ import TimeController from "../components/timeController/timeController";
 
 import { GenerateNewBandit } from "../utils/bandits";
 
+const newBandit = new GenerateNewBandit();
+
 function Home(props) {
   const [banditInfoValue, setBanditInfoValue] = useRecoilState(banditInfo);
+  const [triggerBanditRecordVal, setTriggerBanditRecordVal] = useRecoilState(triggerBanditRecord);
   // const [step, setStep] = useState(0);
   const armTagsValue = useRecoilValue(armTags);
   const modelTypeIDValue = useRecoilValue(modelTypeID);
@@ -49,39 +57,38 @@ function Home(props) {
 
   // EG FN FORWARD
   useEffect(async () => {
-    const newBandit = new GenerateNewBandit();
-    // setBanditInfoValue((old) => {
-    //   let o = {...old};
-    //   let n = newBandit.startGenerate(modelTypeIDValue.thompson, Object.keys(armTagsValue).length)
-    //   o.model = n.model;
-    //   o.model_name = n.model_name;
-    //   o.model_id = n.model_id;
-    //   o.n_arms = n.n_arms;
-    //   o.parameters = n.parameters;
-    //   o.steps = n.steps;
-    //   o.cur_step = n.cur_step;
-    //   o.cur_arm = n.cur_arm;
-    //   return o;
-    // });
-    await newBandit.startGenerate(
+    newBandit.startGenerate(
       modelTypeIDValue.thompson,
-      Object.keys(armTagsValue).length,
-      (d) => {
-        console.log("callback", d);
-        setBanditInfoValue(d);
-      }
+      Object.keys(armTagsValue).length
     );
-    // setBanditInfoValue(d);
-    newBandit.record(1, () => {
-      newBandit.getArm((retval) => {
-        console.log("got arm", retval);
-      });
+    await newBandit.recordInit((d) => {
+      console.log("callback1", d);
+      setBanditInfoValue(d);
     });
   }, []);
 
   useEffect(() => {
-    console.log(banditInfoValue.n_arms);
+    // console.log(banditInfoValue.keys);
   }, [banditInfoValue]);
+
+  useEffect(async () => {
+    // await newBandit.record(1);
+    // await newBandit.record(triggerBanditRecordVal.rewardToPass);
+    if (triggerBanditRecordVal.trigger && newBandit?.valueOf() !== undefined) {
+      // await newBandit.record(triggerBanditRecordVal.rewardToPass);
+      await newBandit.record(triggerBanditRecordVal.rewardToPass, (d) => {
+        console.log("callback2", d);
+        setBanditInfoValue(d);
+      });
+      // await newBandit.record(triggerBanditRecordVal.rewardToPass, setBanditInfoValue);
+      setTriggerBanditRecordVal({
+        trigger: false,
+        rewardToPass: -1,
+      });
+    } else if(newBandit?.valueOf() === undefined) {
+      console.log("ERROR: New bandit is null");
+    }
+  }, [triggerBanditRecordVal]);
 
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>

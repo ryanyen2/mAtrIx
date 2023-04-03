@@ -1179,6 +1179,7 @@ export class GenerateNewBandit {
     this.banditInfo.steps = [];
     this.banditInfo.cur_step = 0;
     this.banditInfo.cur_arm = 0;
+    this.banditInfo.n_arms = n_arms;
 
     if (this.banditInfo.model_id === 2) {
       // Thompson Sampling Init
@@ -1198,25 +1199,28 @@ export class GenerateNewBandit {
       this.banditInfo.steps.push(init_bandit);
       this.banditInfo.model = init_bandit;
       // await this.setBanditInfo(this.banditInfo);
-      if (callback) callback(this.banditInfo);
+      if (callback) {
+        let {model: _, ...rest} = this.banditInfo;
+        await callback(rest);
+      }
     }
   }
 
-  recordInit = (reward, callback) => {
-    this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] =
-      this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] =
-      this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
-
+  recordInit = async (callback) => {
     this.banditInfo.cur_arm = this.banditInfo.model.act();
+    console.log("very first arm is " + this.banditInfo.cur_arm);
     this.banditInfo.cur_step += 1;
     this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
 
-    if (callback) callback();
+    // if (callback) await callback(this.banditInfo);
+    if (callback) {
+      let {model: _, ...rest} = this.banditInfo;
+      await callback(rest);
+    }
   };
 
-  record = (reward, callback) => {
+  record = async (reward, callback) => {
+    console.log("In record, reward is " + reward);
     this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
     this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] =
       this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
@@ -1227,7 +1231,11 @@ export class GenerateNewBandit {
     this.banditInfo.cur_step += 1;
     this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
 
-    if (callback) callback();
+    // if (callback) await callback(this.banditInfo);
+    if (callback) {
+      let {model: _, ...rest} = this.banditInfo;
+      await callback(rest);
+    }
   };
 
   getArm = (callback) => {
