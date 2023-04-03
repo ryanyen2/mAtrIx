@@ -15,6 +15,7 @@
     "add": "^2.0.6",
     "bootstrap": "^5.2.3",
     "d3": "^7.8.2",
+    "jstat": "^1.9.6",
     "mathjax-react": "^2.0.1",
     "nouislider": "^15.7.0",
     "react": "17.0.0",
@@ -31,6 +32,7 @@
     "rete-comment-plugin": "^0.7.0-rc.1",
     "rete-connection-plugin": "^0.9.0",
     "rete-react-render-plugin": "^0.3.1",
+    "unsplash-js": "^7.0.15",
     "yarn": "^1.22.19"
   },
   "scripts": {

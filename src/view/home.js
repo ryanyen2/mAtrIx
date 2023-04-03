@@ -14,10 +14,15 @@ import { barChartData } from "../state/atoms";
 import { styled } from "@mui/material/styles";
 
 // social media app component
-import SocialMediaApp from "../components/socialMediaApp/SocialMediaApp.jsx";
+// import SocialMediaApp from "../components/socialMediaApp/SocialMediaApp.jsx";
+import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 
 import { RegretPlot } from "../components/home/regretPlot";
+import AlgGraph from "../components/home/AlgGraph";
 // import {timeRegretSelector} from '../state/selector';
+
+// import { RadarChart } from "../components/home/radarChart";
+// import ParameterSettings from "../components/home/parameterSettings";
 
 import MathBlock from "../components/codeMath/mathBlock";
 // import CodeBlock from "../components/codeMath/codeBlock";
@@ -51,8 +56,6 @@ function Home(props) {
     });
   }, []);
 
-
-
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -66,7 +69,9 @@ function Home(props) {
         </Grid>
         <Grid item xs={5}>
           <Grid item xs={12}>
-            <Item>Distribution Grpah</Item>
+            <div id="alggraphparent">
+              <AlgGraph width={500} height={500} />
+            </div>
           </Grid>
           <Grid item xs={12}>
             <Item>
@@ -90,10 +95,6 @@ function Home(props) {
               <MathBlock algorithm={currentAlgorithm} />
             </Item>
           </Grid>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Item>Radar Chart</Item>
         </Grid>
       </Grid>
     </Container>
