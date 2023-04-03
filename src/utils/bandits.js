@@ -377,7 +377,7 @@ export class EvaluationApplet {
 
   get_param() {
     var self = this;
-    this.param = {...self.inputParams};
+    this.param = { ...self.inputParams };
 
     var intFromId = function (x) {
       return parseInt(document.getElementById(self.inputIds[x]).value);
@@ -855,7 +855,7 @@ export class ThompsonSampling {
     var R = reward;
     var prevN = this.N[A];
     var prevMean = this.mean[A];
-	console.log(A + " " + this.N[A])
+    console.log(A + " " + this.N[A]);
     this.N[A] += 1;
     this.mean[A] += (1 / this.N[A]) * (R - this.mean[A]);
     this.rho[A] =
@@ -1156,10 +1156,9 @@ export class Alea {
   }
 }
 
-
 export class GenerateNewBandit {
   static banditInfo = {
-    model: new ThompsonSampling(3,0,1,1,1),
+    model: new ThompsonSampling(3, 0, 1, 1, 1),
     model_name: "N/A",
     model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
     n_arms: 3, // Number of Arms, we can set at init
@@ -1167,14 +1166,13 @@ export class GenerateNewBandit {
     steps: [],
     cur_step: 0, // Index of current step
     cur_arm: 0, // Index tag of current arm
-  }
+  };
 
-  constructor(setBanditInfo) {
+  constructor() {
     this.banditInfo = GenerateNewBandit.banditInfo;
-	this.setBanditInfo = setBanditInfo;
   }
 
-  async startGenerate(model_id, n_arms) {
+  startGenerate = async (model_id, n_arms, callback) => {
     console.log("startGenerate", model_id, n_arms);
     this.banditInfo.model_id = model_id;
     this.banditInfo.parameters = {};
@@ -1182,61 +1180,77 @@ export class GenerateNewBandit {
     this.banditInfo.cur_step = 0;
     this.banditInfo.cur_arm = 0;
 
-	  if(this.banditInfo.model_id === 2) { // Thompson Sampling Init
-      console.log("Init Thompson Sampling")
+    if (this.banditInfo.model_id === 2) {
+      // Thompson Sampling Init
+      console.log("Init Thompson Sampling");
       this.banditInfo.model_name = "Thompson Sampling";
       for (let i = 0; i < this.banditInfo.n_arms; i++) {
         // create a new parameter list for each key
-        this.banditInfo.parameters[i] = {"mu": 0, "sig2": 1};
+        this.banditInfo.parameters[i] = { mu: 0, sig2: 1 };
       }
-      var init_bandit = new ThompsonSampling(this.banditInfo.n_arms, 0, 1, 1, 1);
-      this.banditInfo.steps.push(init_bandit)
+      var init_bandit = new ThompsonSampling(
+        this.banditInfo.n_arms,
+        0,
+        1,
+        1,
+        1
+      );
+      this.banditInfo.steps.push(init_bandit);
       this.banditInfo.model = init_bandit;
-	  await this.setBanditInfo(this.banditInfo);
+      // await this.setBanditInfo(this.banditInfo);
+      if (callback) callback(this.banditInfo);
     }
   }
 
   recordInit = (reward, callback) => {
     this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] = this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] = this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
+    this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] =
+      this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
+    this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] =
+      this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
 
     this.banditInfo.cur_arm = this.banditInfo.model.act();
     this.banditInfo.cur_step += 1;
     this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
 
     if (callback) callback();
-  }
+  };
 
   record = (reward, callback) => {
     this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] = this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] = this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
+    this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] =
+      this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
+    this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] =
+      this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
 
     this.banditInfo.cur_arm = this.banditInfo.model.act();
     this.banditInfo.cur_step += 1;
     this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
 
     if (callback) callback();
-  }
+  };
 
   getArm = (callback) => {
     if (callback) callback(this.banditInfo.cur_arm);
-  }
+  };
 
   resetModel = () => {
     this.banditInfo.model.reset();
-    this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms);
-  }
+    this.startGenerate(
+      this.banditInfo.model_name,
+      this.banditInfo.model_id,
+      this.banditInfo.n_arms
+    );
+  };
 
   newModel = (new_model_id, callback) => {
     this.startGenerate(new_model_id, this.banditInfo.n_arms);
 
     if (callback) callback();
-  }
+  };
 
   timelineSet = (idx, callback) => {
-    if (idx <= this.banditInfo.steps.length){
+    if (idx <= this.banditInfo.steps.length) {
       this.banditInfo.cur_step = idx;
 
       // TODO: what do we want when we rewind our timeline?
@@ -1244,5 +1258,5 @@ export class GenerateNewBandit {
     }
 
     if (callback) callback();
-  }
+  };
 }

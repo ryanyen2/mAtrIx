@@ -49,7 +49,7 @@ function Home(props) {
 
   // EG FN FORWARD
   useEffect(async () => {
-    const newBandit = new GenerateNewBandit(setBanditInfoValue);
+    const newBandit = new GenerateNewBandit();
     // setBanditInfoValue((old) => {
     //   let o = {...old};
     //   let n = newBandit.startGenerate(modelTypeIDValue.thompson, Object.keys(armTagsValue).length)
@@ -63,7 +63,14 @@ function Home(props) {
     //   o.cur_arm = n.cur_arm;
     //   return o;
     // });
-    await newBandit.startGenerate(modelTypeIDValue.thompson, Object.keys(armTagsValue).length);
+    await newBandit.startGenerate(
+      modelTypeIDValue.thompson,
+      Object.keys(armTagsValue).length,
+      (d) => {
+        console.log("callback", d);
+        setBanditInfoValue(d);
+      }
+    );
     // setBanditInfoValue(d);
     newBandit.record(1, () => {
       newBandit.getArm((retval) => {
@@ -74,7 +81,7 @@ function Home(props) {
 
   useEffect(() => {
     console.log(banditInfoValue.n_arms);
-  }, [banditInfoValue])
+  }, [banditInfoValue]);
 
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
