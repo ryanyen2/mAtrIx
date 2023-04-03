@@ -14,7 +14,8 @@ import { barChartData } from "../state/atoms";
 import { styled } from "@mui/material/styles";
 
 // social media app component
-import SocialMediaApp from "../components/socialMediaApp/SocialMediaApp.jsx";
+// import SocialMediaApp from "../components/socialMediaApp/SocialMediaApp.jsx";
+import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 
 import { RegretPlot } from "../components/home/regretPlot";
 // import {timeRegretSelector} from '../state/selector';
