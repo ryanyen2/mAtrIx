@@ -60,3 +60,13 @@ export const currentStep = atom({
         mathBlock: {},
     }
 });
+
+export const armTags = atom({
+    key: "armTags",
+    default: {
+        cat: 0,
+        dog: 1,
+        panda: 2,
+        alpaca: 3
+    }
+})
