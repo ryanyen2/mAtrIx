@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #ffffff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -38,7 +38,10 @@
   }
 }
 
-
+/* Parameter settings */
+label {
+  color: black;
+}
 
 /* bandits js */
 /* Copyright 2020, G.J.J. van den Burg */

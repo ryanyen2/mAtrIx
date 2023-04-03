@@ -20,6 +20,9 @@ import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 import { RegretPlot } from "../components/home/regretPlot";
 // import {timeRegretSelector} from '../state/selector';
 
+import { RadarChart } from "../components/home/radarChart";
+import ParameterSettings from "../components/home/parameterSettings";
+
 import MathBlock from "../components/codeMath/mathBlock";
 // import CodeBlock from "../components/codeMath/codeBlock";
 import CodeFlow from "../components/codeMath/codeFlow";
@@ -28,74 +31,83 @@ import TimeController from "../components/timeController/timeController";
 // import {GenerateNewBandit} from '../utils/bandits';
 
 function Home(props) {
-  const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
-  // const [step, setStep] = useState(0);
+    const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
+    // const [step, setStep] = useState(0);
 
-  const currentAlgorithm = "thompson-sampling"; // change this to recoil state
+    const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  }));
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: "center",
+        color: theme.palette.text.secondary,
+    }));
 
-  // useEffect(() => {
-  //   const newBandit = new GenerateNewBandit();
-  //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
-  //     console.log(newSteps);
-  //     setStep(newSteps);
-  //   });
-  // }, []);
+    // useEffect(() => {
+    //   const newBandit = new GenerateNewBandit();
+    //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
+    //     console.log(newSteps);
+    //     setStep(newSteps);
+    //   });
+    // }, []);
 
-
-
-  return (
-    <Container id="home" style={{ marginTop: "2rem" }}>
-      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid item xs={12}>
-          <Item>
-            <TimeController />
-          </Item>
-        </Grid>
-        <Grid item xs={3}>
-          <SocialMediaApp />
-        </Grid>
-        <Grid item xs={5}>
-          <Grid item xs={12}>
-            <Item>Distribution Grpah</Item>
-          </Grid>
-          <Grid item xs={12}>
-            <Item>
-              <RegretPlot width={500} height={150} />
-            </Item>
-          </Grid>
-          <Grid container>
-            <Grid item xs={0}>
-              {/* <Item>
+    return (
+        <Container id="home" style={{ marginTop: "2rem" }}>
+            <Grid
+                container
+                rowSpacing={1}
+                columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+            >
+                <Grid item xs={12}>
+                    <Item>
+                        <TimeController />
+                    </Item>
+                </Grid>
+                <Grid item xs={3}>
+                    <SocialMediaApp />
+                </Grid>
+                <Grid item xs={5}>
+                    <Grid item xs={12}>
+                        <Item>Distribution Grpah</Item>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Item>
+                            <RegretPlot width={500} height={150} />
+                        </Item>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Item>
+                            <ParameterSettings></ParameterSettings>
+                        </Item>
+                    </Grid>
+                    <Grid container>
+                        <Grid item xs={0}>
+                            {/* <Item>
                 <CodeBlock algorithm={currentAlgorithm} />
               </Item> */}
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={4}>
-          <Grid item xs={12}>
-            <CodeFlow algorithm={currentAlgorithm} />
-          </Grid>
-          <Grid item xs={12}>
-            <Item>
-              <MathBlock algorithm={currentAlgorithm} />
-            </Item>
-          </Grid>
-        </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={4}>
+                    <Grid item xs={12}>
+                        <CodeFlow algorithm={currentAlgorithm} />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Item>
+                            <MathBlock algorithm={currentAlgorithm} />
+                        </Item>
+                    </Grid>
+                </Grid>
 
-        <Grid item xs={12}>
-          <Item>Radar Chart</Item>
-        </Grid>
-      </Grid>
-    </Container>
-  );
+                <Grid item xs={12}>
+                    <Item id="radarchart">
+                        <RadarChart></RadarChart>
+                    </Item>
+                </Grid>
+            </Grid>
+        </Container>
+    );
 }
 
 export default Home;
