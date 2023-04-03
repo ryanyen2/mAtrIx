@@ -19,9 +19,10 @@ import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 
 import { RegretPlot } from "../components/home/regretPlot";
 import AlgGraph from "../components/home/AlgGraph";
+// import {timeRegretSelector} from '../state/selector';
+
 import { RadarChart } from "../components/home/radarChart";
 import ParameterSettings from "../components/home/parameterSettings";
-// import {timeRegretSelector} from '../state/selector';
 
 import MathBlock from "../components/codeMath/mathBlock";
 // import CodeBlock from "../components/codeMath/codeBlock";
@@ -33,7 +34,6 @@ import TimeController from "../components/timeController/timeController";
 function Home(props) {
     const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
     // const [step, setStep] = useState(0);
-
     const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
     const Item = styled(Paper)(({ theme }) => ({
