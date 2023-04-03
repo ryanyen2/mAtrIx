@@ -70,3 +70,12 @@ export const armTags = atom({
         alpaca: 3
     }
 })
+
+export const modelTypeID = atom({
+    key: "modelTypeID",
+    default: {
+        egreedy: 0,
+        ucb: 1,
+        thompson: 2
+    }
+})

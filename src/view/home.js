@@ -7,9 +7,9 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-import { barChartData } from "../state/atoms";
+import { armTags, barChartData } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
@@ -19,6 +19,10 @@ import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 
 import { RegretPlot } from "../components/home/regretPlot";
 // import {timeRegretSelector} from '../state/selector';
+import {
+  armTags, 
+  modelTypeID
+} from "../state/atoms";
 
 import MathBlock from "../components/codeMath/mathBlock";
 // import CodeBlock from "../components/codeMath/codeBlock";
@@ -30,6 +34,8 @@ import {GenerateNewBandit} from '../utils/bandits';
 function Home(props) {
   const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
   const [step, setStep] = useState(0);
+  const armTags = useRecoilValue(armTags);
+  const modelID = useRecoilValue(modelTypeID);
 
   const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
@@ -44,7 +50,7 @@ function Home(props) {
   // EG FN FORWARD
   useEffect(() => {
     const newBandit = new GenerateNewBandit();
-    newBandit.startGenerate(2, 3,);
+    newBandit.startGenerate(modelID.thompson, Object.keys(armTags).length);
     newBandit.record(1, () => {
       newBandit.getArm( (retval) => {
         console.log("got arm", retval);
