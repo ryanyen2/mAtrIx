@@ -185,7 +185,7 @@ export function RegretPlot(props) {
                 ),
               }}
             />
-            <p id="non-linear-slider" gutterBottom>
+            <p id="non-linear-slider" gutterbottom>
               ThompsonSampling
             </p>
             <TextField

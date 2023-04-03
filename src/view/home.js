@@ -18,6 +18,7 @@ import { styled } from "@mui/material/styles";
 import { SocialMediaApp } from "../components/socialMediaApp/socialMediaApp";
 
 import { RegretPlot } from "../components/home/regretPlot";
+import AlgGraph from "../components/home/AlgGraph";
 // import {timeRegretSelector} from '../state/selector';
 
 import { RadarChart } from "../components/home/radarChart";
@@ -33,7 +34,6 @@ import TimeController from "../components/timeController/timeController";
 function Home(props) {
     const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
     // const [step, setStep] = useState(0);
-
     const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
     const Item = styled(Paper)(({ theme }) => ({
@@ -74,6 +74,9 @@ function Home(props) {
                     <Grid item xs={12}>
                         <Item>
                             <RegretPlot width={500} height={150} />
+                            <div id="alggraphparent">
+                                <AlgGraph></AlgGraph>
+                            </div>
                         </Item>
                     </Grid>
                     <Grid item xs={12}>
