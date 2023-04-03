@@ -44,7 +44,6 @@ function Home(props) {
   // const [step, setStep] = useState(0);
   const armTagsValue = useRecoilValue(armTags);
   const modelTypeIDValue = useRecoilValue(modelTypeID);
-
   const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
   const Item = styled(Paper)(({ theme }) => ({

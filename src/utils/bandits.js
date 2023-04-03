@@ -744,6 +744,10 @@ export class EpsilonGreedy {
     this.Q[A] += (1.0 / this.N[A]) * (R - this.Q[A]);
   }
 
+  get_Q(idx){
+    return this.Q[idx];
+  }
+
   label() {
     return `ε-Greedy (ε = ${this.epsilon})`;
   }
@@ -782,6 +786,10 @@ export class UpperConfidenceBound {
       }
     }
     return aprime;
+  }
+
+  get_Q(idx){
+    return this.Q[idx];
   }
 
   record(action, reward) {
@@ -1172,7 +1180,7 @@ export class GenerateNewBandit {
     this.banditInfo = GenerateNewBandit.banditInfo;
   }
 
-  startGenerate = async (model_id, n_arms, callback) => {
+  startGenerate = async (model_id, n_arms, extra_params={}, callback) => {
     console.log("startGenerate", model_id, n_arms);
     this.banditInfo.model_id = model_id;
     this.banditInfo.parameters = {};
@@ -1185,18 +1193,50 @@ export class GenerateNewBandit {
       // Thompson Sampling Init
       console.log("Init Thompson Sampling");
       this.banditInfo.model_name = "Thompson Sampling";
+
+      // Supply provided parameters if they exist:
+      var ma = extra_params["ma"] !== undefined ? extra_params["ma"] : 0;
+      var va = extra_params["va"] !== undefined ? extra_params["va"] : 1;
+      var alpha = extra_params["alpha"] !== undefined ? extra_params["alpha"] : 1;
+      var beta = extra_params["beta"] !== undefined ? extra_params["beta"] : 1;
+
+      // create a new parameter list for each key
+      for (let i = 0; i < this.banditInfo.n_arms; i++) {
+        this.banditInfo.parameters[i] = {"mu": 0, "sig2": 1, "ma": ma, "va": va, "alpha": alpha, "beta": beta, "n" : 0};
+      }
+      var init_bandit = new ThompsonSampling(this.banditInfo.n_arms, ma, va, alpha, beta );
+      this.banditInfo.steps.push(init_bandit)
+      this.banditInfo.model = init_bandit;
+    }
+    else if(this.banditInfo.model_id === 1) { // UpperConfidenceBound Init
+      console.log("Init UpperConfidenceBound")
+      this.banditInfo.model_name = "Upper Confidence Bound";
+
+      // Supply provided parameters if they exist:
+      var c = extra_params["c"] !== undefined ? extra_params["c"] : 1;
+
       for (let i = 0; i < this.banditInfo.n_arms; i++) {
         // create a new parameter list for each key
-        this.banditInfo.parameters[i] = { mu: 0, sig2: 1 };
+        this.banditInfo.parameters[i] = {"c": c, "Q": 0, "n": 0};
       }
-      var init_bandit = new ThompsonSampling(
-        this.banditInfo.n_arms,
-        0,
-        1,
-        1,
-        1
-      );
-      this.banditInfo.steps.push(init_bandit);
+
+      var init_bandit = new UpperConfidenceBound(this.banditInfo.n_arms, c);
+      this.banditInfo.steps.push(init_bandit)
+      this.banditInfo.model = init_bandit;
+    }
+    else if(this.banditInfo.model_id === 0) { // EpsilonGreedy Init
+      console.log("Init EpsilonGreedy")
+      this.banditInfo.model_name = "Epsilon Greedy";
+
+      // Supply provided parameters if they exist:
+      var epsln = extra_params["epsilon"] !== undefined ? extra_params["epsilon"] : 0.5;
+
+      for (let i = 0; i < this.banditInfo.n_arms; i++) {
+        // create a new parameter list for each key
+        this.banditInfo.parameters[i] = {"epsilon": epsln, "n": 0};
+      }
+      var init_bandit = new EpsilonGreedy(this.banditInfo.n_arms, epsln);
+      this.banditInfo.steps.push(init_bandit)
       this.banditInfo.model = init_bandit;
       // await this.setBanditInfo(this.banditInfo);
       if (callback) {
@@ -1222,10 +1262,18 @@ export class GenerateNewBandit {
   record = async (reward, callback) => {
     console.log("In record, reward is " + reward);
     this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] =
-      this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
-    this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] =
-      this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
+    // Perform parameter update:
+    if (this.banditInfo.model_id === 2){ // Thompson Sampling Update
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] = this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] = this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
+    }
+    else if (this.banditInfo.model_id === 1){
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["Q"] = this.banditInfo.model.get_Q(this.banditInfo.cur_arm);
+    }
+    else if (this.banditInfo.model_id === 0){
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["Q"] = this.banditInfo.model.get_Q(this.banditInfo.cur_arm);
+    }
+    this.banditInfo.parameters[this.banditInfo.cur_arm]["n"] += 1;
 
     this.banditInfo.cur_arm = this.banditInfo.model.act();
     this.banditInfo.cur_step += 1;
@@ -1242,29 +1290,21 @@ export class GenerateNewBandit {
     if (callback) callback(this.banditInfo.cur_arm);
   };
 
-  resetModel = () => {
+  resetModel = (extra_params={}) => {
     this.banditInfo.model.reset();
-    this.startGenerate(
-      this.banditInfo.model_name,
-      this.banditInfo.model_id,
-      this.banditInfo.n_arms
-    );
-  };
+    this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms, extra_params);
+  }
 
-  newModel = (new_model_id, callback) => {
-    this.startGenerate(new_model_id, this.banditInfo.n_arms);
+  newModel = (new_model_id, extra_params={}, callback) => {
+    this.startGenerate(new_model_id, this.banditInfo.n_arms, extra_params);
 
     if (callback) callback();
   };
 
   timelineSet = (idx, callback) => {
-    if (idx <= this.banditInfo.steps.length) {
-      this.banditInfo.cur_step = idx;
-
-      // TODO: what do we want when we rewind our timeline?
-      // this.banditInfo.model = this.banditInfo.steps[idx];
+    if (idx < this.banditInfo.steps.length){
+      callback(this.banditInfo.steps[idx].parameters);
     }
-
-    if (callback) callback();
-  };
+    // if (callback) callback();
+  }
 }
