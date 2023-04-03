@@ -28,37 +28,9 @@ export const Post = forwardRef((props, ref) => {
 
     // using the module for detecting swiping
     // from https://www.npmjs.com/package/react-swipe-component
-    // useEffect(() => {
-    //     if (swipingUp) {
-    //         console.log("Swiped Up");
-
-    //         // setState({
-    //         //   numOfLikes: props.postInfo.numOfLikes+(state.liked?1:0),
-    //         // });
-
-    //         // TODO wait for x seconds
-
-    //         if (props.postInfo.userName == "mAtrIx") {
-    //             props.onUserAction(-100.0);
-    //         } else {
-    //             if (liked) {
-    //                 props.onUserAction(1.0);
-    //             } else {
-    //                 props.onUserAction(0.0);
-    //             }
-    //         }
-    //         setSwipingUp(false);
-    //     }
-    // }, [swipingUp]);
     const onSwipeEnd = () => {
         if (swipingUp) {
             console.log("Swiped Up");
-
-            // setState({
-            //   numOfLikes: props.postInfo.numOfLikes+(state.liked?1:0),
-            // });
-
-            // TODO wait for x seconds
 
             if (props.postInfo.userName == "mAtrIx") {
                 props.onUserAction(-100.0);
@@ -72,25 +44,9 @@ export const Post = forwardRef((props, ref) => {
             setSwipingUp(false);
         }
     };
-    const onSwipeLeftListener = () => {
-        console.log("Swiped left");
-    };
-    const onSwipeRightListener = () => {
-        console.log("Swiped right");
-    };
+
     const onSwipeUpListener = () => {
         setSwipingUp(true);
-    };
-    const onSwipeDownListener = () => {
-        console.log("Swiped down");
-    };
-    const onSwipeListener = (p) => {
-        if (p.x !== 0) {
-            console.log(`Swipe x: ${p.x}`);
-        }
-        if (p.y !== 0) {
-            console.log(`Swipe y: ${p.y}`);
-        }
     };
 
     // like button handler
@@ -106,15 +62,6 @@ export const Post = forwardRef((props, ref) => {
             setLikeButtonColor({ color: "#E91E63" });
             setNumOfLikes(props.postInfo.numOfLikes + 1);
             setLiked(!liked);
-            // TODO wait for x seconds
-
-            // props.onUserAction(1.0);
-
-            // TODO: reset the page
-            // setState({
-            //   likeButtonColor: {color: "#C6C6C6"},
-            //   liked: false,
-            // });
         }
     };
 
@@ -129,11 +76,7 @@ export const Post = forwardRef((props, ref) => {
             <Swipe
                 nodeName="div"
                 onSwipeEnd={onSwipeEnd}
-                //           onSwipedLeft={onSwipeLeftListener}
-                //           onSwipedRight={onSwipeRightListener}
-                //           onSwipedDown={onSwipeDownListener}
                 onSwipedUp={onSwipeUpListener}
-                //           onSwipe={onSwipeListener}
             >
                 <CardHeader
                     className="userProfile"

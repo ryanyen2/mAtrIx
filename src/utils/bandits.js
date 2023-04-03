@@ -377,7 +377,7 @@ export class EvaluationApplet {
 
   get_param() {
     var self = this;
-    this.param = {...self.inputParams};
+    this.param = { ...self.inputParams };
 
     var intFromId = function (x) {
       return parseInt(document.getElementById(self.inputIds[x]).value);
@@ -863,7 +863,7 @@ export class ThompsonSampling {
     var R = reward;
     var prevN = this.N[A];
     var prevMean = this.mean[A];
-
+    console.log(A + " " + this.N[A]);
     this.N[A] += 1;
     this.mean[A] += (1 / this.N[A]) * (R - this.mean[A]);
     this.rho[A] =
@@ -1164,33 +1164,34 @@ export class Alea {
   }
 }
 
-
 export class GenerateNewBandit {
   static banditInfo = {
-    model: new ThompsonSampling(3,0,1,1,1),
+    model: new ThompsonSampling(3, 0, 1, 1, 1),
     model_name: "N/A",
     model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
     n_arms: 3, // Number of Arms, we can set at init
-    parameters: {},
+    parameters: {}, // Parameters for bandit of each arm
     steps: [],
     cur_step: 0, // Index of current step
     cur_arm: 0, // Index tag of current arm
-  }
+  };
 
   constructor() {
     this.banditInfo = GenerateNewBandit.banditInfo;
   }
 
-  startGenerate = (model_id, n_arms, extra_params={}) => {
+  startGenerate = async (model_id, n_arms, extra_params={}, callback) => {
     console.log("startGenerate", model_id, n_arms);
     this.banditInfo.model_id = model_id;
     this.banditInfo.parameters = {};
     this.banditInfo.steps = [];
     this.banditInfo.cur_step = 0;
     this.banditInfo.cur_arm = 0;
+    this.banditInfo.n_arms = n_arms;
 
-	  if(this.banditInfo.model_id === 2) { // Thompson Sampling Init
-      console.log("Init Thompson Sampling")
+    if (this.banditInfo.model_id === 2) {
+      // Thompson Sampling Init
+      console.log("Init Thompson Sampling");
       this.banditInfo.model_name = "Thompson Sampling";
 
       // Supply provided parameters if they exist:
@@ -1237,12 +1238,30 @@ export class GenerateNewBandit {
       var init_bandit = new EpsilonGreedy(this.banditInfo.n_arms, epsln);
       this.banditInfo.steps.push(init_bandit)
       this.banditInfo.model = init_bandit;
+      // await this.setBanditInfo(this.banditInfo);
+      if (callback) {
+        let {model: _, ...rest} = this.banditInfo;
+        await callback(rest);
+      }
     }
   }
 
-  record = (reward, callback) => {
-    this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
+  recordInit = async (callback) => {
+    this.banditInfo.cur_arm = this.banditInfo.model.act();
+    console.log("very first arm is " + this.banditInfo.cur_arm);
+    this.banditInfo.cur_step += 1;
+    this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
 
+    // if (callback) await callback(this.banditInfo);
+    if (callback) {
+      let {model: _, ...rest} = this.banditInfo;
+      await callback(rest);
+    }
+  };
+
+  record = async (reward, callback) => {
+    console.log("In record, reward is " + reward);
+    this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
     // Perform parameter update:
     if (this.banditInfo.model_id === 2){ // Thompson Sampling Update
       this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] = this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
@@ -1260,23 +1279,27 @@ export class GenerateNewBandit {
     this.banditInfo.cur_step += 1;
     this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
 
-    if (callback) callback();
-  }
+    // if (callback) await callback(this.banditInfo);
+    if (callback) {
+      let {model: _, ...rest} = this.banditInfo;
+      await callback(rest);
+    }
+  };
 
   getArm = (callback) => {
     if (callback) callback(this.banditInfo.cur_arm);
-  }
+  };
 
-  resetModel = () => {
+  resetModel = (extra_params={}) => {
     this.banditInfo.model.reset();
-    this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms);
+    this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms, extra_params);
   }
 
-  newModel = (new_model_id, callback) => {
-    this.startGenerate(new_model_id, this.banditInfo.n_arms);
+  newModel = (new_model_id, extra_params={}, callback) => {
+    this.startGenerate(new_model_id, this.banditInfo.n_arms, extra_params);
 
     if (callback) callback();
-  }
+  };
 
   timelineSet = (idx, callback) => {
     if (idx < this.banditInfo.steps.length){
