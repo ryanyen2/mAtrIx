@@ -9,7 +9,7 @@ import Grid from "@mui/material/Grid";
 
 import { useRecoilState } from "recoil";
 
-import { barChartData } from "../state/atoms";
+import { allSettingsParam } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
@@ -32,7 +32,9 @@ import TimeController from "../components/timeController/timeController";
 // import {GenerateNewBandit} from '../utils/bandits';
 
 function Home(props) {
-  const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
+  // const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
+  const [allSettingsParamValue, setAllSettingsParam] =
+    useRecoilState(allSettingsParam);
   // const [step, setStep] = useState(0);
   const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
@@ -52,6 +54,10 @@ function Home(props) {
   //   });
   // }, []);
 
+  useEffect(() => {
+    console.log("allSettingsParamValue", allSettingsParamValue);
+  }, [allSettingsParamValue]);
+
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -61,7 +67,33 @@ function Home(props) {
           </Item>
         </Grid>
         <Grid item xs={3}>
-          <SocialMediaApp />
+          <Grid item xs={12}>
+            <Item style={{ textAlign: 'left' }}>
+              {/* allSettingsParamValue */}
+              {Object.keys(allSettingsParamValue).map((key) => {
+                return (
+                  <div>
+                    <b>{key}:</b> {typeof allSettingsParamValue[key] === "object" ? (
+                      <div>
+                        {Object.keys(allSettingsParamValue[key]).map((key2) => {
+                          return (
+                            <span style={{ marginRight: '10px' }}>
+                              {key2}: {allSettingsParamValue[key][key2]}
+                              </span>
+                          );
+                        })}
+                        </div>
+                    ) : (
+                      typeof allSettingsParamValue[key] === 'boolean' ? allSettingsParamValue[key] ? 'True' : 'False' : allSettingsParamValue[key]
+                    )}
+                  </div>
+                );
+              })}
+            </Item>
+          </Grid>
+          <Grid item xs={12}>
+            <SocialMediaApp />
+          </Grid>
         </Grid>
         <Grid item xs={5}>
           <Grid item xs={12}>
@@ -70,9 +102,7 @@ function Home(props) {
             </div>
           </Grid>
           <Grid item xs={12}>
-            <Item>
-              <RegretPlot width={500} height={150} />
-            </Item>
+            <RegretPlot width={500} height={150} />
           </Grid>
           <Grid container>
             <Grid item xs={0}>

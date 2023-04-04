@@ -341,11 +341,13 @@ export class EvaluationApplet {
     document
       .getElementById("eval-btn-toggle")
       .addEventListener("click", function () {
+        console.log("toggle");
         self.toggle();
       });
     document
       .getElementById("eval-btn-reset")
       .addEventListener("click", function () {
+        console.log("reset");
         self.reset();
       });
 

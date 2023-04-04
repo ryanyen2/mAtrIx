@@ -40,26 +40,26 @@ export const allRegretPlotData = atom({
 });
 
 
-export const currentAlgorithm = atom({
-    key: "currentAlgorithm",
-    default: {
-        name: "ucb",
-        code: "",
-        math: "",
-    }
-});
+// export const currentAlgorithm = atom({
+//     key: "currentAlgorithm",
+//     default: {
+//         name: "ucb",
+//         code: "",
+//         math: "",
+//     }
+// });
 
 
-export const currentStep = atom({
-    key: "currentStep",
-    default: {
-        step: 0,
-        regretPlotData: {},
-        distributionPlotData: {},
-        startCodeFlow: false,
-        mathBlock: {},
-    }
-});
+// export const currentStep = atom({
+//     key: "currentStep",
+//     default: {
+//         step: 0,
+//         regretPlotData: {},
+//         distributionPlotData: {},
+//         startCodeFlow: false,
+//         mathBlock: {},
+//     }
+// });
 
 export const armTags = atom({
     key: "armTags",
@@ -74,7 +74,9 @@ export const armTags = atom({
 export const allSettingsParam = atom({
     key: "allSettingsParam",
     default: {
-        currentMode: "manual",  //manual, automatic, slow-demo
+        currentMode: "manual",  //manual, automatic, demo
+        play: false,
+        reset: false,
         currentAlgorithm: "thompson-sampling",  //ucb, thompson-sampling, epsilon-greedy
         regretPlotParam: {
             epsilon: 0.05,
@@ -86,10 +88,10 @@ export const allSettingsParam = atom({
             repeats: 100
         },
         targetProbability: {
-            cat: 0.3,
-            dog: 0.7,
-            panda: 0.65,
-            alpaca: 0.45
+            cat: 0.34,
+            dog: 0.79,
+            panda: 0.645,
+            alpaca: 0.458
         }
     }
 })

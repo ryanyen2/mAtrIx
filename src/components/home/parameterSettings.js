@@ -12,7 +12,11 @@ import { allSettingsParam } from "../../state/atoms";
 
 export default function ParameterSettings(props) {
   const [currentAlgorithm, setCurrentAlgorithm] = useState("thompson-sampling");
-  const [allSettingsParamValue, setAllSettingsParam] = useRecoilState(allSettingsParam);
+  const [allSettingsParamValue, setAllSettingsParam] =
+    useRecoilState(allSettingsParam);
+  // const [props.localSettingsParamValue, setLocalSettingsParam] = useState({
+  //   ...allSettingsParamValue,
+  // });
 
   return (
     <div style={{ color: "black" }}>
@@ -37,12 +41,12 @@ export default function ParameterSettings(props) {
             id="var-repeat"
             size="small"
             variant="standard"
-            value={allSettingsParamValue.regretPlotParam.repeats}
+            value={props.localSettingsParamValue.regretPlotParam.repeats}
             onChange={(e) => {
-              setAllSettingsParam({
-                ...allSettingsParamValue,
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
                 regretPlotParam: {
-                  ...allSettingsParamValue.regretPlotParam,
+                  ...props.localSettingsParamValue.regretPlotParam,
                   repeats: e.target.value,
                 },
               });
@@ -62,12 +66,12 @@ export default function ParameterSettings(props) {
             size="small"
             style={{ fontSize: "1rem" }}
             sx={{ m: 1, width: "10ch" }}
-            value={allSettingsParamValue.regretPlotParam.epsilon}
+            value={props.localSettingsParamValue.regretPlotParam.epsilon}
             onChange={(e) => {
-              setAllSettingsParam({
-                ...allSettingsParamValue,
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
                 regretPlotParam: {
-                  ...allSettingsParamValue.regretPlotParam,
+                  ...props.localSettingsParamValue.regretPlotParam,
                   epsilon: e.target.value,
                 },
               });
@@ -87,12 +91,12 @@ export default function ParameterSettings(props) {
             size="small"
             variant="standard"
             sx={{ m: 1, width: "8ch" }}
-            value={allSettingsParamValue.regretPlotParam.c}
+            value={props.localSettingsParamValue.regretPlotParam.c}
             onChange={(e) => {
-              setAllSettingsParam({
-                ...allSettingsParamValue,
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
                 regretPlotParam: {
-                  ...allSettingsParamValue.regretPlotParam,
+                  ...props.localSettingsParamValue.regretPlotParam,
                   c: e.target.value,
                 },
               });
@@ -104,19 +108,27 @@ export default function ParameterSettings(props) {
               ),
             }}
           />
-          <span style={{ display: "inline-block", width: "1.5rem", color: "grey", fontSize: ".9rem" }}
-          >ThompsonSampling</span>
+          <span
+            style={{
+              display: "inline-block",
+              width: "1.5rem",
+              color: "grey",
+              fontSize: ".9rem",
+            }}
+          >
+            ThompsonSampling
+          </span>
           <TextField
             id="var-m"
             label={<MathComponent tex={String.raw`m_a`} />}
             variant="standard"
             size="small"
-            value={allSettingsParamValue.regretPlotParam.m}
+            value={props.localSettingsParamValue.regretPlotParam.m}
             onChange={(e) => {
-              setAllSettingsParam({
-                ...allSettingsParamValue,
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
                 regretPlotParam: {
-                  ...allSettingsParamValue.regretPlotParam,
+                  ...props.localSettingsParamValue.regretPlotParam,
                   m: e.target.value,
                 },
               });
@@ -128,12 +140,12 @@ export default function ParameterSettings(props) {
             label={<MathComponent tex={String.raw`\nu_a`} />}
             variant="standard"
             size="small"
-            value={allSettingsParamValue.regretPlotParam.nu}
+            value={props.localSettingsParamValue.regretPlotParam.nu}
             onChange={(e) => {
-              setAllSettingsParam({
-                ...allSettingsParamValue,
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
                 regretPlotParam: {
-                  ...allSettingsParamValue.regretPlotParam,
+                  ...props.localSettingsParamValue.regretPlotParam,
                   nu: e.target.value,
                 },
               });
@@ -145,12 +157,12 @@ export default function ParameterSettings(props) {
             label={<MathComponent tex={String.raw`\alpha_a`} />}
             variant="standard"
             size="small"
-            value={allSettingsParamValue.regretPlotParam.alpha}
+            value={props.localSettingsParamValue.regretPlotParam.alpha}
             onChange={(e) => {
-              setAllSettingsParam({
-                ...allSettingsParamValue,
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
                 regretPlotParam: {
-                  ...allSettingsParamValue.regretPlotParam,
+                  ...props.localSettingsParamValue.regretPlotParam,
                   alpha: e.target.value,
                 },
               });
@@ -162,12 +174,12 @@ export default function ParameterSettings(props) {
             label={<MathComponent tex={String.raw`\beta_a`} />}
             variant="standard"
             size="small"
-            value={allSettingsParamValue.regretPlotParam.beta}
+            value={props.localSettingsParamValue.regretPlotParam.beta}
             onChange={(e) => {
-              setAllSettingsParam({
-                ...allSettingsParamValue,
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
                 regretPlotParam: {
-                  ...allSettingsParamValue.regretPlotParam,
+                  ...props.localSettingsParamValue.regretPlotParam,
                   beta: e.target.value,
                 },
               });

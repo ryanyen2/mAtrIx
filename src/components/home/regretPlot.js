@@ -2,14 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 // import * as d3 from "d3";
 import { Container } from "@material-ui/core";
 import { EvaluationApplet } from "../../utils/bandits";
-// import Button from "@mui/material/Button";
-
-import { MathComponent } from "mathjax-react";
-// import Slider from "@mui/material/Slider";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import Typography from "@mui/material/Typography";
+// import Box from "@mui/material/Box";
 
 import { useRecoilState } from "recoil";
 import {
@@ -18,22 +11,22 @@ import {
   allRegretPlotData,
 } from "../../state/atoms";
 
-import ToggleButton from "@mui/material/ToggleButton";
-import IconButton from "@mui/material/IconButton";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
+// import ToggleButton from "@mui/material/ToggleButton";
+// import IconButton from "@mui/material/IconButton";
+// import RefreshIcon from "@mui/icons-material/Refresh";
+// import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+// import PauseIcon from "@mui/icons-material/Pause";
 
 export function RegretPlot(props) {
   const [allSettingsParamValue, setAllSettingsParam] =
     useRecoilState(allSettingsParam);
-  
-    const [regretPlotDataValue, setRegretPlotData] =
+
+  const [regretPlotDataValue, setRegretPlotData] =
     useRecoilState(regretPlotData);
   const [allRegretPlotDataValue, setAllRegretPlotData] =
     useRecoilState(allRegretPlotData);
 
-  const [play, setPlay] = useState(true);
+  // const [play, setPlay] = useState(true);
 
   useEffect(() => {
     const evalApp = new EvaluationApplet(
@@ -98,7 +91,21 @@ export function RegretPlot(props) {
 
   return (
     <Container id="regretplot">
-      <div id="eval-control">
+      {/* <IconButton
+        id="eval-btn-reset"
+        className="btn-reset"
+        aria-label="Reset"
+        onClick={() =>
+          setAllSettingsParam({
+            ...allSettingsParamValue,
+            play: false,
+            reset: true,
+          })
+        }
+      >
+        <RefreshIcon />
+      </IconButton> */}
+      {/* <div id="eval-control" style={{ opacity: 1}}>
         <Box
           component="form"
           sx={{
@@ -113,20 +120,21 @@ export function RegretPlot(props) {
               aria-label="Play"
               value="check"
               size="small"
-              onClick={() => setPlay(!play)}
+              onClick={() => setAllSettingsParam({ ...allSettingsParamValue, play: !allSettingsParamValue.play })}
             >
-              {play ? <PlayArrowIcon /> : <PauseIcon />}
+              {allSettingsParamValue.play ? <PauseIcon /> : <PlayArrowIcon />}
             </ToggleButton>
             <IconButton
               id="eval-btn-reset"
               className="btn-reset"
               aria-label="Reset"
+              onClick={() => setAllSettingsParam({ ...allSettingsParamValue, play: false, reset: true })}
             >
               <RefreshIcon />
             </IconButton>
           </div>
         </Box>
-      </div>
+      </div> */}
       <div id="eval-graph-wrap">
         <div id="eval-graph" className="graph" />
         {/* to the right most within the wrap */}

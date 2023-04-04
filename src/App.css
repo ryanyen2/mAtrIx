@@ -200,11 +200,6 @@ label {
   margin-bottom: 10px;
 }
 
-#eval-graph-wrap {
-  border-style: dotted;
-  padding: 10px;
-}
-
 .eval-table {
   display: flex;
   flex-wrap: wrap;
@@ -876,3 +871,14 @@ p[class^="code-Method-Name-"] {
 #social-media-app-card .ease-out {
   animation: slideOutToTop .4s ease-in-out;
 }
+
+
+
+/* settings */
+#settings-drawer .MuiPaper-root {
+  border-radius: 2em;
+  right: -18px;
+
+  background-color: #f8f8f8;
+}
+
