@@ -63,7 +63,7 @@ export const Post = forwardRef((props, ref) => {
 
   // run auto mode and automatically run functions every 1 and 3 seconds
   const runingAutoMode = () => {
-    console.log("In runningautomode");
+    console.log("-----In running auto mode----");
     setTimeoutIDAutoLike(setTimeout(autoClickLike, 1000));
     setTimeoutIDAutoSwipe(setTimeout(autoSwipeUp, 4000));
   };
@@ -81,7 +81,7 @@ export const Post = forwardRef((props, ref) => {
     if (props.postInfo.userName == "mAtrIx") {
       props.onUserAction(-100.0);
     } else {
-      if (liked) {
+      if (props.autoClickLike) {
         props.onUserAction(1.0);
       } else {
         props.onUserAction(0.0);
