@@ -91,6 +91,7 @@ export function SocialMediaApp(props) {
 
   const generateNewPost = (newTag) => {
     console.log("get the new tag: " + newTag);
+    console.log("get the new regret: " + banditInfoValue.regret_t);
 
     //generate a new post
     const tempId = randomId(6);

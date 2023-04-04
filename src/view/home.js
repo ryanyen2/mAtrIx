@@ -169,7 +169,7 @@ function Home(props) {
                 <AlgGraph width={500} height={500} />
               </div>
             </Grid>
-          ) : <div>hi</div>}
+          ) : null}
           <Grid item xs={12}>
             <RegretPlot width={500} height={150} />
           </Grid>
