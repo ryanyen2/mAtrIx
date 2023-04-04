@@ -14,7 +14,7 @@ import {
   banditInfo,
   modelTypeID,
   triggerBanditRecord,
-  allSettingsParam
+  allSettingsParam,
 } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
@@ -41,7 +41,8 @@ const newBandit = new GenerateNewBandit();
 
 function Home(props) {
   const [banditInfoValue, setBanditInfoValue] = useRecoilState(banditInfo);
-  const [triggerBanditRecordVal, setTriggerBanditRecordVal] = useRecoilState(triggerBanditRecord);
+  const [triggerBanditRecordVal, setTriggerBanditRecordVal] =
+    useRecoilState(triggerBanditRecord);
   // const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
   const [allSettingsParamValue, setAllSettingsParam] =
     useRecoilState(allSettingsParam);
@@ -88,7 +89,7 @@ function Home(props) {
         trigger: false,
         rewardToPass: -1,
       });
-    } else if(newBandit?.valueOf() === undefined) {
+    } else if (newBandit?.valueOf() === undefined) {
       console.log("ERROR: New bandit is null");
     }
   }, [triggerBanditRecordVal]);
@@ -107,23 +108,30 @@ function Home(props) {
         </Grid>
         <Grid item xs={3}>
           <Grid item xs={12}>
-            <Item style={{ textAlign: 'left' }}>
+            <Item style={{ textAlign: "left" }}>
               {/* allSettingsParamValue */}
-              {Object.keys(allSettingsParamValue).map((key) => {
+              {Object.keys(allSettingsParamValue).map((k) => {
                 return (
-                  <div key={key}>
-                    <b>{key}:</b> {typeof allSettingsParamValue[key] === "object" ? (
+                  <div key={k}>
+                    <b>{k}:</b>{" "}
+                    {typeof allSettingsParamValue[k] === "object" ? (
                       <div>
-                        {Object.keys(allSettingsParamValue[key]).map((key2) => {
+                        {Object.keys(allSettingsParamValue[k]).map((key2) => {
                           return (
-                            <span style={{ marginRight: '10px' }}>
-                              {key2}: {allSettingsParamValue[key][key2]}
-                              </span>
+                            <span style={{ marginRight: "10px" }} key={key2}>
+                              {key2}: {allSettingsParamValue[k][key2]}
+                            </span>
                           );
                         })}
-                        </div>
+                      </div>
+                    ) : typeof allSettingsParamValue[k] === "boolean" ? (
+                      allSettingsParamValue[k] ? (
+                        "True"
+                      ) : (
+                        "False"
+                      )
                     ) : (
-                      typeof allSettingsParamValue[key] === 'boolean' ? allSettingsParamValue[key] ? 'True' : 'False' : allSettingsParamValue[key]
+                      allSettingsParamValue[k]
                     )}
                   </div>
                 );
@@ -135,11 +143,13 @@ function Home(props) {
           </Grid>
         </Grid>
         <Grid item xs={5}>
-          <Grid item xs={12}>
-            <div id="alggraphparent">
-              <AlgGraph width={500} height={500} />
-            </div>
-          </Grid>
+          {allSettingsParamValue.currentAlgorithm === "thompson-sampling" ? (
+            <Grid item xs={12}>
+              <div id="alggraphparent">
+                <AlgGraph width={500} height={500} />
+              </div>
+            </Grid>
+          ) : <div>hi</div>}
           <Grid item xs={12}>
             <RegretPlot width={500} height={150} />
           </Grid>
