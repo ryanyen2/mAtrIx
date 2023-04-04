@@ -51,13 +51,11 @@ export class EvaluationApplet {
     document
       .getElementById("eval-btn-toggle")
       .addEventListener("click", function () {
-        console.log("toggle");
         self.toggle();
       });
     document
       .getElementById("eval-btn-reset")
       .addEventListener("click", function () {
-        console.log("reset");
         self.reset();
       });
 
@@ -169,7 +167,7 @@ export class EvaluationApplet {
       this.appletRunning = true;
       // document.getElementById('eval-btn-toggle').className = 'btn-pause';
       this.get_param();
-      console.log(this.banditConfig);
+      // console.log(this.banditConfig);
       this.animate();
     }
   }
