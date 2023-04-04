@@ -23,8 +23,12 @@ export function SocialMediaApp(props) {
     imgSrc: "images/tutorial.png", // source from https://slp-statics.astockcdn.net/static_assets/staging/22spring/free/browse-vector-categories-collections/Card4_399895799.jpg?width=580
     numOfLikes: 0,
   });
-  const [numPostScrolled, setNumPostScrolled] = useState(0);
-  const [liked, setLiked] = useState(0.0);
+  const [numPostScrolledNLiked, setNumPostScrolledNLiked] = useState({
+    nPost: 0,
+    liked: 0
+  });
+  // const [numPostScrolled, setNumPostScrolled] = useState(0);
+  // const [liked, setLiked] = useState(0.0);
   const [passFirstImg, setPassFirstImg] = useState(false);
   const [autoClickLike, setAutoClickLike] = useState(false);
 
@@ -49,13 +53,14 @@ export function SocialMediaApp(props) {
   const child = useRef(null);
 
   useEffect(() => {
-    if (numPostScrolled > 0) {
+    if (numPostScrolledNLiked.nPost > 0) {
       var newTag = -1;
-      if (liked != -100.0) {
+      if (numPostScrolledNLiked.liked != -100.0) {
         setPassFirstImg(true);
+        // console.log("setting trigger to true");
         setTriggerBanditRecordVal({
           trigger: true,
-          rewardToPass: liked,
+          rewardToPass: numPostScrolledNLiked.liked,
         });
       } else {
         // get the very first selected arm (done in home.js)
@@ -63,7 +68,7 @@ export function SocialMediaApp(props) {
         generateNewPost(newTag);
       }
     }
-  }, [numPostScrolled, liked]);
+  }, [numPostScrolledNLiked]);
 
   useEffect(() => {
     if(passFirstImg) {
@@ -107,8 +112,12 @@ export function SocialMediaApp(props) {
   // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs
   const handleUserAction = (likedValue) => {
     //save user's action
-    setLiked(likedValue);
-    setNumPostScrolled(numPostScrolled + 1);
+    setNumPostScrolledNLiked({
+      nPost: numPostScrolledNLiked.nPost + 1,
+      liked: likedValue
+    })
+    // setLiked(likedValue);
+    // setNumPostScrolled(numPostScrolled + 1);
     console.log("received reward: " + likedValue);
   };
 
