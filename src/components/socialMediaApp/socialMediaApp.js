@@ -226,6 +226,7 @@ export function SocialMediaApp(props) {
           autoClickLike = {autoClickLike}
           ref={child}
           onUserAction={handleUserAction}
+          allSettingsParamValue={allSettingsParamValue}
         />
       </Grid>
     </Card>

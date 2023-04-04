@@ -12,7 +12,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import { Swipe, Position } from "react-swipe-component";
 
-import { allSettingsParam } from "../../state/atoms";
+// import { allSettingsParam } from "../../state/atoms";
 import { interval } from "d3";
 
 export const Post = forwardRef((props, ref) => {
@@ -27,24 +27,28 @@ export const Post = forwardRef((props, ref) => {
   const [timeoutIDAutoLike, setTimeoutIDAutoLike] = useState(null);
   const [timeoutIDAutoSwipe, setTimeoutIDAutoSwipe] = useState(null);
 
-  const allSettingsParamValue = useRecoilValue(allSettingsParam);
+//   const props.allSettingsParamValue = useRecoilValue(allSettingsParam);
+
+//   useEffect(() => {
+//     console.log("props.props.allSettingsParamValue changed");
+//   }, [props.allSettingsParamValue])
 
   useEffect(() => {
     if (
-      allSettingsParamValue.currentMode == "automatic" &&
-      allSettingsParamValue.play
+      props.allSettingsParamValue.currentMode == "automatic" &&
+      props.allSettingsParamValue.play && !play
     ) {
       runingAutoMode();
     }
     // console.log(
     //   "in use effect, gonna set mode to " +
-    //     allSettingsParamValue.currentMode +
+    //     props.allSettingsParamValue.currentMode +
     //     " and play is " +
-    //     allSettingsParamValue.play
+    //     props.allSettingsParamValue.play
     // );
-    setMode(allSettingsParamValue.currentMode);
-    setPlay(allSettingsParamValue.play);
-  }, [allSettingsParamValue]);
+    setMode(props.allSettingsParamValue.currentMode);
+    setPlay(props.allSettingsParamValue.play);
+  }, [props.allSettingsParamValue, play]);
 
   useEffect(() => {
     if (!play) {
@@ -59,6 +63,7 @@ export const Post = forwardRef((props, ref) => {
 
   // run auto mode and automatically run functions every 1 and 3 seconds
   const runingAutoMode = () => {
+    console.log("In runningautomode");
     setTimeoutIDAutoLike(setTimeout(autoClickLike, 1000));
     setTimeoutIDAutoSwipe(setTimeout(autoSwipeUp, 4000));
   };

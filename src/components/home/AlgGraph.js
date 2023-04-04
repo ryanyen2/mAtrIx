@@ -88,7 +88,7 @@ export default function AlgGraph(props) {
     if (Object.keys(localBanditInfo.parameters).length !== 0 && triggerBanditRecordVal.trigger) {
     //   var index = localBanditInfo.cur_arm;
       var index = arms.old;
-      // console.log("Updating post dist of arm: " + index);
+      console.log("Updating post dist of arm: " + index);
       // console.log(localBanditInfo.parameters);
       var mu = localBanditInfo.parameters[index].mu;
       var sig = Math.sqrt(localBanditInfo.parameters[index].sig2);

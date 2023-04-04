@@ -69,15 +69,15 @@ function Home(props) {
     }
     extra_params["true_mus"] = target_mapped;
 
-    newBandit.startGenerate(
-      modelTypeIDValue.thompson,
-      Object.keys(armTagsValue).length,
-      extra_params
-    );
-    await newBandit.recordInit((d) => {
-      console.log("callback1", d);
-      setBanditInfoValue(d);
-    });
+    // newBandit.startGenerate(
+    //   modelTypeIDValue.thompson,
+    //   Object.keys(armTagsValue).length,
+    //   extra_params
+    // );
+    // await newBandit.recordInit((d) => {
+    //   console.log("callback1", d);
+    //   setBanditInfoValue(d);
+    // });
   }, []);
 
   useEffect(() => {
@@ -103,9 +103,10 @@ function Home(props) {
     }
   }, [triggerBanditRecordVal]);
 
-  useEffect(( newParam ) => {
+  useEffect(async () => {
+    // console.log(newParam);
     // dont update if it's the first time
-    if (newParam === undefined) return;
+    // if (newParam === undefined) return;
 
     console.log("allSettingsParamValue-->", allSettingsParamValue);
     var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
@@ -120,7 +121,16 @@ function Home(props) {
       Object.keys(armTagsValue).length,
       extra_params
     )
-  }, [allSettingsParamValue]);
+    await newBandit.recordInit((d) => {
+      console.log("callback1", d);
+      setBanditInfoValue(d);
+    });
+  }, [allSettingsParamValue.currentMode, 
+    allSettingsParamValue.reset, 
+    allSettingsParamValue.currentAlgorithm, 
+    allSettingsParamValue.regretPlotParam,
+    allSettingsParamValue.targetProbability, 
+  ]);
 
   return (
     <Container id="home" style={{ marginTop: "2rem" }}>
