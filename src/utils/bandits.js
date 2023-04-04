@@ -27,295 +27,295 @@ import * as d3 from "d3";
 
 var DOMAIN = 3;
 
-export class BanditsApplet {
-  constructor(selector, sliderIds) {
-    this.selector = selector;
-    this.nBandits = 10;
-    this.env = null;
-    this.ts = null;
-    this.images = null;
-    this.last_action = null;
-    this.last_reward = null;
+// export class BanditsApplet {
+//   constructor(selector, sliderIds) {
+//     this.selector = selector;
+//     this.nBandits = 10;
+//     this.env = null;
+//     this.ts = null;
+//     this.images = null;
+//     this.last_action = null;
+//     this.last_reward = null;
 
-    this.appletRunning = false; // for pause/continue
+//     this.appletRunning = false; // for pause/continue
 
-    this.sliderIds = sliderIds;
-    this.sliders = {};
-    this.init_sliders();
-  }
+//     this.sliderIds = sliderIds;
+//     this.sliders = {};
+//     this.init_sliders();
+//   }
 
-  init_sliders() {
-    for (let [key, id] of Object.entries(this.sliderIds)) {
-      this.sliders[key] = document.getElementById(id);
-      if (this.sliders[key].hasOwnProperty("noUiSlider"))
-        this.sliders[key].noUiSlider.destroy();
-    }
-    noUiSlider.create(this.sliders["prior_m"], {
-      start: [0],
-      range: { min: -2, max: 2 },
-      step: 0.1,
-      tooltips: [true],
-    });
-    noUiSlider.create(this.sliders["prior_v"], {
-      start: [1],
-      range: {
-        min: 0,
-        "20%": [0.1, 0.1],
-        "30%": [1, 1],
-        "60%": [10, 10],
-        max: 100,
-      },
-      tooltips: [true],
-    });
-    noUiSlider.create(this.sliders["prior_a"], {
-      start: [1],
-      range: {
-        min: [0],
-        "10%": [0.1, 0.1],
-        "20%": [1, 1],
-        "30%": [10, 10],
-        "50%": [100, 100],
-        max: [1000],
-      },
-      tooltips: [true],
-    });
-    noUiSlider.create(this.sliders["prior_b"], {
-      start: [1],
-      range: {
-        min: [0],
-        "10%": [0.1, 0.1],
-        "20%": [1, 1],
-        "30%": [10, 10],
-        "50%": [100, 100],
-        max: [1000],
-      },
-      tooltips: [true],
-    });
-    var self = this;
-    for (let [key, id] of Object.entries(this.sliderIds)) {
-      this.sliders[key].noUiSlider.on("change", function () {
-        var wasRunning = self.appletRunning;
-        self.reset(true);
-        if (wasRunning) self.toggle();
-      });
-    }
-  }
+//   init_sliders() {
+//     for (let [key, id] of Object.entries(this.sliderIds)) {
+//       this.sliders[key] = document.getElementById(id);
+//       if (this.sliders[key].hasOwnProperty("noUiSlider"))
+//         this.sliders[key].noUiSlider.destroy();
+//     }
+//     noUiSlider.create(this.sliders["prior_m"], {
+//       start: [0],
+//       range: { min: -2, max: 2 },
+//       step: 0.1,
+//       tooltips: [true],
+//     });
+//     noUiSlider.create(this.sliders["prior_v"], {
+//       start: [1],
+//       range: {
+//         min: 0,
+//         "20%": [0.1, 0.1],
+//         "30%": [1, 1],
+//         "60%": [10, 10],
+//         max: 100,
+//       },
+//       tooltips: [true],
+//     });
+//     noUiSlider.create(this.sliders["prior_a"], {
+//       start: [1],
+//       range: {
+//         min: [0],
+//         "10%": [0.1, 0.1],
+//         "20%": [1, 1],
+//         "30%": [10, 10],
+//         "50%": [100, 100],
+//         max: [1000],
+//       },
+//       tooltips: [true],
+//     });
+//     noUiSlider.create(this.sliders["prior_b"], {
+//       start: [1],
+//       range: {
+//         min: [0],
+//         "10%": [0.1, 0.1],
+//         "20%": [1, 1],
+//         "30%": [10, 10],
+//         "50%": [100, 100],
+//         max: [1000],
+//       },
+//       tooltips: [true],
+//     });
+//     var self = this;
+//     for (let [key, id] of Object.entries(this.sliderIds)) {
+//       this.sliders[key].noUiSlider.on("change", function () {
+//         var wasRunning = self.appletRunning;
+//         self.reset(true);
+//         if (wasRunning) self.toggle();
+//       });
+//     }
+//   }
 
-  init(outerWidth, outerHeight) {
-    this.outerWidth = outerWidth;
-    this.outerHeight = outerHeight;
+//   init(outerWidth, outerHeight) {
+//     this.outerWidth = outerWidth;
+//     this.outerHeight = outerHeight;
 
-    var self = this;
-    // register the buttons
-    document
-      .getElementById("ts-btn-toggle")
-      .addEventListener("click", function () {
-        self.toggle();
-      });
-    document
-      .getElementById("ts-btn-reset")
-      .addEventListener("click", function () {
-        var wasRunning = self.appletRunning;
-        self.reset();
-        if (wasRunning) self.toggle();
-      });
-    this.reset();
-  }
+//     var self = this;
+//     // register the buttons
+//     document
+//       .getElementById("ts-btn-toggle")
+//       .addEventListener("click", function () {
+//         self.toggle();
+//       });
+//     document
+//       .getElementById("ts-btn-reset")
+//       .addEventListener("click", function () {
+//         var wasRunning = self.appletRunning;
+//         self.reset();
+//         if (wasRunning) self.toggle();
+//       });
+//     this.reset();
+//   }
 
-  build_table() {
-    var lrmargin = Math.ceil(0.05 * this.outerWidth);
-    var margin = { top: 0, right: lrmargin, bottom: 0, left: lrmargin };
-    this.cvHeight = 20;
-    this.cvWidth = Math.floor(this.outerWidth - margin.right - margin.left);
+//   build_table() {
+//     var lrmargin = Math.ceil(0.05 * this.outerWidth);
+//     var margin = { top: 0, right: lrmargin, bottom: 0, left: lrmargin };
+//     this.cvHeight = 20;
+//     this.cvWidth = Math.floor(this.outerWidth - margin.right - margin.left);
 
-    this.images = new Array(this.nBandits);
+//     this.images = new Array(this.nBandits);
 
-    var vizDiv = document.getElementById(this.selector);
-    var oldTable = vizDiv.querySelector("#viz-table");
-    if (oldTable) oldTable.remove();
+//     var vizDiv = document.getElementById(this.selector);
+//     var oldTable = vizDiv.querySelector("#viz-table");
+//     if (oldTable) oldTable.remove();
 
-    var table = document.createElement("TABLE");
-    table.id = "viz-table";
+//     var table = document.createElement("TABLE");
+//     table.id = "viz-table";
 
-    var tr, td, th, thead, tbody, el;
+//     var tr, td, th, thead, tbody, el;
 
-    var addhead = function (lbl) {
-      th = document.createElement("TH");
-      if (lbl) {
-        el = document.createElement("SPAN");
-        el.innerHTML = lbl;
-        th.appendChild(el);
-      }
-      thead.appendChild(th);
-    };
-    var addcell = function (lbl, cls, id) {
-      td = document.createElement("TD");
-      td.setAttribute("class", cls);
-      el = document.createElement("SPAN");
-      el.innerHTML = lbl;
-      el.setAttribute("id", id);
-      td.appendChild(el);
-      tr.appendChild(td);
-    };
-    var meanStr = function (means, idx) {
-      var mi = means.indexOf(Math.max(...means));
-      var s = means[idx].toFixed(3);
-      if (idx == mi) s = `<u>${s}</u>`;
-      return s;
-    };
+//     var addhead = function (lbl) {
+//       th = document.createElement("TH");
+//       if (lbl) {
+//         el = document.createElement("SPAN");
+//         el.innerHTML = lbl;
+//         th.appendChild(el);
+//       }
+//       thead.appendChild(th);
+//     };
+//     var addcell = function (lbl, cls, id) {
+//       td = document.createElement("TD");
+//       td.setAttribute("class", cls);
+//       el = document.createElement("SPAN");
+//       el.innerHTML = lbl;
+//       el.setAttribute("id", id);
+//       td.appendChild(el);
+//       tr.appendChild(td);
+//     };
+//     var meanStr = function (means, idx) {
+//       var mi = means.indexOf(Math.max(...means));
+//       var s = means[idx].toFixed(3);
+//       if (idx == mi) s = `<u>${s}</u>`;
+//       return s;
+//     };
 
-    thead = document.createElement("THEAD");
-    addhead();
-    addhead("N");
-    addhead("Estimate");
-    addhead("True");
+//     thead = document.createElement("THEAD");
+//     addhead();
+//     addhead("N");
+//     addhead("Estimate");
+//     addhead("True");
 
-    table.appendChild(thead);
+//     table.appendChild(thead);
 
-    tbody = document.createElement("TBODY");
+//     tbody = document.createElement("TBODY");
 
-    var mu, sigma2;
-    for (let i = 0; i < this.nBandits; i++) {
-      mu = this.ts.get_rho(i);
-      sigma2 = this.ts.get_sigma2_map(i);
+//     var mu, sigma2;
+//     for (let i = 0; i < this.nBandits; i++) {
+//       mu = this.ts.get_rho(i);
+//       sigma2 = this.ts.get_sigma2_map(i);
 
-      tr = document.createElement("TR");
+//       tr = document.createElement("TR");
 
-      // first column contains canvas
-      td = document.createElement("TD");
-      this.images[i] = new SVGImage(this.cvWidth, this.cvHeight, margin);
-      this.images[i].init(td);
-      this.images[i].update(mu, sigma2);
-      td.setAttribute("class", "col-cvs");
-      tr.appendChild(td);
+//       // first column contains canvas
+//       td = document.createElement("TD");
+//       this.images[i] = new SVGImage(this.cvWidth, this.cvHeight, margin);
+//       this.images[i].init(td);
+//       this.images[i].update(mu, sigma2);
+//       td.setAttribute("class", "col-cvs");
+//       tr.appendChild(td);
 
-      addcell("0", "col-cnt", "viz-count-" + i);
-      addcell("0.0", "col-est", "viz-est-" + i);
-      addcell(meanStr(this.env.means, i), "col-mean", "viz-mean" + i);
+//       addcell("0", "col-cnt", "viz-count-" + i);
+//       addcell("0.0", "col-est", "viz-est-" + i);
+//       addcell(meanStr(this.env.means, i), "col-mean", "viz-mean" + i);
 
-      tbody.appendChild(tr);
-    }
+//       tbody.appendChild(tr);
+//     }
 
-    table.appendChild(tbody);
-    vizDiv.appendChild(table);
-  }
+//     table.appendChild(tbody);
+//     vizDiv.appendChild(table);
+//   }
 
-  get_param() {
-    this.m = parseFloat(this.sliders["prior_m"].noUiSlider.get());
-    this.v = parseFloat(this.sliders["prior_v"].noUiSlider.get());
-    this.alpha = parseFloat(this.sliders["prior_a"].noUiSlider.get());
-    this.beta = parseFloat(this.sliders["prior_b"].noUiSlider.get());
-    // make sure these hyperparameters are always positive
-    var bump = function (a) {
-      return a < 0.001 ? 0.001 : a;
-    };
-    this.v = bump(this.v);
-    this.alpha = bump(this.alpha);
-    this.beta = bump(this.beta);
-  }
+//   get_param() {
+//     this.m = parseFloat(this.sliders["prior_m"].noUiSlider.get());
+//     this.v = parseFloat(this.sliders["prior_v"].noUiSlider.get());
+//     this.alpha = parseFloat(this.sliders["prior_a"].noUiSlider.get());
+//     this.beta = parseFloat(this.sliders["prior_b"].noUiSlider.get());
+//     // make sure these hyperparameters are always positive
+//     var bump = function (a) {
+//       return a < 0.001 ? 0.001 : a;
+//     };
+//     this.v = bump(this.v);
+//     this.alpha = bump(this.alpha);
+//     this.beta = bump(this.beta);
+//   }
 
-  toggle() {
-    if (this.appletRunning) {
-      this.appletRunning = false;
-      document.getElementById("ts-btn-toggle").className = "btn-play";
-    } else {
-      this.appletRunning = true;
-      document.getElementById("ts-btn-toggle").className = "btn-pause";
-      this.animate();
-    }
-  }
+//   toggle() {
+//     if (this.appletRunning) {
+//       this.appletRunning = false;
+//       document.getElementById("ts-btn-toggle").className = "btn-play";
+//     } else {
+//       this.appletRunning = true;
+//       document.getElementById("ts-btn-toggle").className = "btn-pause";
+//       this.animate();
+//     }
+//   }
 
-  reset(soft) {
-    if (soft === undefined) soft = false;
-    var self = this;
+//   reset(soft) {
+//     if (soft === undefined) soft = false;
+//     var self = this;
 
-    var soft_reset = function () {
-      // reset everything except the test bed
-      self.get_param();
-      self.t = 0;
-      self.ts = new ThompsonSampling(
-        self.nBandits,
-        self.m,
-        self.v,
-        self.alpha,
-        self.beta
-      );
-      self.build_table();
-    };
+//     var soft_reset = function () {
+//       // reset everything except the test bed
+//       self.get_param();
+//       self.t = 0;
+//       self.ts = new ThompsonSampling(
+//         self.nBandits,
+//         self.m,
+//         self.v,
+//         self.alpha,
+//         self.beta
+//       );
+//       self.build_table();
+//     };
 
-    var hard_reset = function () {
-      if (self.t == 0)
-        // double reset also resets sliders
-        self.init_sliders();
-      self.get_param();
-      self.t = 0;
-      self.ts = new ThompsonSampling(
-        self.nBandits,
-        self.m,
-        self.v,
-        self.alpha,
-        self.beta
-      );
-      self.env = new TestBed(self.nBandits, null, true);
-      self.build_table();
-    };
+//     var hard_reset = function () {
+//       if (self.t == 0)
+//         // double reset also resets sliders
+//         self.init_sliders();
+//       self.get_param();
+//       self.t = 0;
+//       self.ts = new ThompsonSampling(
+//         self.nBandits,
+//         self.m,
+//         self.v,
+//         self.alpha,
+//         self.beta
+//       );
+//       self.env = new TestBed(self.nBandits, null, true);
+//       self.build_table();
+//     };
 
-    var reset = soft ? soft_reset : hard_reset;
+//     var reset = soft ? soft_reset : hard_reset;
 
-    // A delay is used because otherwise there's a chance that the
-    // last animation frame updates our clean table.
-    if (this.appletRunning) {
-      this.appletRunning = false;
-      window.setTimeout(reset, 100);
-    } else {
-      reset();
-    }
+//     // A delay is used because otherwise there's a chance that the
+//     // last animation frame updates our clean table.
+//     if (this.appletRunning) {
+//       this.appletRunning = false;
+//       window.setTimeout(reset, 100);
+//     } else {
+//       reset();
+//     }
 
-    document.getElementById("ts-btn-toggle").className = "btn-play";
-  }
+//     document.getElementById("ts-btn-toggle").className = "btn-play";
+//   }
 
-  step() {
-    this.t += 1;
-    // perform a single step of the simulation
-    var action = this.ts.act();
-    var reward = this.env.step(action);
-    this.ts.record(action, reward);
-    this.last_action = action;
-    this.last_reward = reward;
-  }
+//   step() {
+//     this.t += 1;
+//     // perform a single step of the simulation
+//     var action = this.ts.act();
+//     var reward = this.env.step(action);
+//     this.ts.record(action, reward);
+//     this.last_action = action;
+//     this.last_reward = reward;
+//   }
 
-  draw() {
-    var i, mu, sigma2, seq, el;
-    i = this.last_action;
-    mu = this.ts.get_rho(i);
-    sigma2 = this.ts.get_sigma2_map(i);
+//   draw() {
+//     var i, mu, sigma2, seq, el;
+//     i = this.last_action;
+//     mu = this.ts.get_rho(i);
+//     sigma2 = this.ts.get_sigma2_map(i);
 
-    this.images[i].update(mu, sigma2, this.last_reward);
+//     this.images[i].update(mu, sigma2, this.last_reward);
 
-    el = document.getElementById("viz-count-" + i);
-    el.innerHTML = parseInt(el.innerHTML) + 1;
+//     el = document.getElementById("viz-count-" + i);
+//     el.innerHTML = parseInt(el.innerHTML) + 1;
 
-    el = document.getElementById("viz-est-" + i);
-    el.innerHTML = mu.toFixed(3);
-  }
+//     el = document.getElementById("viz-est-" + i);
+//     el.innerHTML = mu.toFixed(3);
+//   }
 
-  animate() {
-    var frame,
-      paint,
-      parent = this;
+//   animate() {
+//     var frame,
+//       paint,
+//       parent = this;
 
-    paint = function () {
-      parent.step();
-      parent.draw();
+//     paint = function () {
+//       parent.step();
+//       parent.draw();
 
-      frame = window.requestAnimationFrame(paint);
-      if (!parent.appletRunning) {
-        window.cancelAnimationFrame(frame);
-      }
-    };
-    frame = requestAnimationFrame(paint);
-  }
-}
+//       frame = window.requestAnimationFrame(paint);
+//       if (!parent.appletRunning) {
+//         window.cancelAnimationFrame(frame);
+//       }
+//     };
+//     frame = requestAnimationFrame(paint);
+//   }
+// }
 
 export class EvaluationApplet {
   constructor(selector, inputParams, setRegretPlotData) {
@@ -1171,15 +1171,18 @@ export class GenerateNewBandit {
     model: new ThompsonSampling(3, 0, 1, 1, 1),
     model_name: "N/A",
     model_id: 2, //0 = EGreedy, 1 = UCB, 2 = Thompson Sampling
-    n_arms: 3, // Number of Arms, we can set at init
+    n_arms: 4, // Number of Arms, we can set at init
     parameters: {}, // Parameters for bandit of each arm
     steps: [],
     cur_step: 0, // Index of current step
     cur_arm: 0, // Index tag of current arm
+    regret_t: [],
+    true_mus: {}
   };
 
   constructor() {
     this.banditInfo = GenerateNewBandit.banditInfo;
+    this.optimal = -1;
   }
 
   startGenerate = async (model_id, n_arms, extra_params={}, callback) => {
@@ -1190,6 +1193,13 @@ export class GenerateNewBandit {
     this.banditInfo.cur_step = 0;
     this.banditInfo.cur_arm = 0;
     this.banditInfo.n_arms = n_arms;
+    this.banditInfo.regret_t = [];
+
+    this.banditInfo.true_mus = {};
+    for(var i = 0; i < n_arms; i++){ this.banditInfo.true_mus[i] = 0.0; }
+    this.banditInfo.true_mus = extra_params["true_mus"] !== undefined ? extra_params["true_mus"] : this.banditInfo.true_mus;
+
+    this.optimal = Object.entries(this.banditInfo.true_mus).reduce((a, b) => a[1] > b[1] ? a : b)[1]
 
     if (this.banditInfo.model_id === 2) {
       // Thompson Sampling Init
@@ -1240,7 +1250,7 @@ export class GenerateNewBandit {
     
     // await this.setBanditInfo(this.banditInfo);
     if (callback) {
-      let {model: _, ...rest} = this.banditInfo;
+      let {model: _, true_mus: __, ...rest} = this.banditInfo;
       await callback(rest);
     }
   };
@@ -1255,7 +1265,7 @@ export class GenerateNewBandit {
 
     // if (callback) await callback(this.banditInfo);
     if (callback) {
-      let {model: _, ...rest} = this.banditInfo;
+      let {model: _, true_mus: __, ...rest} = this.banditInfo;
       await callback(rest);
     }
   };
@@ -1276,13 +1286,16 @@ export class GenerateNewBandit {
     }
     this.banditInfo.parameters[this.banditInfo.cur_arm]["n"] += 1;
 
+    // model Regret
+    this.banditInfo.regret_t.push( this.optimal - this.banditInfo.true_mus[this.banditInfo.cur_arm])
+
     this.banditInfo.cur_arm = this.banditInfo.model.act();
     this.banditInfo.cur_step += 1;
     this.banditInfo.steps.push(this.banditInfo.parameters);
 
     // if (callback) await callback(this.banditInfo);
     if (callback) {
-      let {model: _, ...rest} = this.banditInfo;
+      let {model: _, true_mus: __, ...rest} = this.banditInfo;
       await callback(rest);
     }
   };

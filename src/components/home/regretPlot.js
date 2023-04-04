@@ -36,7 +36,7 @@ export function RegretPlot(props) {
         cs: [allSettingsParamValue.regretPlotParam.c],
         ms: [allSettingsParamValue.regretPlotParam.m],
         nus: [allSettingsParamValue.regretPlotParam.nu],
-        alphas: allSettingsParamValue.regretPlotParam.alpha,
+        alphas: [allSettingsParamValue.regretPlotParam.alpha],
         betas: [allSettingsParamValue.regretPlotParam.beta],
         repeats: allSettingsParamValue.regretPlotParam.repeats,
       },

@@ -33,11 +33,11 @@ export default function ParameterSettings(props) {
               });
             }}
           >
-            <MenuItem value={"epsilon-greedy"}>Epsilon-greedy</MenuItem>
-            <MenuItem value={"upper-confidence-bound"}>
+            <MenuItem value={"egreedy"}>Epsilon-greedy</MenuItem>
+            <MenuItem value={"ucb"}>
               Upper Confidence Bound
             </MenuItem>
-            <MenuItem value={"thompson-sampling"}>Thompson Sampling</MenuItem>
+            <MenuItem value={"thompson"}>Thompson Sampling</MenuItem>
           </Select>
           <TextField
             label="Repetitions"
@@ -126,13 +126,13 @@ export default function ParameterSettings(props) {
             label={<MathComponent tex={String.raw`m_a`} />}
             variant="standard"
             size="small"
-            value={props.localSettingsParamValue.regretPlotParam.m}
+            value={props.localSettingsParamValue.regretPlotParam.ma}
             onChange={(e) => {
               props.setLocalSettingsParamValue({
                 ...props.localSettingsParamValue,
                 regretPlotParam: {
                   ...props.localSettingsParamValue.regretPlotParam,
-                  m: e.target.value,
+                  ma: e.target.value,
                 },
               });
             }}
@@ -143,13 +143,13 @@ export default function ParameterSettings(props) {
             label={<MathComponent tex={String.raw`\nu_a`} />}
             variant="standard"
             size="small"
-            value={props.localSettingsParamValue.regretPlotParam.nu}
+            value={props.localSettingsParamValue.regretPlotParam.va}
             onChange={(e) => {
               props.setLocalSettingsParamValue({
                 ...props.localSettingsParamValue,
                 regretPlotParam: {
                   ...props.localSettingsParamValue.regretPlotParam,
-                  nu: e.target.value,
+                  va: e.target.value,
                 },
               });
             }}
