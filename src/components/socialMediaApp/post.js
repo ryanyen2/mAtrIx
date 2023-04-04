@@ -64,7 +64,8 @@ export const Post = forwardRef((props, ref) => {
   };
 
   const autoClickLike = () => {
-    if (props.autoClickLike && mode != "manual") {
+    // console.log("Auto click like is " + props.autoClickLike + " mode is " + mode);
+    if (props.autoClickLike) {
       setLikeButtonColor({ color: "#E91E63" });
       setNumOfLikes(props.postInfo.numOfLikes + 1);
       setLiked(!liked);
@@ -72,8 +73,6 @@ export const Post = forwardRef((props, ref) => {
   };
 
   const autoSwipeUp = () => {
-    console.log("IN autoSwipeUp, play is " + play);
-    // if (play) {
     if (props.postInfo.userName == "mAtrIx") {
       props.onUserAction(-100.0);
     } else {
@@ -83,7 +82,6 @@ export const Post = forwardRef((props, ref) => {
         props.onUserAction(0.0);
       }
     }
-    // }
   };
 
   // reset the page
