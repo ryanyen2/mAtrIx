@@ -1,73 +1,19 @@
-import React, { cloneElement } from "react";
-import ReactDOM from "react-dom";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
 import * as d3 from "d3";
 import jStat from "jstat";
-// import cloneDeep from "lodash";
-import { useRecoilState } from "recoil";
-import { allRegretPlotData, allSettingsParam } from "../../state/atoms";
+
+import { armTags, banditInfo, allSettingsParam } from "../../state/atoms";
 
 export default function AlgGraph(props) {
-  const [allSettingsParamValue, setAllSettingsParam] =
-    useRecoilState(allSettingsParam);
+  const banditInfoValue = useRecoilValue(banditInfo);
+  const allSettingsParamValue = useRecoilValue(allSettingsParam);
+  const armTagsVal = useRecoilValue(armTags);
   const [trueRewards, setTrueRewards] = useState([0.4, 0.5, 0.6, 0.7]);
-  const numArms = 4;
+  const armTagsValue = useRecoilValue(armTags);
+  const numArms = Object.keys(armTagsValue).length;
   const w = 400,
     h = 100;
-  const mounted = useRef(0);
-  // const [lastSelectedBanditIndex, setLastSelectedBanditIndex] = useState(-1);
-  const [theBandits, setTheBandits] = useState([
-    {
-      // currentDistributionParameters: {
-      alpha: 1,
-      beta: 1,
-      // },
-      currentActualProbability: allSettingsParamValue.targetProbability.cat,
-      // stats: {
-      numberSuccesses: 0,
-      numberPulls: 1,
-      probabilityHistory: [],
-      // },
-    },
-    {
-      // currentDistributionParameters: {
-      alpha: 1,
-      beta: 1,
-      // },
-      currentActualProbability: allSettingsParamValue.targetProbability.dog,
-      // stats: {
-      numberSuccesses: 0,
-      numberPulls: 1,
-      probabilityHistory: [],
-      // },
-    },
-    {
-      // currentDistributionParameters: {
-      alpha: 1,
-      beta: 1,
-      // },
-      currentActualProbability: allSettingsParamValue.targetProbability.panda,
-      // stats: {
-      numberSuccesses: 0,
-      numberPulls: 1,
-      probabilityHistory: [],
-      // },
-    },
-    {
-      // currentDistributionParameters: {
-      alpha: 1,
-      beta: 1,
-      // },
-      currentActualProbability: allSettingsParamValue.targetProbability.alpaca,
-      // stats: {
-      numberSuccesses: 0,
-      numberPulls: 1,
-      probabilityHistory: [],
-      // },
-    },
-    -1,
-  ]);
-
   const [xArray, setXArray] = useState([]);
   var _N = 100;
   var margin = 15;
@@ -95,8 +41,8 @@ export default function AlgGraph(props) {
     }
     xArray.push(1 - 0.0001);
     setXArray(xArray);
-    theBandits.forEach(function (b, index) {
-      if (index >= numArms) return;
+    
+    for (let index = 0; index < numArms; index++) {
       var theId = "graph_" + index;
 
       d3.selectAll("#graph_" + index).remove();
@@ -108,149 +54,89 @@ export default function AlgGraph(props) {
         .attr("height", h);
 
       var g = vis.append("svg:g").attr("id", "theGraph_" + index);
-    });
-
-    draw();
-
-    var i = setInterval(() => {
-      if (
-        !allSettingsParamValue.play ||
-        allSettingsParamValue.currentMode !== "automatic"
-      )
-        return;
-      runBandits();
-    }, 1000);
-
-    return () => clearInterval(i);
-  }, [allSettingsParamValue.play]);
-
-  useEffect(() => {
-    setTheBandits([
-      {
-        ...theBandits[0],
-        currentActualProbability: allSettingsParamValue.targetProbability.cat,
-      },
-      {
-        ...theBandits[1],
-        currentActualProbability: allSettingsParamValue.targetProbability.dog,
-      },
-      {
-        ...theBandits[2],
-        currentActualProbability: allSettingsParamValue.targetProbability.panda,
-      },
-      {
-        ...theBandits[3],
-        currentActualProbability:
-          allSettingsParamValue.targetProbability.alpaca,
-      },
-      -1,
-    ]);
-  }, [allSettingsParamValue.targetProbability]);
-
-  useEffect(() => {
-    theBandits.forEach(function (b, index) {
-      if (index >= numArms) return;
-      var theId = "graph_" + index;
-
-      d3.selectAll("#graph_" + index).remove();
-      var vis = d3
-        .select("#alggraphparent")
-        .append("svg")
-        .attr("id", theId)
-        .attr("width", w)
-        .attr("height", h);
-
-      var g = vis.append("svg:g").attr("id", "theGraph_" + index);
-    });
-
-    draw();
-
-    update();
-  }, [theBandits]);
-
-  //   useEffect(() => {
-  //     // allSettingsParam
-  //     console.log("In useEffect for allSettingsParam", allSettingsParamValue.targetProbability);
-  //     }, [allSettingsParamValue.targetProbability]);
-
-  function runBandits() {
-    // // console.log("Running bandits");
-    var selectedBandit = Math.floor(Math.random() * numArms);
-    const newBanidtsList = theBandits.map((b, i) => {
-      if (i === selectedBandit) {
-        if (Math.random() < b.currentActualProbability) {
-          b.alpha++;
-        } else {
-          b.beta++;
-        }
-      } else if (i === numArms) {
-        b = selectedBandit;
-      }
-      return b;
-    });
-    setTheBandits(newBanidtsList);
-  }
-
-  function update() {
-    // console.log("In update");
-    if (theBandits[numArms] < 0) return;
-    // console.log("Update called for index " + theBandits[numArms]);
-    var b = theBandits[theBandits[numArms]];
-    var index = theBandits[numArms];
-    var alpha = b.alpha;
-    var beta = b.beta;
-
-    var g = d3.select("#theGraph_" + index);
-
-    var theMax = -1;
-    var _data = xArray.map(function (x) {
-      var y = jStat.beta.pdf(x, alpha, beta);
-      theMax = Math.max(y, theMax);
-      return y;
-    });
-    var y = d3
-        .scaleLinear()
-        .domain([0, theMax])
-        .range([h - margin, 0 + margin]),
-      x = d3
-        .scaleLinear()
-        .domain([0, _N])
-        .range([0 + margin, w - margin]);
-
-    var d = [];
-    var xt10 = x.ticks(_N);
-    for (var i = 0; i < _N; i++) {
-      d.push([x(xt10[i]), y(_data[i])]);
     }
-    // console.log(alpha, beta, xArray, _data, d);
-    var line = d3.line();
 
-    d3.selectAll("#line_" + index).remove();
-    g.append("path")
-      .attr("d", line(d))
-      .attr("stroke", "#0d6efd")
-      .attr("id", "line_" + index)
-      .attr("fill", "none")
-      .attr("stroke-width", "2px");
-  }
+    draw();
+  }, []);
+
+  useEffect(() => {
+    // update the distribution
+    // console.log("In update");
+    // console.log("Update called for index " + theBandits[numArms]);
+    // var b = theBandits[theBandits[numArms]];
+    if (Object.keys(banditInfoValue.parameters).length !== 0) {
+      var index = banditInfoValue.cur_arm;
+      console.log(banditInfoValue.parameters);
+      var mu = banditInfoValue.parameters[index].mu;
+      var sig = Math.sqrt(banditInfoValue.parameters[index].sig2);
+
+      var g = d3.select("#theGraph_" + index);
+
+      var theMax = -1;
+      var _data = xArray.map(function (x) {
+        var y = jStat.normal.pdf(x, mu, sig);
+        theMax = Math.max(y, theMax);
+        return y;
+      });
+      var y = d3
+          .scaleLinear()
+          .domain([0, theMax])
+          .range([h - margin, 0 + margin]),
+        x = d3
+          .scaleLinear()
+          .domain([0, _N])
+          .range([0 + margin, w - margin]);
+
+      var d = [];
+      var xt10 = x.ticks(_N);
+      for (var i = 0; i < _N; i++) {
+        d.push([x(xt10[i]), y(_data[i])]);
+      }
+      // console.log(alpha, beta, xArray, _data, d);
+      var line = d3.line();
+
+      d3.selectAll("#line_" + index).remove();
+      g.append("path")
+        .attr("d", line(d))
+        .attr("stroke", "#0000FF")
+        .attr("id", "line_" + index)
+        .attr("fill", "none")
+        .attr("stroke-width", "2px");
+
+      d3.selectAll("#actualProb_" + index).remove();
+      let tagKey = Object.keys(armTagsVal).find(
+        (k) => armTagsVal[k] === banditInfoValue.cur_arm
+      );
+      var curActualProb = allSettingsParamValue.targetProbability[tagKey];
+
+      g.append("svg:line")
+        .attr("id", "actualProb_" + index)
+        .attr("x1", margin + (w - 2 * margin) * curActualProb)
+        .attr("y1", y(0))
+        .attr("x2", margin + (w - 2 * margin) * curActualProb)
+        // .attr("y2", y(max_data))
+        .attr("y2", y(theMax))
+        .attr("stroke", "#000000")
+        .attr("stroke-width", "2px")
+        .attr("banditIndex", index)
+        .attr("class", "actualProbabilityLine");
+    }
+  }, [banditInfoValue, allSettingsParamValue]);
 
   function draw() {
-    theBandits.forEach(function (b, index) {
-      if (index == numArms) return;
+    for (let index = 0; index < numArms; index++) {
       var theId = "graph_" + index;
 
       var g = d3.select("#theGraph_" + index);
 
-      var alpha = b.alpha;
-      var beta = b.beta;
-
       var theMax = -1;
 
       var _data = xArray.map(function (x) {
-        var y = jStat.beta.pdf(x, alpha, beta);
+        var y = jStat.normal.pdf(x, 0, 1);
         theMax = Math.max(y, theMax);
         return y;
       });
+    //   console.log(_data);
 
       var y = d3
           .scaleLinear()
@@ -323,26 +209,32 @@ export default function AlgGraph(props) {
 
       var vis = d3.select("#" + theId);
 
+      let tagKey = Object.keys(armTagsVal).find(
+        (k) => armTagsVal[k] === index
+      );
+
       vis
         .append("text")
-        .attr("x", w - 5 * margin)
+        .attr("x", w - 7 * margin)
         .attr("y", 13)
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
-        .text("Posterior Distributions");
+        .text("Posterior Distributions: " + tagKey);
+
+      var curActualProb = allSettingsParamValue.targetProbability[tagKey];
 
       g.append("svg:line")
         .attr("id", "actualProb_" + index)
-        .attr("x1", margin + (w - 2 * margin) * b.currentActualProbability)
+        .attr("x1", margin + (w - 2 * margin) * curActualProb)
         .attr("y1", y(0))
-        .attr("x2", margin + (w - 2 * margin) * b.currentActualProbability)
+        .attr("x2", margin + (w - 2 * margin) * curActualProb)
         // .attr("y2", y(max_data))
         .attr("y2", y(theMax))
         .attr("stroke", "#000000")
         .attr("stroke-width", "2px")
         .attr("banditIndex", index)
         .attr("class", "actualProbabilityLine");
-    });
+    }
   }
 
   return <div></div>;
