@@ -12,7 +12,7 @@ const CodeFlow = (props) => {
   };
 
   const createFlowChart = (canvas, algorithm) => {
-    if (algorithm === "thompson-sampling") {
+    if (algorithm === "thompson") {
       return <ThompsonSampling />;
     }
   };

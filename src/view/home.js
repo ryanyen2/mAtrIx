@@ -163,7 +163,7 @@ function Home(props) {
           </Grid>
         </Grid>
         <Grid item xs={5}>
-          {allSettingsParamValue.currentAlgorithm === "thompson-sampling" ? (
+          {allSettingsParamValue.currentAlgorithm === "thompson" ? (
             <Grid item xs={12}>
               <div id="alggraphparent">
                 <AlgGraph width={500} height={500} />
