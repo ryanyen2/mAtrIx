@@ -71,6 +71,16 @@ export const armTags = atom({
     }
 })
 
+export const armTagNames = atom({
+    key: "armTagNames",
+    default: [
+        "cat",
+        "dog",
+        "panda",
+        "alpaca"
+    ]
+})
+
 export const modelTypeID = atom({
     key: "modelTypeID",
     default: {
