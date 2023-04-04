@@ -1301,10 +1301,17 @@ export class GenerateNewBandit {
     if (callback) callback();
   };
 
-  timelineSet = (idx, callback) => {
+  getAtTimeline = (idx, callback) => {
     if (idx < this.banditInfo.steps.length){
-      callback(this.banditInfo.steps[idx].parameters);
+      callback(this.banditInfo.steps[idx]);
     }
-    // if (callback) callback();
+  }
+
+  getModel = (callback) => {
+    callback(this.banditInfo.model);
+  }
+
+  getParams = (callback) => {
+    callback(this.banditInfo.parameters);
   }
 }
