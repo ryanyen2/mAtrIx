@@ -22,7 +22,7 @@ export default function AlgGraph(props) {
       alpha: 1,
       beta: 1,
       // },
-      currentActualProbability: 0.3,
+      currentActualProbability: allSettingsParamValue.targetProbability.cat,
       // stats: {
       numberSuccesses: 0,
       numberPulls: 1,
@@ -34,7 +34,7 @@ export default function AlgGraph(props) {
       alpha: 1,
       beta: 1,
       // },
-      currentActualProbability: 0.5,
+      currentActualProbability: allSettingsParamValue.targetProbability.dog,
       // stats: {
       numberSuccesses: 0,
       numberPulls: 1,
@@ -46,7 +46,7 @@ export default function AlgGraph(props) {
       alpha: 1,
       beta: 1,
       // },
-      currentActualProbability: 0.7,
+      currentActualProbability: allSettingsParamValue.targetProbability.panda,
       // stats: {
       numberSuccesses: 0,
       numberPulls: 1,
@@ -58,7 +58,7 @@ export default function AlgGraph(props) {
       alpha: 1,
       beta: 1,
       // },
-      currentActualProbability: 0.9,
+      currentActualProbability: allSettingsParamValue.targetProbability.alpaca,
       // stats: {
       numberSuccesses: 0,
       numberPulls: 1,
@@ -84,13 +84,17 @@ export default function AlgGraph(props) {
   // https://stackoverflow.com/questions/53945763/componentdidmount-equivalent-on-a-react-function-hooks-component
   // run only at the start after mounting
   useEffect(() => {
+    // if (
+    //   !allSettingsParamValue.play ||
+    //   allSettingsParamValue.currentMode !== "automatic"
+    // )
+    //   return;
     xArray.push(0.0001);
     for (var i = 1; i < _N - 1; i++) {
       xArray.push(0.01 * i);
     }
     xArray.push(1 - 0.0001);
     setXArray(xArray);
-
     theBandits.forEach(function (b, index) {
       if (index >= numArms) return;
       var theId = "graph_" + index;
@@ -105,6 +109,7 @@ export default function AlgGraph(props) {
 
       var g = vis.append("svg:g").attr("id", "theGraph_" + index);
     });
+
     draw();
 
     var i = setInterval(() => {
@@ -120,8 +125,53 @@ export default function AlgGraph(props) {
   }, [allSettingsParamValue.play]);
 
   useEffect(() => {
+    setTheBandits([
+      {
+        ...theBandits[0],
+        currentActualProbability: allSettingsParamValue.targetProbability.cat,
+      },
+      {
+        ...theBandits[1],
+        currentActualProbability: allSettingsParamValue.targetProbability.dog,
+      },
+      {
+        ...theBandits[2],
+        currentActualProbability: allSettingsParamValue.targetProbability.panda,
+      },
+      {
+        ...theBandits[3],
+        currentActualProbability:
+          allSettingsParamValue.targetProbability.alpaca,
+      },
+      -1,
+    ]);
+  }, [allSettingsParamValue.targetProbability]);
+
+  useEffect(() => {
+    theBandits.forEach(function (b, index) {
+      if (index >= numArms) return;
+      var theId = "graph_" + index;
+
+      d3.selectAll("#graph_" + index).remove();
+      var vis = d3
+        .select("#alggraphparent")
+        .append("svg")
+        .attr("id", theId)
+        .attr("width", w)
+        .attr("height", h);
+
+      var g = vis.append("svg:g").attr("id", "theGraph_" + index);
+    });
+
+    draw();
+
     update();
   }, [theBandits]);
+
+  //   useEffect(() => {
+  //     // allSettingsParam
+  //     console.log("In useEffect for allSettingsParam", allSettingsParamValue.targetProbability);
+  //     }, [allSettingsParamValue.targetProbability]);
 
   function runBandits() {
     // // console.log("Running bandits");
