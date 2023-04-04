@@ -1,4 +1,6 @@
 import React, { useEffect, useState, forwardRef } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
+
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -10,7 +12,12 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import { Swipe, Position } from "react-swipe-component";
 
+import { allSettingsParam } from "../../state/atoms";
+import { interval } from "d3";
+
 export const Post = forwardRef((props, ref) => {
+
+    const [mode, setMode] = useState("manual");
     const [likeButtonColor, setLikeButtonColor] = useState({
         color: "#C6C6C6",
     });
@@ -18,19 +25,59 @@ export const Post = forwardRef((props, ref) => {
     const [liked, setLiked] = useState(false);
     const [swipingUp, setSwipingUp] = useState(false);
 
+    const allSettingsParamValue = useRecoilValue(allSettingsParam);
+
+    useEffect(() => {
+        // to manual mode
+        if (mode != "manual" && allSettingsParamValue.currentMode == "manual") {
+            setMode("manual")            
+        }
+        // to automatic mode
+        else if (mode != "automatic" && allSettingsParamValue.currentMode == "automatic") {
+            setMode("automatic")
+            runingAutoMode();
+        }
+      }, [allSettingsParamValue]);
+
+    // run auto mode and automatically run functions every 1 and 3 seconds
+    const runingAutoMode = () => {
+        setTimeout(autoClickLike, 1000);      
+        setTimeout(autoSwipeUp, 4000);
+    }
+
+    const autoClickLike = () => {
+        if (props.autoClickLike) {
+            setLikeButtonColor({ color: "#E91E63" });
+            setNumOfLikes(props.postInfo.numOfLikes + 1);
+            setLiked(!liked);
+        }
+    }
+
+    const autoSwipeUp = () => {
+        if (props.postInfo.userName == "mAtrIx") {
+            props.onUserAction(-100.0);
+        } else {
+            if (liked) {
+                props.onUserAction(1.0);
+            } else {
+                props.onUserAction(0.0);
+            }
+        }
+    }
+
     // reset the page
     const resetPost = () => {
         setLikeButtonColor({ color: "#C6C6C6" });
         setNumOfLikes(props.postInfo.numOfLikes);
         setLiked(false);
-        console.log("done resetting");
+        // console.log("done resetting");
     };
 
     // using the module for detecting swiping
     // from https://www.npmjs.com/package/react-swipe-component
     const onSwipeEnd = () => {
-        if (swipingUp) {
-            console.log("Swiped Up");
+        if (swipingUp && mode == "manual") {
+            // console.log("Swiped Up");
 
             if (props.postInfo.userName == "mAtrIx") {
                 props.onUserAction(-100.0);
@@ -49,19 +96,21 @@ export const Post = forwardRef((props, ref) => {
         setSwipingUp(true);
     };
 
-    // like button handler
+    // like button handler in mannual mode
     const handleLikeButton = (e) => {
-        // dislike the post
-        if (liked) {
-            setLikeButtonColor({ color: "#C6C6C6" });
-            setNumOfLikes(props.postInfo.numOfLikes);
-            setLiked(!liked);
-        }
-        // like the post
-        else {
-            setLikeButtonColor({ color: "#E91E63" });
-            setNumOfLikes(props.postInfo.numOfLikes + 1);
-            setLiked(!liked);
+        if (mode == "manual") {
+            // dislike the post
+            if (liked) {
+                setLikeButtonColor({ color: "#C6C6C6" });
+                setNumOfLikes(props.postInfo.numOfLikes);
+                setLiked(!liked);
+            }
+            // like the post
+            else {
+                setLikeButtonColor({ color: "#E91E63" });
+                setNumOfLikes(props.postInfo.numOfLikes + 1);
+                setLiked(!liked);
+            }
         }
     };
 

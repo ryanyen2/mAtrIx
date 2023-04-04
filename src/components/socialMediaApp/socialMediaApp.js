@@ -8,7 +8,7 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 
 import imageUrls from "./urls";
-import { armTags, banditInfo, triggerBanditRecord } from "../../state/atoms";
+import { armTagNames, armTags, banditInfo, triggerBanditRecord, allSettingsParam } from "../../state/atoms";
 
 import { Post } from "./post.js";
 
@@ -26,6 +26,8 @@ export function SocialMediaApp(props) {
   const [numPostScrolled, setNumPostScrolled] = useState(0);
   const [liked, setLiked] = useState(0.0);
   const [passFirstImg, setPassFirstImg] = useState(false);
+  const [autoClickLike, setAutoClickLike] = useState(false);
+
   // const armTagsVal = useRecoilValue(armTags);
   // initialize a array and fill in with numbers from 0 to n-1
   const initArray = (n) => {
@@ -45,9 +47,11 @@ export function SocialMediaApp(props) {
     //   alpaca: initArray(120), // hard-coded
     // },
     maxNumPhoto = 120; // hard-coded
+  const armTagNamesValue = useRecoilValue(armTagNames);
   const banditInfoValue = useRecoilValue(banditInfo);
   const [triggerBanditRecordVal, setTriggerBanditRecordVal] =
     useRecoilState(triggerBanditRecord);
+  const allSettingsParamValue = useRecoilValue(allSettingsParam);
   const child = useRef(null);
 
   // useEffect(() => {
@@ -62,7 +66,7 @@ export function SocialMediaApp(props) {
     if (numPostScrolled > 0) {
       var newTag = -1;
       if (liked != -100.0) {
-        //TODO: pass this data to Kris
+        // pass the first reward
         // newBandit.record(liked, () => {
         //     newBandit.getArm((retval) => {
         //       newTag = retval;
@@ -78,8 +82,6 @@ export function SocialMediaApp(props) {
         newTag = banditInfoValue.cur_arm;
         generateNewPost(newTag);
       }
-
-      //TODO: get the tag
     }
   }, [numPostScrolled, liked]);
 
@@ -90,7 +92,7 @@ export function SocialMediaApp(props) {
   }, [banditInfoValue]);
 
   const generateNewPost = (newTag) => {
-    console.log("get the new tag: " + newTag);
+    console.log("get the new tag: " + armTagNamesValue[newTag]);
 
     //generate a new post
     const tempId = randomId(6);
@@ -99,7 +101,14 @@ export function SocialMediaApp(props) {
     const smaDiv = sma.getElementsByTagName("div")[0];
     smaDiv.classList.add("ease-out");
 
+    // calculate whether the simulated user should click the like button
+    const p = Math.random();
+    const tagName = armTagNamesValue[newTag];
+    const click = p <= allSettingsParamValue.targetProbability[tagName] ? true: false;
+    // console.log(`---> ${click} | ${p} >= ${allSettingsParamValue.targetProbability[tagName]}`);
+
     setTimeout(() => {
+      setAutoClickLike(click);
       setPostInfo({
         userName: tempId,
         avatar: tempId.substring(0, 2),
@@ -124,11 +133,11 @@ export function SocialMediaApp(props) {
   };
 
   // random tag (TODO: for testing only)
-  const randomTag = () => {
-    const tags = ["cat", "dog", "panda", "alpaca"];
-    const tag = tags[Math.floor(Math.random() * tags.length)];
-    return tag;
-  };
+  // const randomTag = () => {
+  //   const tags = ["cat", "dog", "panda", "alpaca"];
+  //   const tag = tags[Math.floor(Math.random() * tags.length)];
+  //   return tag;
+  // };
 
   // user id generator https://www.codemzy.com/blog/random-unique-id-javascript
   // short random string for ids - not guaranteed to be unique
@@ -207,7 +216,7 @@ export function SocialMediaApp(props) {
   };
 
   useEffect(() => {
-    console.log("new post generated");
+    //console.log("new post generated");
     // Call the child method resetPost
     child.current?.resetPost(); // https://chafikgharbi.com/react-call-child-method/
   }, [postInfo]);
@@ -234,6 +243,7 @@ export function SocialMediaApp(props) {
           style={{ margin: 12 }}
           key={postInfo.userName}
           postInfo={postInfo}
+          autoClickLike = {autoClickLike}
           ref={child}
           onUserAction={handleUserAction}
         />
