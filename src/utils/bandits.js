@@ -1206,9 +1206,7 @@ export class GenerateNewBandit {
       for (let i = 0; i < this.banditInfo.n_arms; i++) {
         this.banditInfo.parameters[i] = {"mu": 0, "sig2": 1, "ma": ma, "va": va, "alpha": alpha, "beta": beta, "n" : 0};
       }
-      var init_bandit = new ThompsonSampling(this.banditInfo.n_arms, ma, va, alpha, beta );
-      this.banditInfo.steps.push(init_bandit)
-      this.banditInfo.model = init_bandit;
+      this.banditInfo.model = new ThompsonSampling(this.banditInfo.n_arms, ma, va, alpha, beta );
     }
     else if(this.banditInfo.model_id === 1) { // UpperConfidenceBound Init
       console.log("Init UpperConfidenceBound")
@@ -1222,9 +1220,7 @@ export class GenerateNewBandit {
         this.banditInfo.parameters[i] = {"c": c, "Q": 0, "n": 0};
       }
 
-      var init_bandit = new UpperConfidenceBound(this.banditInfo.n_arms, c);
-      this.banditInfo.steps.push(init_bandit)
-      this.banditInfo.model = init_bandit;
+      this.banditInfo.model = new UpperConfidenceBound(this.banditInfo.n_arms, c);
     }
     else if(this.banditInfo.model_id === 0) { // EpsilonGreedy Init
       console.log("Init EpsilonGreedy")
@@ -1237,22 +1233,25 @@ export class GenerateNewBandit {
         // create a new parameter list for each key
         this.banditInfo.parameters[i] = {"epsilon": epsln, "n": 0};
       }
-      var init_bandit = new EpsilonGreedy(this.banditInfo.n_arms, epsln);
-      this.banditInfo.steps.push(init_bandit)
-      this.banditInfo.model = init_bandit;
-      // await this.setBanditInfo(this.banditInfo);
-      if (callback) {
-        let {model: _, ...rest} = this.banditInfo;
-        await callback(rest);
-      }
+      this.banditInfo.model = new EpsilonGreedy(this.banditInfo.n_arms, epsln);
     }
-  }
+
+    this.banditInfo.steps.push(this.banditInfo.parameters)
+    
+    // await this.setBanditInfo(this.banditInfo);
+    if (callback) {
+      let {model: _, ...rest} = this.banditInfo;
+      await callback(rest);
+    }
+  };
 
   recordInit = async (callback) => {
     this.banditInfo.cur_arm = this.banditInfo.model.act();
     console.log("very first arm is " + this.banditInfo.cur_arm);
     this.banditInfo.cur_step += 1;
-    this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
+
+    // TODO: Might duplicate first parameters, may want to remove this
+    this.banditInfo.steps.push(this.banditInfo.parameters);
 
     // if (callback) await callback(this.banditInfo);
     if (callback) {
@@ -1279,7 +1278,7 @@ export class GenerateNewBandit {
 
     this.banditInfo.cur_arm = this.banditInfo.model.act();
     this.banditInfo.cur_step += 1;
-    this.banditInfo.steps.push(this.banditInfo.model); // TODO: Could send generic dict
+    this.banditInfo.steps.push(this.banditInfo.parameters);
 
     // if (callback) await callback(this.banditInfo);
     if (callback) {
@@ -1295,7 +1294,7 @@ export class GenerateNewBandit {
   resetModel = (extra_params={}) => {
     this.banditInfo.model.reset();
     this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms, extra_params);
-  }
+  };
 
   newModel = (new_model_id, extra_params={}, callback) => {
     this.startGenerate(new_model_id, this.banditInfo.n_arms, extra_params);
@@ -1307,13 +1306,13 @@ export class GenerateNewBandit {
     if (idx < this.banditInfo.steps.length){
       callback(this.banditInfo.steps[idx]);
     }
-  }
+  };
 
   getModel = (callback) => {
     callback(this.banditInfo.model);
-  }
+  };
 
   getParams = (callback) => {
     callback(this.banditInfo.parameters);
-  }
+  };
 }
