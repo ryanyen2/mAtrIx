@@ -91,6 +91,7 @@ export const banditInfo = atom({
         steps: [],
         cur_step: 0, // Index of current step
         cur_arm: 0, // Index tag of current arm
+        regret_t: [],
     }, 
     // I don't like this but oh well
     dangerouslyAllowMutability: true
@@ -102,13 +103,13 @@ export const allSettingsParam = atom({
         currentMode: "manual",  //manual, automatic, demo
         play: false,
         reset: false,
-        currentAlgorithm: "thompson-sampling",  //ucb, thompson-sampling, epsilon-greedy
+        currentAlgorithm: "thompson",  //ucb, thompson-sampling, epsilon-greedy
         regretPlotParam: {
             epsilon: 0.05,
             c: 2,
-            m: 0,
-            nu: 1,
-            alpha: [1, 10],
+            ma: 0,
+            va: 1,
+            alpha: 1,
             beta: 1,
             repeats: 100
         },

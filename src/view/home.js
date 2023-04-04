@@ -49,7 +49,7 @@ function Home(props) {
   // const [step, setStep] = useState(0);
   const armTagsValue = useRecoilValue(armTags);
   const modelTypeIDValue = useRecoilValue(modelTypeID);
-  const currentAlgorithm = "thompson-sampling"; // change this to recoil state
+  const currentAlgorithm = "thompson"; // change this to recoil state
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -61,9 +61,17 @@ function Home(props) {
 
   // EG FN FORWARD
   useEffect(async () => {
+    var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
+    var target_mapped = {}
+    for(const [key, value] of Object.entries(allSettingsParamValue.targetProbability)){
+      target_mapped[armTagsValue[key]] = value;
+    }
+    extra_params["true_mus"] = target_mapped;
+
     newBandit.startGenerate(
       modelTypeIDValue.thompson,
-      Object.keys(armTagsValue).length
+      Object.keys(armTagsValue).length,
+      extra_params
     );
     await newBandit.recordInit((d) => {
       console.log("callback1", d);
@@ -95,7 +103,19 @@ function Home(props) {
   }, [triggerBanditRecordVal]);
 
   useEffect(() => {
-    console.log("allSettingsParamValue", allSettingsParamValue);
+    console.log("allSettingsParamValue-->", allSettingsParamValue);
+    var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
+    var target_mapped = {}
+    for(const [key, value] of Object.entries(allSettingsParamValue.targetProbability)){
+      target_mapped[armTagsValue[key]] = value;
+    }
+    extra_params["true_mus"] = target_mapped;
+
+    newBandit.startGenerate(
+      modelTypeIDValue[allSettingsParamValue.currentAlgorithm],
+      Object.keys(armTagsValue).length,
+      extra_params
+    )
   }, [allSettingsParamValue]);
 
   return (
@@ -149,7 +169,7 @@ function Home(props) {
                 <AlgGraph width={500} height={500} />
               </div>
             </Grid>
-          ) : <div>hi</div>}
+          ) : null}
           <Grid item xs={12}>
             <RegretPlot width={500} height={150} />
           </Grid>
