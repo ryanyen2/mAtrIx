@@ -61,6 +61,7 @@ function Home(props) {
 
   // EG FN FORWARD
   useEffect(async () => {
+    console.log('start====================')
     var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
     var target_mapped = {}
     for(const [key, value] of Object.entries(allSettingsParamValue.targetProbability)){
@@ -102,7 +103,10 @@ function Home(props) {
     }
   }, [triggerBanditRecordVal]);
 
-  useEffect(() => {
+  useEffect(( newParam ) => {
+    // dont update if it's the first time
+    if (newParam === undefined) return;
+
     console.log("allSettingsParamValue-->", allSettingsParamValue);
     var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
     var target_mapped = {}

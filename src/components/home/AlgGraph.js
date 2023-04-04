@@ -117,7 +117,7 @@ export default function AlgGraph(props) {
       d3.selectAll("#line_" + index).remove();
       g.append("path")
         .attr("d", line(d))
-        .attr("stroke", "#0000FF")
+        .attr("stroke", "#0d6efd")
         .attr("id", "line_" + index)
         .attr("fill", "none")
         .attr("stroke-width", "2px");

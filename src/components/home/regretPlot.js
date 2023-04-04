@@ -112,10 +112,10 @@ export function RegretPlot(props) {
   var legend = null;
 
   useEffect(() => {
-    console.log("banditInfoValue.regret_t", banditInfoValue.regret_t);
+    // console.log("banditInfoValue.regret_t", banditInfoValue.regret_t);
     var data = banditInfoValue.regret_t;
     // data = random generate 100 data points from 0 to 1
-    // data = d3.range(100).map((d) => Math.random());
+    data = d3.range(100).map((d) => Math.random());
     d3.select(selector).select("svg").remove();
 
     svg = d3
@@ -203,7 +203,6 @@ export function RegretPlot(props) {
       );
 
     if (data.length > 0) {
-      console.log("data: ", data);
       var x = d3.scaleLinear().domain([0, 100]).range([0, width]);
 
       var y = d3.scaleLinear().domain([0, 1]).range([height, 0]);

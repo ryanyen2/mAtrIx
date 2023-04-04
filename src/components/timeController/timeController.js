@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Slider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -26,8 +26,8 @@ import Box from "@mui/material/Box";
 import ParameterSettings from "../home/parameterSettings";
 import { styled } from "@mui/material/styles";
 
-import { useRecoilState } from "recoil";
-import { allSettingsParam } from "../../state/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { allSettingsParam, banditInfo } from "../../state/atoms";
 import ToggleButton from "@mui/material/ToggleButton";
 
 const modeOptions = ["manual", "automatic", "demo"];
@@ -48,6 +48,8 @@ export default function TimeController() {
   const [localSettingsParamValue, setLocalSettingsParamValue] = useState({
     ...allSettingsParamValue,
   });
+
+  const banditInfoValue = useRecoilValue(banditInfo);
 
   const toggleDrawerWithSettings = (open) => (event) => {
     if (
@@ -148,6 +150,7 @@ export default function TimeController() {
       },
     });
   };
+  
 
   return (
     <div>
@@ -179,8 +182,8 @@ export default function TimeController() {
         <Grid item xs={8}>
           <Slider
             aria-label="Step"
-            defaultValue={30}
-            valueLabelDisplay="auto"
+            defaultValue={banditInfoValue.cur_step}
+            valueLabelDisplay="on"
             step={1}
             marks
             min={0}
