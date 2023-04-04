@@ -112,7 +112,7 @@ export const allSettingsParam = atom({
     default: {
         currentMode: "manual",  //manual, automatic, demo
         play: false,
-        reset: false,
+        resetCount: 0, // set this as a number that increases, not a toggle to avoid double triggling when setting reset back to false in useEffect
         currentAlgorithm: "thompson",  //ucb, thompson-sampling, epsilon-greedy
         regretPlotParam: {
             epsilon: 0.05,

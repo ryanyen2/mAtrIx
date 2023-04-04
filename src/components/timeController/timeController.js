@@ -175,6 +175,13 @@ export default function TimeController() {
             id="eval-btn-reset"
             className="btn-reset"
             aria-label="Reset"
+            onClick={() => {
+              setAllSettingsParam({
+                ...allSettingsParamValue,
+                resetCount: allSettingsParamValue.reset + 1,
+              });
+              // document.getElementById("eval-btn-toggle").click();
+            }}
           >
             <RefreshIcon />
           </IconButton>
