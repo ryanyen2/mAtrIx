@@ -72,20 +72,24 @@ export default function AlgGraph(props) {
       var g = vis.append("svg:g").attr("id", "theGraph_" + index);
     }
 
+    // setArms({
+    //   ...arms,
+    //   cur: banditInfoValue.cur_arm
+    // })
+    // console.log(banditInfoValue.cur_arm);
+
     draw();
   }, []);
 
-  useEffect((p) => {
-    console.log(localBanditInfo);
-    console.log(triggerBanditRecordVal);
-    // if(p===undefined) return;
-    // update the distribution
-    // console.log("In update");
-    // console.log("Update called for index " + theBandits[numArms]);
-    // var b = theBandits[theBandits[numArms]];
+  useEffect(() => {
+    // console.log(localBanditInfo);
+    // console.log(triggerBanditRecordVal);
+    
     if (Object.keys(localBanditInfo.parameters).length !== 0 && triggerBanditRecordVal.trigger) {
-      var index = localBanditInfo.cur_arm;
-      console.log(localBanditInfo.parameters);
+    //   var index = localBanditInfo.cur_arm;
+      var index = arms.old;
+      // console.log("Updating post dist of arm: " + index);
+      // console.log(localBanditInfo.parameters);
       var mu = localBanditInfo.parameters[index].mu;
       var sig = Math.sqrt(localBanditInfo.parameters[index].sig2);
 
@@ -124,8 +128,9 @@ export default function AlgGraph(props) {
 
       d3.selectAll("#actualProb_" + index).remove();
       let tagKey = Object.keys(armTagsVal).find(
-        (k) => armTagsVal[k] === localBanditInfo.cur_arm
+        (k) => armTagsVal[k] === index
       );
+      // console.log(localAllParam.targetProbability);
       var curActualProb = localAllParam.targetProbability[tagKey];
 
       g.append("svg:line")
@@ -140,15 +145,22 @@ export default function AlgGraph(props) {
         .attr("banditIndex", index)
         .attr("class", "actualProbabilityLine");
     }
-  }, [triggerBanditRecordVal]);
+  }, [triggerBanditRecordVal, arms, localBanditInfo, localAllParam]);
   
   useEffect(() => {
-    setLocalBanditInfo({
-        ...banditInfoValue
-    });
-    setLocalAllParam({
-        ...allSettingsParamValue
-    });
+    // setLocalBanditInfo({
+    //     ...banditInfoValue
+    // });
+    setLocalBanditInfo(banditInfoValue);
+    // setLocalAllParam({
+    //     ...allSettingsParamValue
+    // });
+    setLocalAllParam(allSettingsParamValue);
+    setArms({
+        old: arms.cur,
+        cur: banditInfoValue.cur_arm
+    })
+    // console.log(banditInfoValue.cur_arm);
   }, [banditInfoValue, allSettingsParamValue]);
 
   function draw() {
