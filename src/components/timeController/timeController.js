@@ -61,6 +61,7 @@ export default function TimeController() {
     if (!open) {
       setAllSettingsParam({
         ...allSettingsParamValue,
+        currentAlgorithm: localSettingsParamValue.currentAlgorithm,
         regretPlotParam: {
           ...localSettingsParamValue.regretPlotParam,
         },
@@ -161,7 +162,6 @@ export default function TimeController() {
                 ...allSettingsParamValue,
                 play: !allSettingsParamValue.play,
               });
-              console.log("play", allSettingsParamValue.play);
               // document.getElementById("eval-btn-toggle").click();
             }}
           >
@@ -194,7 +194,9 @@ export default function TimeController() {
             size="small"
             ref={anchorRef}
           >
-            <Button>{modeOptions[selectedIndex]}</Button>
+            <Button disabled>
+              {allSettingsParamValue.currentMode}
+              </Button>
             <Button
               size="small"
               aria-controls={open ? "split-button-menu" : undefined}

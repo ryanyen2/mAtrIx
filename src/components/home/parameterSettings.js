@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -7,13 +7,11 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import { MathComponent } from "mathjax-react";
-import { useRecoilState } from "recoil";
-import { allSettingsParam } from "../../state/atoms";
+// import { useRecoilState } from "recoil";
+// import { allSettingsParam } from "../../state/atoms";
 
 export default function ParameterSettings(props) {
-  const [currentAlgorithm, setCurrentAlgorithm] = useState("thompson-sampling");
-  const [allSettingsParamValue, setAllSettingsParam] =
-    useRecoilState(allSettingsParam);
+  // const [currentAlgorithm, setCurrentAlgorithm] = useState("thompson-sampling");
   // const [props.localSettingsParamValue, setLocalSettingsParam] = useState({
   //   ...allSettingsParamValue,
   // });
@@ -26,15 +24,20 @@ export default function ParameterSettings(props) {
           <Select
             labelId="algorithm-selection-label"
             id="algorithm-selection-select"
-            value={currentAlgorithm}
+            value={props.localSettingsParamValue.currentAlgorithm}
             label="Algorithm"
-            onChange={(e) => setCurrentAlgorithm(e.target.value)}
+            onChange={(e) => {
+              props.setLocalSettingsParamValue({
+                ...props.localSettingsParamValue,
+                currentAlgorithm: e.target.value,
+              });
+            }}
           >
-            <MenuItem value={"epsilon-greedy"}>Epsilon-greedy</MenuItem>
-            <MenuItem value={"upper-confidence-bound"}>
+            <MenuItem value={"egreedy"}>Epsilon-greedy</MenuItem>
+            <MenuItem value={"ucb"}>
               Upper Confidence Bound
             </MenuItem>
-            <MenuItem value={"thompson-sampling"}>Thompson Sampling</MenuItem>
+            <MenuItem value={"thompson"}>Thompson Sampling</MenuItem>
           </Select>
           <TextField
             label="Repetitions"
@@ -123,13 +126,13 @@ export default function ParameterSettings(props) {
             label={<MathComponent tex={String.raw`m_a`} />}
             variant="standard"
             size="small"
-            value={props.localSettingsParamValue.regretPlotParam.m}
+            value={props.localSettingsParamValue.regretPlotParam.ma}
             onChange={(e) => {
               props.setLocalSettingsParamValue({
                 ...props.localSettingsParamValue,
                 regretPlotParam: {
                   ...props.localSettingsParamValue.regretPlotParam,
-                  m: e.target.value,
+                  ma: e.target.value,
                 },
               });
             }}
@@ -140,13 +143,13 @@ export default function ParameterSettings(props) {
             label={<MathComponent tex={String.raw`\nu_a`} />}
             variant="standard"
             size="small"
-            value={props.localSettingsParamValue.regretPlotParam.nu}
+            value={props.localSettingsParamValue.regretPlotParam.va}
             onChange={(e) => {
               props.setLocalSettingsParamValue({
                 ...props.localSettingsParamValue,
                 regretPlotParam: {
                   ...props.localSettingsParamValue.regretPlotParam,
-                  nu: e.target.value,
+                  va: e.target.value,
                 },
               });
             }}

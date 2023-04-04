@@ -14,7 +14,7 @@ import {
   banditInfo,
   modelTypeID,
   triggerBanditRecord,
-  allSettingsParam
+  allSettingsParam,
 } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
@@ -41,14 +41,15 @@ const newBandit = new GenerateNewBandit();
 
 function Home(props) {
   const [banditInfoValue, setBanditInfoValue] = useRecoilState(banditInfo);
-  const [triggerBanditRecordVal, setTriggerBanditRecordVal] = useRecoilState(triggerBanditRecord);
+  const [triggerBanditRecordVal, setTriggerBanditRecordVal] =
+    useRecoilState(triggerBanditRecord);
   // const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
   const [allSettingsParamValue, setAllSettingsParam] =
     useRecoilState(allSettingsParam);
   // const [step, setStep] = useState(0);
   const armTagsValue = useRecoilValue(armTags);
   const modelTypeIDValue = useRecoilValue(modelTypeID);
-  const currentAlgorithm = "thompson-sampling"; // change this to recoil state
+  const currentAlgorithm = "thompson"; // change this to recoil state
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -60,9 +61,17 @@ function Home(props) {
 
   // EG FN FORWARD
   useEffect(async () => {
+    var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
+    var target_mapped = {}
+    for(const [key, value] of Object.entries(allSettingsParamValue.targetProbability)){
+      target_mapped[armTagsValue[key]] = value;
+    }
+    extra_params["true_mus"] = target_mapped;
+
     newBandit.startGenerate(
       modelTypeIDValue.thompson,
-      Object.keys(armTagsValue).length
+      Object.keys(armTagsValue).length,
+      extra_params
     );
     await newBandit.recordInit((d) => {
       console.log("callback1", d);
@@ -88,13 +97,25 @@ function Home(props) {
         trigger: false,
         rewardToPass: -1,
       });
-    } else if(newBandit?.valueOf() === undefined) {
+    } else if (newBandit?.valueOf() === undefined) {
       console.log("ERROR: New bandit is null");
     }
   }, [triggerBanditRecordVal]);
 
   useEffect(() => {
-    console.log("allSettingsParamValue", allSettingsParamValue);
+    console.log("allSettingsParamValue-->", allSettingsParamValue);
+    var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
+    var target_mapped = {}
+    for(const [key, value] of Object.entries(allSettingsParamValue.targetProbability)){
+      target_mapped[armTagsValue[key]] = value;
+    }
+    extra_params["true_mus"] = target_mapped;
+
+    newBandit.startGenerate(
+      modelTypeIDValue[allSettingsParamValue.currentAlgorithm],
+      Object.keys(armTagsValue).length,
+      extra_params
+    )
   }, [allSettingsParamValue]);
 
   return (
@@ -107,23 +128,30 @@ function Home(props) {
         </Grid>
         <Grid item xs={3}>
           <Grid item xs={12}>
-            <Item style={{ textAlign: 'left' }}>
+            <Item style={{ textAlign: "left" }}>
               {/* allSettingsParamValue */}
-              {Object.keys(allSettingsParamValue).map((key) => {
+              {Object.keys(allSettingsParamValue).map((k) => {
                 return (
-                  <div key={key}>
-                    <b>{key}:</b> {typeof allSettingsParamValue[key] === "object" ? (
+                  <div key={k}>
+                    <b>{k}:</b>{" "}
+                    {typeof allSettingsParamValue[k] === "object" ? (
                       <div>
-                        {Object.keys(allSettingsParamValue[key]).map((key2) => {
+                        {Object.keys(allSettingsParamValue[k]).map((key2) => {
                           return (
-                            <span style={{ marginRight: '10px' }}>
-                              {key2}: {allSettingsParamValue[key][key2]}
-                              </span>
+                            <span style={{ marginRight: "10px" }} key={key2}>
+                              {key2}: {allSettingsParamValue[k][key2]}
+                            </span>
                           );
                         })}
-                        </div>
+                      </div>
+                    ) : typeof allSettingsParamValue[k] === "boolean" ? (
+                      allSettingsParamValue[k] ? (
+                        "True"
+                      ) : (
+                        "False"
+                      )
                     ) : (
-                      typeof allSettingsParamValue[key] === 'boolean' ? allSettingsParamValue[key] ? 'True' : 'False' : allSettingsParamValue[key]
+                      allSettingsParamValue[k]
                     )}
                   </div>
                 );
@@ -135,11 +163,13 @@ function Home(props) {
           </Grid>
         </Grid>
         <Grid item xs={5}>
-          <Grid item xs={12}>
-            <div id="alggraphparent">
-              <AlgGraph width={500} height={500} />
-            </div>
-          </Grid>
+          {allSettingsParamValue.currentAlgorithm === "thompson-sampling" ? (
+            <Grid item xs={12}>
+              <div id="alggraphparent">
+                <AlgGraph width={500} height={500} />
+              </div>
+            </Grid>
+          ) : null}
           <Grid item xs={12}>
             <RegretPlot width={500} height={150} />
           </Grid>

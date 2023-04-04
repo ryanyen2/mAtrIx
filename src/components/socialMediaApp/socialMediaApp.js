@@ -40,12 +40,6 @@ export function SocialMediaApp(props) {
       initArray(120), // hard-coded
       initArray(120), // hard-coded
     ],
-    // imageTrackingDict = {
-    //   armTagsVal.cat: initArray(120), // hard-coded
-    //   dog: initArray(120), // hard-coded
-    //   panda: initArray(120), // hard-coded
-    //   alpaca: initArray(120), // hard-coded
-    // },
     maxNumPhoto = 120; // hard-coded
   const armTagNamesValue = useRecoilValue(armTagNames);
   const banditInfoValue = useRecoilValue(banditInfo);
@@ -54,24 +48,10 @@ export function SocialMediaApp(props) {
   const allSettingsParamValue = useRecoilValue(allSettingsParam);
   const child = useRef(null);
 
-  // useEffect(() => {
-  //   const newBandit = new GenerateNewBandit();
-  //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
-  //     console.log(newSteps);
-  //     setStep(newSteps);
-  //   });
-  // }, []);
-
   useEffect(() => {
     if (numPostScrolled > 0) {
       var newTag = -1;
       if (liked != -100.0) {
-        // pass the first reward
-        // newBandit.record(liked, () => {
-        //     newBandit.getArm((retval) => {
-        //       newTag = retval;
-        //     });
-        //   });
         setPassFirstImg(true);
         setTriggerBanditRecordVal({
           trigger: true,
