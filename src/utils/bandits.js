@@ -995,7 +995,12 @@ export class GenerateNewBandit {
     this.banditInfo.parameters[this.banditInfo.cur_arm]["n"] += 1;
 
     // model Regret
-    this.banditInfo.regret_t.push( this.optimal - this.banditInfo.true_mus[this.banditInfo.cur_arm])
+    var regretToPush = this.optimal - this.banditInfo.true_mus[this.banditInfo.cur_arm]
+    if(this.banditInfo.regret_t.length > 0) {
+      regretToPush += this.banditInfo.regret_t[this.banditInfo.regret_t.length-1]
+    }
+    // regretToPush
+    this.banditInfo.regret_t.push(regretToPush);
 
     this.banditInfo.cur_arm = this.banditInfo.model.act();
     this.banditInfo.cur_step += 1;

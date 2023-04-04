@@ -81,29 +81,29 @@ export function RegretPlot(props) {
   var yScale = d3.scaleLinear().range([height, 0]);
   var yScaleOrig = d3.scaleLinear().range([height, 0]);
 
-  xScale.domain([xDomainMin, xDomainMax]);
-  xScaleOrig.domain([xDomainMin, xDomainMax]);
-  yScale.domain([yDomainMin, yDomainMax]);
-  yScaleOrig.domain([yDomainMin, yDomainMax]);
+  // xScale.domain([xDomainMin, xDomainMax]);
+  // xScaleOrig.domain([xDomainMin, xDomainMax]);
+  // yScale.domain([yDomainMin, yDomainMax]);
+  // yScaleOrig.domain([yDomainMin, yDomainMax]);
 
-  var xAxis = d3.axisBottom(xScale);
-  var yAxis = d3.axisLeft(yScale);
+  // var xAxis = d3.axisBottom(xScale);
+  // var yAxis = d3.axisLeft(yScale);
 
-  // for small graph sizes, use half the number of ticks
-  if (width < 400) xAxis.ticks(5);
+  // // for small graph sizes, use half the number of ticks
+  // if (width < 400) xAxis.ticks(5);
 
-  var xy = { xmin: 0, xmax: 1, ymin: 0, ymax: 1 };
+  // var xy = { xmin: 0, xmax: 1, ymin: 0, ymax: 1 };
 
-  var xExt = [xy.xmin, xy.xmax];
-  var yExt = [xy.ymin, xy.ymax];
+  // var xExt = [xy.xmin, xy.xmax];
+  // var yExt = [xy.ymin, xy.ymax];
 
-  var xRange = xExt[1] - xExt[0];
-  var xDomainMin = xExt[0] - xRange * 0.02;
-  var xDomainMax = xExt[1] + xRange * 0.02;
+  // var xRange = xExt[1] - xExt[0];
+  // var xDomainMin = xExt[0] - xRange * 0.02;
+  // var xDomainMax = xExt[1] + xRange * 0.02;
 
-  var yRange = yExt[1] - yExt[0];
-  var yDomainMin = yExt[0] - yRange * 0.02;
-  var yDomainMax = yExt[1] + yRange * 0.02;
+  // var yRange = yExt[1] - yExt[0];
+  // var yDomainMin = yExt[0] - yRange * 0.02;
+  // var yDomainMax = yExt[1] + yRange * 0.02;
 
   const selector = "#eval-graph";
   var svg = d3.select(selector);
@@ -115,7 +115,36 @@ export function RegretPlot(props) {
     // console.log("banditInfoValue.regret_t", banditInfoValue.regret_t);
     var data = banditInfoValue.regret_t;
     // data = random generate 100 data points from 0 to 1
-    data = d3.range(100).map((d) => Math.random());
+    // data = d3.range(100).map((d) => Math.random());
+    // var xAxis = d3.axisBottom(xScale);
+    // var yAxis = d3.axisLeft(yScale);
+
+    var xy = { xmin: 0, xmax: banditInfoValue.cur_step, 
+      ymin: 0, ymax: data.length > 0 ? data.at(-1) : 1 };
+
+    var xExt = [xy.xmin, xy.xmax];
+    var yExt = [xy.ymin, xy.ymax];
+
+    var xRange = xExt[1] - xExt[0];
+    var xDomainMin = xExt[0] - xRange * 0.02;
+    var xDomainMax = xExt[1] + xRange * 0.02;
+
+    var yRange = yExt[1] - yExt[0];
+    var yDomainMin = yExt[0] - yRange * 0.02;
+    var yDomainMax = yExt[1] + yRange * 0.02;
+
+    xScale.domain([xDomainMin, xDomainMax]);
+    xScaleOrig.domain([xDomainMin, xDomainMax]);
+    yScale.domain([yDomainMin, yDomainMax]);
+    yScaleOrig.domain([yDomainMin, yDomainMax]);
+
+    var xAxis = d3.axisBottom(xScale);
+    var yAxis = d3.axisLeft(yScale);
+
+    // for small graph sizes, use half the number of ticks
+    // if (width < 400) xAxis.ticks(5);
+    xAxis.ticks(5);
+
     d3.select(selector).select("svg").remove();
 
     svg = d3
@@ -174,7 +203,7 @@ export function RegretPlot(props) {
         "transform",
         "translate(" + 0.95 * width + "," + (height + 40) + ")"
       )
-      .text("Time");
+      .text("Steps");
     // .text(this.meta.xlabel);
 
     // vertical axis
@@ -203,9 +232,11 @@ export function RegretPlot(props) {
       );
 
     if (data.length > 0) {
-      var x = d3.scaleLinear().domain([0, 100]).range([0, width]);
+      // var x = d3.scaleLinear().domain([0, 100]).range([0, width]);
+      var x = d3.scaleLinear().domain([0, banditInfoValue.cur_step]).range([0, width]);
 
-      var y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
+      // var y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
+      var y = d3.scaleLinear().domain([0, data.at(-1)]).range([height, 0]);
       var line = d3
         .line()
         .x((d, i) => x(i))
@@ -278,23 +309,23 @@ export function RegretPlot(props) {
 
       function mousemove() {
 
-        if (data.length <= 1) return;
+      //   if (data.length <= 1) return;
         
-        // export 'mouse' (imported as 'd3') was not found in 'd3'
-        // var x0 = x.invert(d3.mouse(this)[0]);
-        var x0 = x.invert(d3.pointer(this)[0]);
-        var i = bisect(data, x0, 1);
-        var d0 = data[i - 1];
-        var d1 = data[i];
-        console.log("mousemove", i, d0, d1);
+      //   // export 'mouse' (imported as 'd3') was not found in 'd3'
+      //   // var x0 = x.invert(d3.mouse(this)[0]);
+      //   var x0 = x.invert(d3.pointer(this)[0]);
+      //   var i = bisect(data, x0, 1);
+      //   var d0 = data[i - 1];
+      //   var d1 = data[i];
+      //   console.log("mousemove", i, d0, d1);
 
-        var d = x0 - d0.x > d1.x - x0 ? d1 : d0;
-        focus.attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")");
-        focusText
-          .attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")")
-          .text(d.y);
+      //   var d = x0 - d0.x > d1.x - x0 ? d1 : d0;
+      //   focus.attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")");
+      //   focusText
+      //     .attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")")
+      //     .text(d.y);
 
-        // console.log(d);
+      //   // console.log(d);
       }
 
       var zoomTransform = function () {
@@ -368,7 +399,7 @@ export function RegretPlot(props) {
         {/* <LineGraphComponent selector={selector}/> */}
         {/* to the right most within the wrap */}
         <span style={{ display: "flex", justifyContent: "flex-end" }}>
-          {regretPlotDataValue.current_time}
+          {banditInfoValue.cur_step}
         </span>
       </div>
     </Container>
