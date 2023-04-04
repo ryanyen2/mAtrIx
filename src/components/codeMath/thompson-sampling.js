@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import LeaderLine from "react-leader-line";
 import { useRecoilState } from "recoil";
-import { currentStep } from "../../state/atoms";
+import { allSettingsParam } from "../../state/atoms";
 
 export const ThompsonSampling = () => {
-  const [step, setStep] = useRecoilState(currentStep);
+  const [allSettingsParamValue, setAllSettingsParam] = useRecoilState(allSettingsParam);
   const [lines, setLines] = React.useState([]);
 
   async function showLine(line) {
@@ -12,7 +12,7 @@ export const ThompsonSampling = () => {
   }
 
   useEffect(() => {
-    if (step.startCodeFlow) {
+    if (allSettingsParamValue.play && allSettingsParamValue.currentMode === "demo") {
       let all_lines = [];
       const Line1 = drawLine("init", "run_steps", '10', "#ebbabf", "#ebbabf");
       const Line2 = drawLine("run_steps", "step1", '[10, 20]', "#ebbabf", "#bce7cb");
@@ -36,7 +36,7 @@ export const ThompsonSampling = () => {
       });
       setLines([]);
     }
-  }, [step.startCodeFlow]);
+  }, [allSettingsParamValue.play]);
 
   // destroy all lines when exit
   useEffect(() => {

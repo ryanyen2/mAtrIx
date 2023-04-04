@@ -1,5 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Slider from "@mui/material/Slider";
+import MuiInput from "@mui/material/Input";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -14,35 +16,79 @@ import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
+import Typography from "@mui/material/Typography";
 
+// settgins
 import SettingsIcon from "@mui/icons-material/Settings";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
+// import { RadarChart } from "../home/radarChart";
+import ParameterSettings from "../home/parameterSettings";
+import { styled } from "@mui/material/styles";
 
 import { useRecoilState } from "recoil";
-import { currentStep } from "../../state/atoms";
+import { allSettingsParam } from "../../state/atoms";
+import ToggleButton from "@mui/material/ToggleButton";
 
-const modeOptions = ["manual", "automatic", "slow demo"];
+const modeOptions = ["manual", "automatic", "demo"];
+const Input = styled(MuiInput)`
+  width: 42px;
+`;
 
 export default function TimeController() {
-  const [currentStepValue, setCurrentStep] = useRecoilState(currentStep);
-  const [play, setPlay] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [openSettingsDrawer, setOpenSettingsDrawer] = useState(false);
+  const anchorRef = useRef(null);
 
-  const [openSettingsDrawer, setOpenSettingsDrawer] = React.useState(false);
+  const [allSettingsParamValue, setAllSettingsParam] =
+    useRecoilState(allSettingsParam);
+
+  const [localSettingsParamValue, setLocalSettingsParamValue] = useState({
+    ...allSettingsParamValue,
+  });
 
   const toggleDrawerWithSettings = (open) => (event) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    if (!open) {
+      setAllSettingsParam({
+        ...allSettingsParamValue,
+        regretPlotParam: {
+          ...localSettingsParamValue.regretPlotParam,
+        },
+        targetProbability: {
+          ...localSettingsParamValue.targetProbability,
+        },
+      });
+      // console.log("handleClose", allSettingsParamValue.targetProbability);
+    }
     setOpenSettingsDrawer(open);
+  };
+
+  const handleLocalSettingsParamValue = (newSettings) => {
+    setLocalSettingsParamValue({
+      ...newSettings,
+    });
   };
 
   const handleMenuItemClick = (event, index) => {
     setSelectedIndex(index);
     setOpen(false);
 
-    console.log("selectNewMode", index, modeOptions[index]);
+    setAllSettingsParam({
+      ...allSettingsParamValue,
+      currentMode: modeOptions[index],
+    });
+
+    // console.log("selectNewMode", index, allSettingsParamValue.currentMode);
   };
 
   const handleToggle = () => {
@@ -53,23 +99,81 @@ export default function TimeController() {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
-
     setOpen(false);
   };
 
-  useEffect(() => {
-    setCurrentStep({
-      ...currentStepValue,
-      startCodeFlow: play,
+  let targetOutputSlidersValue = [
+    {
+      name: "cat",
+      value: localSettingsParamValue.targetProbability.cat,
+      icon: "🐈",
+    },
+    {
+      name: "dog",
+      value: localSettingsParamValue.targetProbability.dog,
+      icon: "🐕",
+    },
+    {
+      name: "bird",
+      value: 0,
+      icon: "🐦",
+    },
+    {
+      name: "panda",
+      value: localSettingsParamValue.targetProbability.panda,
+      icon: "🐼",
+    },
+    {
+      name: "alpaca",
+      value: localSettingsParamValue.targetProbability.alpaca,
+      icon: "🦙",
+    },
+    {
+      name: "Dr.Jian",
+      value: 0,
+      icon: "👨‍🎓",
+    },
+  ];
+
+  const handleSliderChange = (index) => (event, newValue) => {
+    if (newValue === null) {
+      return;
+    }
+    setLocalSettingsParamValue({
+      ...localSettingsParamValue,
+      targetProbability: {
+        ...localSettingsParamValue.targetProbability,
+        [targetOutputSlidersValue[index].name]: newValue,
+      },
     });
-  }, [play]);
+  };
 
   return (
     <div>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <Grid item xs={1}>
-          <IconButton aria-label="play" onClick={() => setPlay(!play)}>
-            {play ? <PauseIcon /> : <PlayArrowIcon />}
+        <Grid item xs={1} id="eval-control">
+          <ToggleButton
+            id="eval-btn-toggle"
+            aria-label="play"
+            value="check"
+            onClick={() => {
+              setAllSettingsParam({
+                ...allSettingsParamValue,
+                play: !allSettingsParamValue.play,
+              });
+              console.log("play", allSettingsParamValue.play);
+              // document.getElementById("eval-btn-toggle").click();
+            }}
+          >
+            {allSettingsParamValue.play ? <PauseIcon /> : <PlayArrowIcon />}
+          </ToggleButton>
+
+          <IconButton
+            id="eval-btn-reset"
+            className="btn-reset"
+            aria-label="Reset"
+          >
+            <RefreshIcon />
           </IconButton>
         </Grid>
         <Grid item xs={8}>
@@ -86,9 +190,9 @@ export default function TimeController() {
         <Grid item xs={1.5} style={{ zIndex: 2 }}>
           <ButtonGroup
             variant="contained"
-            ref={anchorRef}
             aria-label="split button"
             size="small"
+            ref={anchorRef}
           >
             <Button>{modeOptions[selectedIndex]}</Button>
             <Button
@@ -107,8 +211,8 @@ export default function TimeController() {
               zIndex: 1,
             }}
             open={open}
-            anchorEl={anchorRef.current}
             role={undefined}
+            anchorEl={anchorRef.current}
             transition
             disablePortal
           >
@@ -150,14 +254,65 @@ export default function TimeController() {
             Settings
           </Button>
           <Drawer
+            id="settings-drawer"
             anchor="right"
             open={openSettingsDrawer}
             onClose={toggleDrawerWithSettings(false)}
+            closeAfterTransition={false}
           >
             <Box sx={{ width: 550, padding: "2rem" }} role="presentation">
-              <h4>Settings</h4>
-              {/* general settings */}
-              {/* radar chart */}
+              <h4>General Settings</h4>
+              <div id="parameterSettings" style={{ margin: "2rem 0 3rem 0" }}>
+                <ParameterSettings
+                  localSettingsParamValue={localSettingsParamValue}
+                  setLocalSettingsParamValue={handleLocalSettingsParamValue}
+                />
+              </div>
+              <h4>Target Ouput</h4>
+              <div id="targetOutputSliders" style={{ margin: "2rem 0 3rem 0" }}>
+                <Grid container spacing={2} alignItems="center">
+                  {targetOutputSlidersValue.map((item, index) => (
+                    <Grid
+                      item
+                      xs={6}
+                      key={item.name}
+                      id={`target-slider${item.name}`}
+                    >
+                      <Typography id={`input-slider-${item.name}`} gutterBottom>
+                        {item.name}
+                      </Typography>
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item>{item.icon}</Grid>
+                        <Grid item xs>
+                          <Slider
+                            defaultValue={parseFloat(item.value)}
+                            value={parseFloat(item.value)}
+                            onChange={handleSliderChange(index)}
+                            aria-labelledby="input-slider"
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            valueLabelDisplay="auto"
+                          />
+                        </Grid>
+                        {/* <Grid item>
+                          <Input
+                            value={parseFloat(item.value)}
+                            size="small"
+                            inputProps={{
+                              step: 100,
+                              min: 0,
+                              max: 1,
+                              type: "number",
+                              "aria-labelledby": "input-slider",
+                            }}
+                          />
+                        </Grid> */}
+                      </Grid>
+                    </Grid>
+                  ))}
+                </Grid>
+              </div>
             </Box>
           </Drawer>
         </Grid>
