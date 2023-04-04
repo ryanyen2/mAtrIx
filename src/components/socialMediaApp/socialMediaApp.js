@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 
 import AppBar from "@mui/material/AppBar";
 import Typography from "@mui/material/Typography";
@@ -8,7 +8,7 @@ import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 
 import imageUrls from "./urls";
-import { armTags } from "../../state/atoms";
+import { armTags, banditInfo, triggerBanditRecord } from "../../state/atoms";
 
 import { Post } from "./post.js";
 
@@ -25,18 +25,29 @@ export function SocialMediaApp(props) {
   });
   const [numPostScrolled, setNumPostScrolled] = useState(0);
   const [liked, setLiked] = useState(0.0);
+  const [passFirstImg, setPassFirstImg] = useState(false);
+  // const armTagsVal = useRecoilValue(armTags);
   // initialize a array and fill in with numbers from 0 to n-1
   const initArray = (n) => {
     return Array.from(Array(n).keys());
   };
   const tagDict = useRecoilValue(armTags), // hard-coded
-    imageTrackingDict = {
-      cat: initArray(120), // hard-coded
-      dog: initArray(120), // hard-coded
-      panda: initArray(120), // hard-coded
-      alpaca: initArray(120), // hard-coded
-    },
+    imageTrackingDict = [
+      initArray(120), // hard-coded
+      initArray(120), // hard-coded
+      initArray(120), // hard-coded
+      initArray(120), // hard-coded
+    ],
+    // imageTrackingDict = {
+    //   armTagsVal.cat: initArray(120), // hard-coded
+    //   dog: initArray(120), // hard-coded
+    //   panda: initArray(120), // hard-coded
+    //   alpaca: initArray(120), // hard-coded
+    // },
     maxNumPhoto = 120; // hard-coded
+  const banditInfoValue = useRecoilValue(banditInfo);
+  const [triggerBanditRecordVal, setTriggerBanditRecordVal] =
+    useRecoilState(triggerBanditRecord);
   const child = useRef(null);
 
   // useEffect(() => {
@@ -49,36 +60,59 @@ export function SocialMediaApp(props) {
 
   useEffect(() => {
     if (numPostScrolled > 0) {
+      var newTag = -1;
       if (liked != -100.0) {
         //TODO: pass this data to Kris
+        // newBandit.record(liked, () => {
+        //     newBandit.getArm((retval) => {
+        //       newTag = retval;
+        //     });
+        //   });
+        setPassFirstImg(true);
+        setTriggerBanditRecordVal({
+          trigger: true,
+          rewardToPass: liked,
+        });
+      } else {
+        // get the very first selected arm (done in home.js)
+        newTag = banditInfoValue.cur_arm;
+        generateNewPost(newTag);
       }
 
       //TODO: get the tag
-      var newTag = randomTag();
-      console.log("get the new tag: " + newTag);
-
-      //generate a new post
-      const tempId = randomId(6);
-      const sma = document.getElementById("social-media-app-card");
-      // first div under sma
-      const smaDiv = sma.getElementsByTagName("div")[0];
-      smaDiv.classList.add("ease-out");
-
-      setTimeout(() => {
-        setPostInfo({
-          userName: tempId,
-          avatar: tempId.substring(0, 2),
-          avatarColor: { bgcolor: randomColor() },
-          date: randomDate(
-            new Date("February 01, 2022"),
-            new Date("April 05, 2022")
-          ),
-          imgSrc: randomImg(newTag),
-          numOfLikes: randomLikes(999),
-        });
-      }, 400);
     }
-  }, [numPostScrolled]);
+  }, [numPostScrolled, liked]);
+
+  useEffect(() => {
+    if(passFirstImg) {
+      generateNewPost(banditInfoValue.cur_arm);
+    }
+  }, [banditInfoValue]);
+
+  const generateNewPost = (newTag) => {
+    console.log("get the new tag: " + newTag);
+
+    //generate a new post
+    const tempId = randomId(6);
+    const sma = document.getElementById("social-media-app-card");
+    // first div under sma
+    const smaDiv = sma.getElementsByTagName("div")[0];
+    smaDiv.classList.add("ease-out");
+
+    setTimeout(() => {
+      setPostInfo({
+        userName: tempId,
+        avatar: tempId.substring(0, 2),
+        avatarColor: { bgcolor: randomColor() },
+        date: randomDate(
+          new Date("February 01, 2022"),
+          new Date("April 05, 2022")
+        ),
+        imgSrc: randomImg(newTag),
+        numOfLikes: randomLikes(999),
+      });
+    }, 400);
+  };
 
   // handling users' action
   // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs
@@ -127,7 +161,7 @@ export function SocialMediaApp(props) {
 
     const randomNum =
       Math.floor(Math.random() * imageTrackingDict[tag].length) +
-      tagDict[tag] * maxNumPhoto;
+      tag * maxNumPhoto;
 
     // console.log(`${tag} : ${randomNum-state.tagDict[tag] * state.maxNumPhoto} | ${randomNum}`);
 
@@ -138,6 +172,7 @@ export function SocialMediaApp(props) {
       randomNum - tagDict[tag] * maxNumPhoto
     );
     imageTrackingDict[tag].splice(index, 1);
+    // console.log("Tag is " + tag + " Next photo src: " + src);
 
     return src;
   };

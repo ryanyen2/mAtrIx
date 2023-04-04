@@ -7,9 +7,14 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-import { allSettingsParam } from "../state/atoms";
+import {
+  armTags,
+  banditInfo,
+  modelTypeID,
+  triggerBanditRecord,
+} from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
@@ -29,13 +34,19 @@ import MathBlock from "../components/codeMath/mathBlock";
 import CodeFlow from "../components/codeMath/codeFlow";
 import TimeController from "../components/timeController/timeController";
 
-// import {GenerateNewBandit} from '../utils/bandits';
+import { GenerateNewBandit } from "../utils/bandits";
+
+const newBandit = new GenerateNewBandit();
 
 function Home(props) {
+  const [banditInfoValue, setBanditInfoValue] = useRecoilState(banditInfo);
+  const [triggerBanditRecordVal, setTriggerBanditRecordVal] = useRecoilState(triggerBanditRecord);
   // const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
   const [allSettingsParamValue, setAllSettingsParam] =
     useRecoilState(allSettingsParam);
   // const [step, setStep] = useState(0);
+  const armTagsValue = useRecoilValue(armTags);
+  const modelTypeIDValue = useRecoilValue(modelTypeID);
   const currentAlgorithm = "thompson-sampling"; // change this to recoil state
 
   const Item = styled(Paper)(({ theme }) => ({
@@ -46,13 +57,40 @@ function Home(props) {
     color: theme.palette.text.secondary,
   }));
 
-  // useEffect(() => {
-  //   const newBandit = new GenerateNewBandit();
-  //   newBandit.startGenerate('new', 'thompson-sampling', {'alpha': 1, 'beta': 1}, (newSteps) => {
-  //     console.log(newSteps);
-  //     setStep(newSteps);
-  //   });
-  // }, []);
+  // EG FN FORWARD
+  useEffect(async () => {
+    newBandit.startGenerate(
+      modelTypeIDValue.thompson,
+      Object.keys(armTagsValue).length
+    );
+    await newBandit.recordInit((d) => {
+      console.log("callback1", d);
+      setBanditInfoValue(d);
+    });
+  }, []);
+
+  useEffect(() => {
+    // console.log(banditInfoValue.keys);
+  }, [banditInfoValue]);
+
+  useEffect(async () => {
+    // await newBandit.record(1);
+    // await newBandit.record(triggerBanditRecordVal.rewardToPass);
+    if (triggerBanditRecordVal.trigger && newBandit?.valueOf() !== undefined) {
+      // await newBandit.record(triggerBanditRecordVal.rewardToPass);
+      await newBandit.record(triggerBanditRecordVal.rewardToPass, (d) => {
+        console.log("callback2", d);
+        setBanditInfoValue(d);
+      });
+      // await newBandit.record(triggerBanditRecordVal.rewardToPass, setBanditInfoValue);
+      setTriggerBanditRecordVal({
+        trigger: false,
+        rewardToPass: -1,
+      });
+    } else if(newBandit?.valueOf() === undefined) {
+      console.log("ERROR: New bandit is null");
+    }
+  }, [triggerBanditRecordVal]);
 
   useEffect(() => {
     console.log("allSettingsParamValue", allSettingsParamValue);
