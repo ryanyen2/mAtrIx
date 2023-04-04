@@ -30,13 +30,18 @@ export default function AlgGraph(props) {
   // https://stackoverflow.com/questions/53945763/componentdidmount-equivalent-on-a-react-function-hooks-component
   // run only at the start after mounting
   useEffect(() => {
+    // if (
+    //   !allSettingsParamValue.play ||
+    //   allSettingsParamValue.currentMode !== "automatic"
+    // )
+    //   return;
     xArray.push(0.0001);
     for (var i = 1; i < _N - 1; i++) {
       xArray.push(0.01 * i);
     }
     xArray.push(1 - 0.0001);
     setXArray(xArray);
-
+    
     for (let index = 0; index < numArms; index++) {
       var theId = "graph_" + index;
 
