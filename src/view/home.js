@@ -61,7 +61,6 @@ function Home(props) {
 
   // EG FN FORWARD
   useEffect(async () => {
-    console.log('start====================')
     var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
     var target_mapped = {}
     for(const [key, value] of Object.entries(allSettingsParamValue.targetProbability)){

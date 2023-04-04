@@ -235,6 +235,23 @@ export function RegretPlot(props) {
 
       gZoom.call(zoomObj);
 
+      // var bisect = d3.bisector(function(d) { return d.x; }).left;
+      var bisect = d3.bisector((d) => d.x).left;
+      var focus = gZoom
+        .append("g")
+        .append("circle")
+        .style("fill", "none")
+        .attr("stroke", "black")
+        .attr("r", 8.5)
+        .style("opacity", 0);
+
+      var focusText = gZoom
+        .append("g")
+        .append("text")
+        .style("opacity", 0)
+        .attr("text-anchor", "left")
+        .attr("alignment-baseline", "middle");
+
       var gView = gZoom.append("g").attr("class", "view");
       gView
         .append("path")
@@ -243,6 +260,42 @@ export function RegretPlot(props) {
         .attr("stroke", "steelblue")
         .attr("fill", "none")
         .attr("stroke-width", 2);
+
+      gView
+        .append("rect")
+        .attr("class", "overlay")
+        .attr("width", width)
+        .attr("height", height)
+        .on("mouseover", function () {
+          focus.style("opacity", 1);
+          focusText.style("opacity", 1);
+        })
+        .on("mouseout", function () {
+          focus.style("opacity", 0);
+          focusText.style("opacity", 0);
+        })
+        .on("mousemove", mousemove);
+
+      function mousemove() {
+
+        if (data.length <= 1) return;
+        
+        // export 'mouse' (imported as 'd3') was not found in 'd3'
+        // var x0 = x.invert(d3.mouse(this)[0]);
+        var x0 = x.invert(d3.pointer(this)[0]);
+        var i = bisect(data, x0, 1);
+        var d0 = data[i - 1];
+        var d1 = data[i];
+        console.log("mousemove", i, d0, d1);
+
+        var d = x0 - d0.x > d1.x - x0 ? d1 : d0;
+        focus.attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")");
+        focusText
+          .attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")")
+          .text(d.y);
+
+        // console.log(d);
+      }
 
       var zoomTransform = function () {
         var t = d3.transition().duration(0);
