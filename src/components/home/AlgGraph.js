@@ -3,13 +3,29 @@ import { useRecoilValue, useRecoilState } from "recoil";
 import * as d3 from "d3";
 import jStat from "jstat";
 
-import { armTags, banditInfo, allSettingsParam } from "../../state/atoms";
+import {
+  armTags,
+  banditInfo,
+  allSettingsParam,
+  triggerBanditRecord,
+} from "../../state/atoms";
 
 export default function AlgGraph(props) {
   const banditInfoValue = useRecoilValue(banditInfo);
   const allSettingsParamValue = useRecoilValue(allSettingsParam);
   const armTagsVal = useRecoilValue(armTags);
-  const [trueRewards, setTrueRewards] = useState([0.4, 0.5, 0.6, 0.7]);
+  const triggerBanditRecordVal = useRecoilValue(triggerBanditRecord);
+  const [localBanditInfo, setLocalBanditInfo] = useState({
+    ...banditInfoValue
+  });
+  const [localAllParam, setLocalAllParam] = useState({
+    ...allSettingsParamValue
+  });
+  const [arms, setArms] = useState({
+    old: -1,
+    cur: -1,
+  });
+  //   const [trueRewards, setTrueRewards] = useState([0.4, 0.5, 0.6, 0.7]);
   const armTagsValue = useRecoilValue(armTags);
   const numArms = Object.keys(armTagsValue).length;
   const w = 400,
@@ -41,7 +57,7 @@ export default function AlgGraph(props) {
     }
     xArray.push(1 - 0.0001);
     setXArray(xArray);
-    
+
     for (let index = 0; index < numArms; index++) {
       var theId = "graph_" + index;
 
@@ -59,16 +75,19 @@ export default function AlgGraph(props) {
     draw();
   }, []);
 
-  useEffect(() => {
+  useEffect((p) => {
+    console.log(localBanditInfo);
+    console.log(triggerBanditRecordVal);
+    // if(p===undefined) return;
     // update the distribution
     // console.log("In update");
     // console.log("Update called for index " + theBandits[numArms]);
     // var b = theBandits[theBandits[numArms]];
-    if (Object.keys(banditInfoValue.parameters).length !== 0) {
-      var index = banditInfoValue.cur_arm;
-      console.log(banditInfoValue.parameters);
-      var mu = banditInfoValue.parameters[index].mu;
-      var sig = Math.sqrt(banditInfoValue.parameters[index].sig2);
+    if (Object.keys(localBanditInfo.parameters).length !== 0 && triggerBanditRecordVal.trigger) {
+      var index = localBanditInfo.cur_arm;
+      console.log(localBanditInfo.parameters);
+      var mu = localBanditInfo.parameters[index].mu;
+      var sig = Math.sqrt(localBanditInfo.parameters[index].sig2);
 
       var g = d3.select("#theGraph_" + index);
 
@@ -105,9 +124,9 @@ export default function AlgGraph(props) {
 
       d3.selectAll("#actualProb_" + index).remove();
       let tagKey = Object.keys(armTagsVal).find(
-        (k) => armTagsVal[k] === banditInfoValue.cur_arm
+        (k) => armTagsVal[k] === localBanditInfo.cur_arm
       );
-      var curActualProb = allSettingsParamValue.targetProbability[tagKey];
+      var curActualProb = localAllParam.targetProbability[tagKey];
 
       g.append("svg:line")
         .attr("id", "actualProb_" + index)
@@ -121,6 +140,15 @@ export default function AlgGraph(props) {
         .attr("banditIndex", index)
         .attr("class", "actualProbabilityLine");
     }
+  }, [triggerBanditRecordVal]);
+  
+  useEffect(() => {
+    setLocalBanditInfo({
+        ...banditInfoValue
+    });
+    setLocalAllParam({
+        ...allSettingsParamValue
+    });
   }, [banditInfoValue, allSettingsParamValue]);
 
   function draw() {
@@ -136,7 +164,7 @@ export default function AlgGraph(props) {
         theMax = Math.max(y, theMax);
         return y;
       });
-    //   console.log(_data);
+      //   console.log(_data);
 
       var y = d3
           .scaleLinear()
@@ -209,9 +237,7 @@ export default function AlgGraph(props) {
 
       var vis = d3.select("#" + theId);
 
-      let tagKey = Object.keys(armTagsVal).find(
-        (k) => armTagsVal[k] === index
-      );
+      let tagKey = Object.keys(armTagsVal).find((k) => armTagsVal[k] === index);
 
       vis
         .append("text")
