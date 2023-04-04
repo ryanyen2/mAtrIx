@@ -14,6 +14,7 @@ import {
   banditInfo,
   modelTypeID,
   triggerBanditRecord,
+  allSettingsParam
 } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
@@ -110,7 +111,7 @@ function Home(props) {
               {/* allSettingsParamValue */}
               {Object.keys(allSettingsParamValue).map((key) => {
                 return (
-                  <div>
+                  <div key={key}>
                     <b>{key}:</b> {typeof allSettingsParamValue[key] === "object" ? (
                       <div>
                         {Object.keys(allSettingsParamValue[key]).map((key2) => {
