@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import Button from "@mui/material/Button";
 import React, { useEffect, useRef } from "react";
 import LeaderLine from "react-leader-line";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -77,9 +77,7 @@ export const ThompsonSampling = (props) => {
   };
 
   useEffect(() => {
-    if (
-      startDemo
-    ) {
+    if (startDemo) {
       let all_lines = [];
       const Line1 = drawLine("init", "run_steps", "", "#ebbabf", "#ebbabf");
       const Line2 = drawLine("run_steps", "step1", "", "#ebbabf", "#bce7cb");
@@ -100,21 +98,21 @@ export const ThompsonSampling = (props) => {
       const Line5 = drawLine(
         "step2",
         "step3",
-        allInterimVals.max_sampled_val_idx.toString(),
+        `max_idx: ${allInterimVals.max_sampled_val_idx}`,
         "#bce7cb",
         "#bce7cb"
       );
       const Line6 = drawLine(
         "step3",
         "generate_reward",
-        allInterimVals.max_sampled_val_idx.toString(),
+        `max_idx: ${allInterimVals.max_sampled_val_idx}`,
         "#bce7cb",
         "#ebbabf"
       );
       const Line7 = drawLine(
         "generate_reward",
         "step4",
-        allInterimVals.curr_reward.toString(),
+        `reward: ${allInterimVals.curr_reward}`,
         "#ebbabf",
         "#bce7cb",
         "top"
@@ -192,7 +190,7 @@ export const ThompsonSampling = (props) => {
 
   return (
     <div>
-      <Button onClick={() => setStartDemo(!startDemo)}>
+      <Button onClick={() => setStartDemo(!startDemo)} size="small">
         {startDemo ? "Stop Demo" : "Start Demo"}
       </Button>
       <fieldset className="code-Class">
@@ -202,7 +200,7 @@ export const ThompsonSampling = (props) => {
           <span className="code-Method-Name" id="init">
             __init__:{" "}
           </span>
-          initialize Beta distribution parameters
+          initialize the Gaussian Hyperparameters
         </p>
         <fieldset className="code-Method">
           <legend className="codeType">fucntion</legend>
@@ -223,11 +221,21 @@ export const ThompsonSampling = (props) => {
           <fieldset className="code-Step" id="step1">
             <legend className="codeType">step 1</legend>
             <p className="code-Method-Explain">
-              sample from Beta distribution for each arm
+              sample from Normal-inverse-gamma Distribution for each arm
             </p>
             <code className="code-Step-Code">
-              sample = [np.random.beta(self._as[x], self._bs[x]) for x in
-              range(self.bandit.n)]
+              {/* sample = [np.random.beta(self._as[x], self._bs[x]) for x in
+              range(self.bandit.n)] */}
+              sigma2_a = 1.0 / np.random.default_rng().gamma(alpha, 1.0 / beta)
+              <br />
+              chi_a = sigma2_a / (self.N[arm] + self.v_a)
+              <br />
+              mu_a = np.random.default_rng().normal( (self.v_a * self.mu_a +
+              self.N[arm] * self.mu[arm]) / (self.v_a + self.N[arm]),
+              np.sqrt(chi_a) )
+              <br />
+              samples = [np.random.default_rng().normal(mu_a, np.sqrt(chi_a))
+              for x in range(self.bandit.n)]
             </code>
           </fieldset>
           <fieldset className="code-Step" id="step2">
@@ -251,12 +259,23 @@ export const ThompsonSampling = (props) => {
           <fieldset className="code-Step" id="step4">
             <legend className="codeType">step 4</legend>
             <p className="code-Method-Explain">
-              update Beta distribution parameters
+              update percieved mean and variance for the selected arm
             </p>
             <code className="code-Step-Code">
-              self._as[i] += r
+              self.N[i] += 1
               <br />
-              self._bs[i] += (1 - r)
+              self.mu_tilde[arm] += 1 / self.N[arm] * (reward -
+              self.mu_tilde[arm])
+              <br />
+              self.rho[arm] = (self.v_a * self.m_a + self.N[arm] *
+              self.mu_tilde[arm]) / (self.v_a + self.N[arm])
+              <br />
+              self.ssd[arm] += ( reward ** 2 + old_N * old_mean ** 2 -
+              self.N[arm] * self.mu_tilde[arm] ** 2 )
+              <br />
+              self.beta_t_a[arm] = (self.beta_a + 0.5 * self.ssd[arm] +
+              (self.N[arm] * self.v_a * (self.mu_tilde[arm] - self.m_a) ** 2) /
+              (2 * (self.N[arm] + self.v_a)))
             </code>
           </fieldset>
         </fieldset>

@@ -139,9 +139,8 @@ function Home(props) {
           </Item>
         </Grid>
         <Grid item xs={3}>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Item style={{ textAlign: "left" }}>
-              {/* allSettingsParamValue */}
               {Object.keys(allSettingsParamValue).map((k) => {
                 return (
                   <div key={k}>
@@ -169,7 +168,7 @@ function Home(props) {
                 );
               })}
             </Item>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12}>
             <SocialMediaApp />
           </Grid>
