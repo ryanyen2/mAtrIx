@@ -492,7 +492,10 @@ export class UpperConfidenceBound {
     for (let a = 0; a < this.nBandits; a++) {
       if (this.N[a] == 0)
         // pull each handle at least once
-        return a;
+        return {
+          cur_arm: a,
+          V_alist: new Array(this.nBandits).fill(0)
+        };
 
       // compute this action's value
       V_a = this.Q[a] + this.c * Math.sqrt(Math.log(this.t) / this.N[a]);
