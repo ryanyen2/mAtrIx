@@ -102,6 +102,7 @@ export const banditInfo = atom({
         cur_step: 0, // Index of current step
         cur_arm: 0, // Index tag of current arm
         regret_t: [],
+        code_math: {}
     }, 
     // I don't like this but oh well
     dangerouslyAllowMutability: true

@@ -433,18 +433,25 @@ export class EpsilonGreedy {
   }
 
   act() {
-    if (this.rng.random() <= this.epsilon) {
-      return this.rng.randint(0, this.nBandits - 1);
-    }
-    var qprime = -Infinity;
-    var aprime = null;
-    for (let a = 0; a < this.nBandits; a++) {
-      if (this.Q[a] > qprime) {
-        aprime = a;
-        qprime = this.Q[a];
+    var r = this.rng.random();
+    var cur_arm;
+    if (r <= this.epsilon) {
+      cur_arm = this.rng.randint(0, this.nBandits - 1);
+    } else {
+      var qprime = -Infinity;
+      var aprime = null;
+      for (let a = 0; a < this.nBandits; a++) {
+        if (this.Q[a] > qprime) {
+          aprime = a;
+          qprime = this.Q[a];
+        }
       }
+      cur_arm = aprime;
     }
-    return aprime;
+    return {
+      cur_arm: cur_arm,
+      r: r
+    };
   }
 
   record(action, reward) {
@@ -454,7 +461,7 @@ export class EpsilonGreedy {
     this.Q[A] += (1.0 / this.N[A]) * (R - this.Q[A]);
   }
 
-  get_Q(idx){
+  get_Q(idx) {
     return this.Q[idx];
   }
 
@@ -481,6 +488,7 @@ export class UpperConfidenceBound {
     var V_a;
     var aprime = null;
     var Vprime = -Infinity;
+    var V_alist = [];
     for (let a = 0; a < this.nBandits; a++) {
       if (this.N[a] == 0)
         // pull each handle at least once
@@ -489,16 +497,21 @@ export class UpperConfidenceBound {
       // compute this action's value
       V_a = this.Q[a] + this.c * Math.sqrt(Math.log(this.t) / this.N[a]);
 
+      V_alist.push(V_a);
+
       // find the best action
       if (V_a > Vprime) {
         Vprime = V_a;
         aprime = a;
       }
     }
-    return aprime;
+    return {
+      cur_arm: aprime,
+      V_alist: V_alist
+    };
   }
 
-  get_Q(idx){
+  get_Q(idx) {
     return this.Q[idx];
   }
 
@@ -551,6 +564,7 @@ export class ThompsonSampling {
     var sigma2_a, mu_a;
     var aprime = null;
     var muprime = -Infinity;
+    var sampled_vals = [];
     for (let a = 0; a < this.nBandits; a++) {
       sigma2_a = this._draw_ig(
         0.5 * this.N[a] + this.alpha_a,
@@ -560,12 +574,17 @@ export class ThompsonSampling {
 
       mu_a = this._draw_normal(this.rho[a], this.latest_zeta[a]);
 
+      sampled_vals.push(mu_a);
+
       if (mu_a > muprime) {
         aprime = a;
         muprime = mu_a;
       }
     }
-    return aprime;
+    return {
+      cur_arm: aprime,
+      sampled_vals: sampled_vals,
+    };
   }
 
   record(action, reward) {
@@ -885,7 +904,8 @@ export class GenerateNewBandit {
     cur_step: 0, // Index of current step
     cur_arm: 0, // Index tag of current arm
     regret_t: [],
-    true_mus: {}
+    true_mus: {},
+    code_math: {}
   };
 
   constructor() {
@@ -893,7 +913,7 @@ export class GenerateNewBandit {
     this.optimal = -1;
   }
 
-  startGenerate = async (model_id, n_arms, extra_params={}, callback) => {
+  startGenerate = async (model_id, n_arms, extra_params = {}, callback) => {
     console.log("startGenerate", model_id, n_arms);
     this.banditInfo.model_id = model_id;
     this.banditInfo.parameters = {};
@@ -902,12 +922,20 @@ export class GenerateNewBandit {
     this.banditInfo.cur_arm = 0;
     this.banditInfo.n_arms = n_arms;
     this.banditInfo.regret_t = [];
+    this.banditInfo.code_math = {};
 
     this.banditInfo.true_mus = {};
-    for(var i = 0; i < n_arms; i++){ this.banditInfo.true_mus[i] = 0.0; }
-    this.banditInfo.true_mus = extra_params["true_mus"] !== undefined ? extra_params["true_mus"] : this.banditInfo.true_mus;
+    for (var i = 0; i < n_arms; i++) {
+      this.banditInfo.true_mus[i] = 0.0;
+    }
+    this.banditInfo.true_mus =
+      extra_params["true_mus"] !== undefined
+        ? extra_params["true_mus"]
+        : this.banditInfo.true_mus;
 
-    this.optimal = Object.entries(this.banditInfo.true_mus).reduce((a, b) => a[1] > b[1] ? a : b)[1]
+    this.optimal = Object.entries(this.banditInfo.true_mus).reduce((a, b) =>
+      a[1] > b[1] ? a : b
+    )[1];
 
     if (this.banditInfo.model_id === 2) {
       // Thompson Sampling Init
@@ -917,17 +945,32 @@ export class GenerateNewBandit {
       // Supply provided parameters if they exist:
       var ma = extra_params["ma"] !== undefined ? extra_params["ma"] : 0;
       var va = extra_params["va"] !== undefined ? extra_params["va"] : 1;
-      var alpha = extra_params["alpha"] !== undefined ? extra_params["alpha"] : 1;
+      var alpha =
+        extra_params["alpha"] !== undefined ? extra_params["alpha"] : 1;
       var beta = extra_params["beta"] !== undefined ? extra_params["beta"] : 1;
 
       // create a new parameter list for each key
       for (let i = 0; i < this.banditInfo.n_arms; i++) {
-        this.banditInfo.parameters[i] = {"mu": 0, "sig2": 1, "ma": ma, "va": va, "alpha": alpha, "beta": beta, "n" : 0};
+        this.banditInfo.parameters[i] = {
+          mu: 0,
+          sig2: 1,
+          ma: ma,
+          va: va,
+          alpha: alpha,
+          beta: beta,
+          n: 0,
+        };
       }
-      this.banditInfo.model = new ThompsonSampling(this.banditInfo.n_arms, ma, va, alpha, beta );
-    }
-    else if(this.banditInfo.model_id === 1) { // UpperConfidenceBound Init
-      console.log("Init UpperConfidenceBound")
+      this.banditInfo.model = new ThompsonSampling(
+        this.banditInfo.n_arms,
+        ma,
+        va,
+        alpha,
+        beta
+      );
+    } else if (this.banditInfo.model_id === 1) {
+      // UpperConfidenceBound Init
+      console.log("Init UpperConfidenceBound");
       this.banditInfo.model_name = "Upper Confidence Bound";
 
       // Supply provided parameters if they exist:
@@ -935,30 +978,34 @@ export class GenerateNewBandit {
 
       for (let i = 0; i < this.banditInfo.n_arms; i++) {
         // create a new parameter list for each key
-        this.banditInfo.parameters[i] = {"c": c, "Q": 0, "n": 0};
+        this.banditInfo.parameters[i] = { c: c, Q: 0, n: 0 };
       }
 
-      this.banditInfo.model = new UpperConfidenceBound(this.banditInfo.n_arms, c);
-    }
-    else if(this.banditInfo.model_id === 0) { // EpsilonGreedy Init
-      console.log("Init EpsilonGreedy")
+      this.banditInfo.model = new UpperConfidenceBound(
+        this.banditInfo.n_arms,
+        c
+      );
+    } else if (this.banditInfo.model_id === 0) {
+      // EpsilonGreedy Init
+      console.log("Init EpsilonGreedy");
       this.banditInfo.model_name = "Epsilon Greedy";
 
       // Supply provided parameters if they exist:
-      var epsln = extra_params["epsilon"] !== undefined ? extra_params["epsilon"] : 0.5;
+      var epsln =
+        extra_params["epsilon"] !== undefined ? extra_params["epsilon"] : 0.5;
 
       for (let i = 0; i < this.banditInfo.n_arms; i++) {
         // create a new parameter list for each key
-        this.banditInfo.parameters[i] = {"epsilon": epsln, "n": 0};
+        this.banditInfo.parameters[i] = { epsilon: epsln, n: 0 };
       }
       this.banditInfo.model = new EpsilonGreedy(this.banditInfo.n_arms, epsln);
     }
 
-    this.banditInfo.steps.push(this.banditInfo.parameters)
-    
+    this.banditInfo.steps.push(this.banditInfo.parameters);
+
     // await this.setBanditInfo(this.banditInfo);
     if (callback) {
-      let {model: _, true_mus: __, ...rest} = this.banditInfo;
+      let { model: _, true_mus: __, ...rest } = this.banditInfo;
       await callback(rest);
     }
   };
@@ -973,7 +1020,7 @@ export class GenerateNewBandit {
 
     // if (callback) await callback(this.banditInfo);
     if (callback) {
-      let {model: _, true_mus: __, ...rest} = this.banditInfo;
+      let { model: _, true_mus: __, ...rest } = this.banditInfo;
       await callback(rest);
     }
   };
@@ -982,33 +1029,52 @@ export class GenerateNewBandit {
     console.log("In record, reward is " + reward);
     this.banditInfo.model.record(this.banditInfo.cur_arm, reward);
     // Perform parameter update:
-    if (this.banditInfo.model_id === 2){ // Thompson Sampling Update
-      this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] = this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
-      this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] = this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
-    }
-    else if (this.banditInfo.model_id === 1){
-      this.banditInfo.parameters[this.banditInfo.cur_arm]["Q"] = this.banditInfo.model.get_Q(this.banditInfo.cur_arm);
-    }
-    else if (this.banditInfo.model_id === 0){
-      this.banditInfo.parameters[this.banditInfo.cur_arm]["Q"] = this.banditInfo.model.get_Q(this.banditInfo.cur_arm);
+    if (this.banditInfo.model_id === 2) {
+      // Thompson Sampling Update
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["mu"] =
+        this.banditInfo.model.get_rho(this.banditInfo.cur_arm);
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["sig2"] =
+        this.banditInfo.model.get_sigma2_map(this.banditInfo.cur_arm);
+    } else if (this.banditInfo.model_id === 1) {
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["Q"] =
+        this.banditInfo.model.get_Q(this.banditInfo.cur_arm);
+    } else if (this.banditInfo.model_id === 0) {
+      this.banditInfo.parameters[this.banditInfo.cur_arm]["Q"] =
+        this.banditInfo.model.get_Q(this.banditInfo.cur_arm);
     }
     this.banditInfo.parameters[this.banditInfo.cur_arm]["n"] += 1;
 
     // model Regret
-    var regretToPush = this.optimal - this.banditInfo.true_mus[this.banditInfo.cur_arm]
-    if(this.banditInfo.regret_t.length > 0) {
-      regretToPush += this.banditInfo.regret_t[this.banditInfo.regret_t.length-1]
+    var regretToPush =
+      this.optimal - this.banditInfo.true_mus[this.banditInfo.cur_arm];
+    if (this.banditInfo.regret_t.length > 0) {
+      regretToPush +=
+        this.banditInfo.regret_t[this.banditInfo.regret_t.length - 1];
     }
     // regretToPush
     this.banditInfo.regret_t.push(regretToPush);
 
-    this.banditInfo.cur_arm = this.banditInfo.model.act();
+    if (this.banditInfo.model_id === 2) {
+      var { cur_arm, sampled_vals } = this.banditInfo.model.act();
+      this.banditInfo.cur_arm = cur_arm;
+      this.banditInfo.code_math["sampled_vals"] =
+        sampled_vals;
+    } else if (this.banditInfo.model_id === 1) {
+      var { cur_arm, V_alist } = this.banditInfo.model.act();
+      this.banditInfo.cur_arm = cur_arm;
+      this.banditInfo.code_math["Ats"] = V_alist;
+    } else if (this.banditInfo.model_id === 0) {
+      var { cur_arm, r } = this.banditInfo.model.act();
+      this.banditInfo.cur_arm = cur_arm;
+      this.banditInfo.code_math["exploration_threshold"] = r;
+    }
+
     this.banditInfo.cur_step += 1;
     this.banditInfo.steps.push(this.banditInfo.parameters);
 
     // if (callback) await callback(this.banditInfo);
     if (callback) {
-      let {model: _, true_mus: __, ...rest} = this.banditInfo;
+      let { model: _, true_mus: __, ...rest } = this.banditInfo;
       await callback(rest);
     }
   };
@@ -1017,19 +1083,24 @@ export class GenerateNewBandit {
     if (callback) callback(this.banditInfo.cur_arm);
   };
 
-  resetModel = (extra_params={}) => {
+  resetModel = (extra_params = {}) => {
     this.banditInfo.model.reset();
-    this.startGenerate(this.banditInfo.model_name, this.banditInfo.model_id, this.banditInfo.n_arms, extra_params);
+    this.startGenerate(
+      this.banditInfo.model_name,
+      this.banditInfo.model_id,
+      this.banditInfo.n_arms,
+      extra_params
+    );
   };
 
-  newModel = (new_model_id, extra_params={}, callback) => {
+  newModel = (new_model_id, extra_params = {}, callback) => {
     this.startGenerate(new_model_id, this.banditInfo.n_arms, extra_params);
 
     if (callback) callback();
   };
 
   getAtTimeline = (idx, callback) => {
-    if (idx < this.banditInfo.steps.length){
+    if (idx < this.banditInfo.steps.length) {
       callback(this.banditInfo.steps[idx]);
     }
   };
