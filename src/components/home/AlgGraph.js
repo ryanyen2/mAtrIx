@@ -8,6 +8,7 @@ import {
   banditInfo,
   allSettingsParam,
   triggerBanditRecord,
+  triggerPosteriorDistribution
 } from "../../state/atoms";
 
 export default function AlgGraph(props) {
@@ -17,6 +18,8 @@ export default function AlgGraph(props) {
     useRecoilState(allSettingsParam);
   const armTagsVal = useRecoilValue(armTags);
   const triggerBanditRecordVal = useRecoilValue(triggerBanditRecord);
+  const [triggerPosteriorDistributionVal, setTriggerPosteriorDistributionVal] =
+    useRecoilState(triggerPosteriorDistribution);
   const [localBanditInfo, setLocalBanditInfo] = useState({
     ...banditInfoValue,
   });
@@ -84,16 +87,16 @@ export default function AlgGraph(props) {
   }, []);
 
   useEffect(() => {
-    // console.log(localBanditInfo);
+    // console.log(localBanditInfo.parameters);
     // console.log(triggerBanditRecordVal);
 
     if (
       Object.keys(localBanditInfo.parameters).length !== 0 &&
-      triggerBanditRecordVal.trigger
+      triggerPosteriorDistributionVal.trigger
     ) {
       //   var index = localBanditInfo.cur_arm;
       var index = arms.old;
-      //   console.log("Updating post dist of arm: " + index);
+        // console.log("Updating post dist of arm: " + index);
       // console.log(localBanditInfo.parameters);
       var mu = localBanditInfo.parameters[index].mu;
       var sig = Math.sqrt(localBanditInfo.parameters[index].sig2);
@@ -147,6 +150,9 @@ export default function AlgGraph(props) {
         .attr("stroke-width", "2px")
         .attr("banditIndex", index)
         .attr("class", "actualProbabilityLine");
+      setTriggerPosteriorDistributionVal({
+        trigger: false
+      })
     }
   }, [triggerBanditRecordVal, arms, localBanditInfo, localAllParam]);
 
@@ -163,8 +169,7 @@ export default function AlgGraph(props) {
       old: arms.cur,
       cur: banditInfoValue.cur_arm,
     });
-    // console.log(banditInfoValue.cur_arm);
-  }, [banditInfoValue, allSettingsParamValue]);
+}, [ triggerPosteriorDistributionVal, allSettingsParamValue]);
 
   function draw() {
     for (let index = 0; index < numArms; index++) {

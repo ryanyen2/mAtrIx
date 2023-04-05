@@ -141,6 +141,13 @@ export const triggerBanditRecord = atom({
     }
 })
 
+export const triggerPosteriorDistribution = atom({
+    key: "triggerPosteriorDistribution",
+    default: {
+        trigger: false
+    }
+})
+
 // export const nextArmReady = atom({
 //     key: "triggerBanditRecord",
 //     default: false

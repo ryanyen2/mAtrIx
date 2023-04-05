@@ -15,6 +15,7 @@ import {
   modelTypeID,
   triggerBanditRecord,
   allSettingsParam,
+  triggerPosteriorDistribution
 } from "../state/atoms";
 // import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
@@ -43,6 +44,8 @@ function Home(props) {
   const [banditInfoValue, setBanditInfoValue] = useRecoilState(banditInfo);
   const [triggerBanditRecordVal, setTriggerBanditRecordVal] =
     useRecoilState(triggerBanditRecord);
+    const [triggerPosteriorDistributionVal, setTriggerPosteriorDistributionVal] =
+    useRecoilState(triggerPosteriorDistribution);
   // const [barChartDataValue, setBarChartData] = useRecoilState(barChartData);
   const [allSettingsParamValue, setAllSettingsParam] =
     useRecoilState(allSettingsParam);
@@ -97,6 +100,9 @@ function Home(props) {
         trigger: false,
         rewardToPass: -1,
       });
+      setTriggerPosteriorDistributionVal({
+        trigger: true
+      })
     } else if (newBandit?.valueOf() === undefined) {
       console.log("ERROR: New bandit is null");
     }
