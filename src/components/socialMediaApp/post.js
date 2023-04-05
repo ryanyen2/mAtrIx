@@ -70,7 +70,7 @@ export const Post = forwardRef((props, ref) => {
   const runingAutoMode = () => {
     console.log("-----In running auto mode----");
     setTimeoutIDAutoLike(setTimeout(autoClickLike, 1000));
-    setTimeoutIDAutoSwipe(setTimeout(autoSwipeUp, 4000));
+    setTimeoutIDAutoSwipe(setTimeout(autoSwipeUp, 1500));
   };
 
   const autoClickLike = () => {
