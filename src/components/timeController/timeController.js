@@ -117,11 +117,6 @@ export default function TimeController() {
       icon: "🐕",
     },
     {
-      name: "bird",
-      value: 0,
-      icon: "🐦",
-    },
-    {
       name: "panda",
       value: localSettingsParamValue.targetProbability.panda,
       icon: "🐼",
@@ -130,11 +125,6 @@ export default function TimeController() {
       name: "alpaca",
       value: localSettingsParamValue.targetProbability.alpaca,
       icon: "🦙",
-    },
-    {
-      name: "Dr.Jian",
-      value: 0,
-      icon: "👨‍🎓",
     },
   ];
 
@@ -150,7 +140,7 @@ export default function TimeController() {
       },
     });
   };
-  
+
 
   return (
     <div>

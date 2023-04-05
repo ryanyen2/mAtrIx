@@ -12,14 +12,16 @@ import {
 
 export default function AlgGraph(props) {
   const banditInfoValue = useRecoilValue(banditInfo);
-  const allSettingsParamValue = useRecoilValue(allSettingsParam);
+  //   const allSettingsParamValue = useRecoilValue(allSettingsParam);
+  const [allSettingsParamValue, setAllSettingsParam] =
+    useRecoilState(allSettingsParam);
   const armTagsVal = useRecoilValue(armTags);
   const triggerBanditRecordVal = useRecoilValue(triggerBanditRecord);
   const [localBanditInfo, setLocalBanditInfo] = useState({
-    ...banditInfoValue
+    ...banditInfoValue,
   });
   const [localAllParam, setLocalAllParam] = useState({
-    ...allSettingsParamValue
+    ...allSettingsParamValue,
   });
   const [arms, setArms] = useState({
     old: -1,
@@ -84,11 +86,14 @@ export default function AlgGraph(props) {
   useEffect(() => {
     // console.log(localBanditInfo);
     // console.log(triggerBanditRecordVal);
-    
-    if (Object.keys(localBanditInfo.parameters).length !== 0 && triggerBanditRecordVal.trigger) {
-    //   var index = localBanditInfo.cur_arm;
+
+    if (
+      Object.keys(localBanditInfo.parameters).length !== 0 &&
+      triggerBanditRecordVal.trigger
+    ) {
+      //   var index = localBanditInfo.cur_arm;
       var index = arms.old;
-      console.log("Updating post dist of arm: " + index);
+    //   console.log("Updating post dist of arm: " + index);
       // console.log(localBanditInfo.parameters);
       var mu = localBanditInfo.parameters[index].mu;
       var sig = Math.sqrt(localBanditInfo.parameters[index].sig2);
@@ -127,9 +132,7 @@ export default function AlgGraph(props) {
         .attr("stroke-width", "2px");
 
       d3.selectAll("#actualProb_" + index).remove();
-      let tagKey = Object.keys(armTagsVal).find(
-        (k) => armTagsVal[k] === index
-      );
+      let tagKey = Object.keys(armTagsVal).find((k) => armTagsVal[k] === index);
       // console.log(localAllParam.targetProbability);
       var curActualProb = localAllParam.targetProbability[tagKey];
 
@@ -146,7 +149,7 @@ export default function AlgGraph(props) {
         .attr("class", "actualProbabilityLine");
     }
   }, [triggerBanditRecordVal, arms, localBanditInfo, localAllParam]);
-  
+
   useEffect(() => {
     // setLocalBanditInfo({
     //     ...banditInfoValue
@@ -157,9 +160,9 @@ export default function AlgGraph(props) {
     // });
     setLocalAllParam(allSettingsParamValue);
     setArms({
-        old: arms.cur,
-        cur: banditInfoValue.cur_arm
-    })
+      old: arms.cur,
+      cur: banditInfoValue.cur_arm,
+    });
     // console.log(banditInfoValue.cur_arm);
   }, [banditInfoValue, allSettingsParamValue]);
 
@@ -261,17 +264,82 @@ export default function AlgGraph(props) {
 
       var curActualProb = allSettingsParamValue.targetProbability[tagKey];
 
-      g.append("svg:line")
+      var actualLine = g
+        .append("svg:line")
         .attr("id", "actualProb_" + index)
         .attr("x1", margin + (w - 2 * margin) * curActualProb)
         .attr("y1", y(0))
         .attr("x2", margin + (w - 2 * margin) * curActualProb)
         // .attr("y2", y(max_data))
         .attr("y2", y(theMax))
-        .attr("stroke", "#000000")
-        .attr("stroke-width", "2px")
+        .attr("stroke", "#ebbabf")
+        .attr("stroke-width", "3px")
         .attr("banditIndex", index)
         .attr("class", "actualProbabilityLine");
+
+      // add text tooltip for actual probability
+      var actualProbText = g
+        .append("text")
+        .attr("id", "actualProbText_" + index)
+        .attr("x", margin + (w - 2 * margin) * curActualProb)
+        .attr("y", y(theMax / 1.2))
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .attr("pointer-events", "none")
+        .text(curActualProb.toFixed(2));
+
+      // drag the actual probability line
+      var drag = d3
+        .drag()
+        .on("drag", function (event, d) {
+          var curX = event.x;
+          var curBanditIndex = d3.select(this).attr("banditIndex");
+          var curActualProb = (curX - margin) / (w - 2 * margin);
+          var curActualProb = Math.max(0, Math.min(1, curActualProb));
+          // console.log(curActualProb);
+          d3.select(this).attr("x1", margin + (w - 2 * margin) * curActualProb);
+          d3.select(this).attr("x2", margin + (w - 2 * margin) * curActualProb);
+          d3.select("#actualProbText_" + curBanditIndex).text(
+            curActualProb.toFixed(2)
+          );
+          d3.select("#actualProbText_" + curBanditIndex).attr(
+            "x",
+            margin + (w - 2 * margin) * curActualProb
+          );
+
+          var curTagKey = Object.keys(armTagsVal).find(
+            (k) => armTagsVal[k] === parseInt(curBanditIndex)
+          );
+        })
+        .on("end", function (event, d) {
+          var curX = event.x;
+          var curBanditIndex = d3.select(this).attr("banditIndex");
+          var curActualProb = (curX - margin) / (w - 2 * margin);
+          var curActualProb = Math.max(0, Math.min(1, curActualProb));
+          d3.select(this).attr("x1", margin + (w - 2 * margin) * curActualProb);
+          d3.select(this).attr("x2", margin + (w - 2 * margin) * curActualProb);
+          d3.select("#actualProb_" + curBanditIndex).text(
+            curActualProb.toFixed(2)
+          );
+          d3.select("#actualProbText_" + curBanditIndex).attr(
+            "x",
+            margin + (w - 2 * margin) * curActualProb
+          );
+
+          var curTagKey = Object.keys(armTagsVal).find(
+            (k) => armTagsVal[k] === parseInt(curBanditIndex)
+          );
+          setAllSettingsParam({
+            ...allSettingsParamValue,
+            targetProbability: {
+              ...allSettingsParamValue.targetProbability,
+              [curTagKey]: Math.round(curActualProb * 1000) / 1000,
+            },
+          });
+        });
+
+      actualLine.call(drag);
     }
   }
 
