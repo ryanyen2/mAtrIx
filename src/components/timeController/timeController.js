@@ -6,6 +6,7 @@ import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
@@ -48,6 +49,42 @@ export default function TimeController() {
   const [localSettingsParamValue, setLocalSettingsParamValue] = useState({
     ...allSettingsParamValue,
   });
+
+  const [targetOutputSlidersValue, setTargetOutputSlidersValue] = useState([
+    {
+      name: "cat",
+      value: localSettingsParamValue.targetProbability.cat,
+      icon: "🐈",
+    },
+    {
+      name: "dog",
+      value: localSettingsParamValue.targetProbability.dog,
+      icon: "🐕",
+    },
+    {
+      name: "panda",
+      value: localSettingsParamValue.targetProbability.panda,
+      icon: "🐼",
+    },
+    {
+      name: "alpaca",
+      value: localSettingsParamValue.targetProbability.alpaca,
+      icon: "🦙",
+    },
+  ]);
+
+  const handleAddTag = () => {
+    const randomVal = Math.random();
+    setTargetOutputSlidersValue([
+      ...targetOutputSlidersValue,
+      {
+        // name: "Bird" || "Dr.Jian",
+        name: randomVal > 0.5 ? "Bird" : "Dr.Jian",
+        value: randomVal,
+        icon: randomVal > 0.5 ? "🐦" : "👨‍🔬",
+      },
+    ]);
+  };
 
   const banditInfoValue = useRecoilValue(banditInfo);
 
@@ -105,28 +142,7 @@ export default function TimeController() {
     setOpen(false);
   };
 
-  let targetOutputSlidersValue = [
-    {
-      name: "cat",
-      value: localSettingsParamValue.targetProbability.cat,
-      icon: "🐈",
-    },
-    {
-      name: "dog",
-      value: localSettingsParamValue.targetProbability.dog,
-      icon: "🐕",
-    },
-    {
-      name: "panda",
-      value: localSettingsParamValue.targetProbability.panda,
-      icon: "🐼",
-    },
-    {
-      name: "alpaca",
-      value: localSettingsParamValue.targetProbability.alpaca,
-      icon: "🦙",
-    },
-  ];
+  // let targetOutputSlidersValue =
 
   const handleSliderChange = (index) => (event, newValue) => {
     if (newValue === null) {
@@ -140,7 +156,6 @@ export default function TimeController() {
       },
     });
   };
-
 
   return (
     <div>
@@ -194,9 +209,7 @@ export default function TimeController() {
             size="small"
             ref={anchorRef}
           >
-            <Button disabled>
-              {allSettingsParamValue.currentMode}
-              </Button>
+            <Button disabled>{allSettingsParamValue.currentMode}</Button>
             <Button
               size="small"
               aria-controls={open ? "split-button-menu" : undefined}
@@ -270,7 +283,20 @@ export default function TimeController() {
                   setLocalSettingsParamValue={handleLocalSettingsParamValue}
                 />
               </div>
-              <h4>Target Ouput</h4>
+              <h4>
+                Target Ouput
+                <Button
+                  color="primary"
+                  aria-label="add to shopping cart"
+                  size="small"
+                  variant="outlined"
+                  style={{ marginLeft: "1rem" }}
+                  onClick={handleAddTag}
+                >
+                  <AddShoppingCartIcon />
+                  Add Tags
+                </Button>
+              </h4>
               <div id="targetOutputSliders" style={{ margin: "2rem 0 3rem 0" }}>
                 <Grid container spacing={2} alignItems="center">
                   {targetOutputSlidersValue.map((item, index) => (

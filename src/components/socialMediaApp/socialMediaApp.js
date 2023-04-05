@@ -77,7 +77,6 @@ export function SocialMediaApp(props) {
   }, [banditInfoValue]);
 
   const generateNewPost = (newTag) => {
-    console.log("get the new tag: " + armTagNamesValue[newTag]);
 
     //generate a new post
     const tempId = randomId(6);
@@ -118,7 +117,7 @@ export function SocialMediaApp(props) {
     })
     // setLiked(likedValue);
     // setNumPostScrolled(numPostScrolled + 1);
-    console.log("received reward: " + likedValue);
+    // console.log("received reward: " + likedValue);
   };
 
   // random tag (TODO: for testing only)
@@ -205,7 +204,7 @@ export function SocialMediaApp(props) {
   };
 
   useEffect(() => {
-    //console.log("new post generated");
+    // console.log("new post generated");
     // Call the child method resetPost
     child.current?.resetPost(); // https://chafikgharbi.com/react-call-child-method/
   }, [postInfo]);

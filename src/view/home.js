@@ -195,13 +195,13 @@ function Home(props) {
         </Grid>
         <Grid item xs={4}>
           <Grid item xs={12}>
-            <CodeFlow algorithm={currentAlgorithm} />
+            <CodeFlow algorithm={currentAlgorithm} banditInfoValue={banditInfoValue} />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Item>
               <MathBlock algorithm={currentAlgorithm} />
             </Item>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
     </Container>

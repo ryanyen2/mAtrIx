@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ThompsonSampling from "./thompson-sampling";
 
 
 const CodeFlow = (props) => {
   const algorithm = props.algorithm;
+  const banditInfoValue = props.banditInfoValue;
 
   const renderCodeFlow = () => {
     const canvas = document.getElementById("block-code-flow");
@@ -13,7 +14,7 @@ const CodeFlow = (props) => {
 
   const createFlowChart = (canvas, algorithm) => {
     if (algorithm === "thompson") {
-      return <ThompsonSampling />;
+      return <ThompsonSampling banditInfoValue={banditInfoValue} />;
     }
   };
 
