@@ -68,3 +68,35 @@ class ThompsonSampling(Solver):
         self._bs[i] += (1 - r)
 
         return i
+
+
+
+class EpsilonGreedy(Solver):
+    def __init__(self, bandit, eps, init_proba=1.0):
+        """
+        eps (float): the probability to explore at each time step.
+        init_proba (float): default to be 1.0; optimistic initialization
+        """
+        super(EpsilonGreedy, self).__init__(bandit)
+
+        assert 0. <= eps <= 1.0
+        self.eps = eps
+
+        self.estimates = [init_proba] * self.bandit.n  # Optimistic initialization
+
+    @property
+    def estimated_probas(self):
+        return self.estimates
+
+    def run_one_step(self):
+        if np.random.random() < self.eps:
+            # Let's do random exploration!
+            i = np.random.randint(0, self.bandit.n)
+        else:
+            # Pick the best one.
+            i = max(range(self.bandit.n), key=lambda x: self.estimates[x])
+
+        r = self.bandit.generate_reward(i)
+        self.estimates[i] += 1. / (self.counts[i] + 1) * (r - self.estimates[i])
+
+        return i

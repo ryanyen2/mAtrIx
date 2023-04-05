@@ -745,6 +745,10 @@ fieldset[class^="code-"]:hover {
   transform: scale(1.01);
 }
 
+.highlight {
+  background-color: #008080;
+}
+
 .code-Class .codeType {
   background-color: #c8e8ff;
 }

@@ -52,7 +52,7 @@ function Home(props) {
   // const [step, setStep] = useState(0);
   const armTagsValue = useRecoilValue(armTags);
   const modelTypeIDValue = useRecoilValue(modelTypeID);
-  const currentAlgorithm = "thompson"; // change this to recoil state
+
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -200,7 +200,7 @@ function Home(props) {
         </Grid>
         <Grid item xs={4}>
           <Grid item xs={12}>
-            <CodeFlow algorithm={currentAlgorithm} banditInfoValue={banditInfoValue} />
+            <CodeFlow algorithm={allSettingsParamValue.currentAlgorithm} banditInfoValue={banditInfoValue} />
           </Grid>
           {/* <Grid item xs={12}>
             <Item>

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ThompsonSampling from "./thompson-sampling";
+import EpsilonGreedy from "./epsilon-greedy";
+import UCB from "./ucb";
 
 
 const CodeFlow = (props) => {
@@ -13,8 +15,13 @@ const CodeFlow = (props) => {
   };
 
   const createFlowChart = (canvas, algorithm) => {
+    console.log("algorithm (codeflow)>> ", algorithm);
     if (algorithm === "thompson") {
       return <ThompsonSampling banditInfoValue={banditInfoValue} />;
+    } else if (algorithm === "ucb") {
+      return <UCB banditInfoValue={banditInfoValue} />;
+    } else if (algorithm === "egreedy") {
+      return <EpsilonGreedy banditInfoValue={banditInfoValue} />;
     }
   };
 
