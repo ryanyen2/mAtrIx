@@ -1,3 +1,6 @@
+import IconButton from "@mui/material/IconButton";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 import Button from "@mui/material/Button";
 import React, { useEffect, useRef } from "react";
 import LeaderLine from "react-leader-line";
@@ -190,12 +193,19 @@ export const ThompsonSampling = (props) => {
 
   return (
     <div>
-      <Button onClick={() => setStartDemo(!startDemo)} size="small">
-        {startDemo ? "Stop Demo" : "Start Demo"}
-      </Button>
       <fieldset className="code-Class">
         <legend className="codeType">class</legend>
-        <p className="code-Class-Name">ThompsonSampling(Solver)</p>
+        <p className="code-Class-Name">
+          ThompsonSampling(Solver)
+          <IconButton
+            onClick={() => setStartDemo(!startDemo)}
+            size="small"
+            style={{ float: "right" }}
+            color="success"
+          >
+            {startDemo ? <PauseIcon /> : <PlayArrowIcon />}
+          </IconButton>
+        </p>
         <p className="code-Method-Explain">
           <span className="code-Method-Name" id="init">
             __init__:{" "}
