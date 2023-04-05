@@ -81,29 +81,29 @@ export function RegretPlot(props) {
   var yScale = d3.scaleLinear().range([height, 0]);
   var yScaleOrig = d3.scaleLinear().range([height, 0]);
 
-  xScale.domain([xDomainMin, xDomainMax]);
-  xScaleOrig.domain([xDomainMin, xDomainMax]);
-  yScale.domain([yDomainMin, yDomainMax]);
-  yScaleOrig.domain([yDomainMin, yDomainMax]);
+  // xScale.domain([xDomainMin, xDomainMax]);
+  // xScaleOrig.domain([xDomainMin, xDomainMax]);
+  // yScale.domain([yDomainMin, yDomainMax]);
+  // yScaleOrig.domain([yDomainMin, yDomainMax]);
 
-  var xAxis = d3.axisBottom(xScale);
-  var yAxis = d3.axisLeft(yScale);
+  // var xAxis = d3.axisBottom(xScale);
+  // var yAxis = d3.axisLeft(yScale);
 
-  // for small graph sizes, use half the number of ticks
-  if (width < 400) xAxis.ticks(5);
+  // // for small graph sizes, use half the number of ticks
+  // if (width < 400) xAxis.ticks(5);
 
-  var xy = { xmin: 0, xmax: 1, ymin: 0, ymax: 1 };
+  // var xy = { xmin: 0, xmax: 1, ymin: 0, ymax: 1 };
 
-  var xExt = [xy.xmin, xy.xmax];
-  var yExt = [xy.ymin, xy.ymax];
+  // var xExt = [xy.xmin, xy.xmax];
+  // var yExt = [xy.ymin, xy.ymax];
 
-  var xRange = xExt[1] - xExt[0];
-  var xDomainMin = xExt[0] - xRange * 0.02;
-  var xDomainMax = xExt[1] + xRange * 0.02;
+  // var xRange = xExt[1] - xExt[0];
+  // var xDomainMin = xExt[0] - xRange * 0.02;
+  // var xDomainMax = xExt[1] + xRange * 0.02;
 
-  var yRange = yExt[1] - yExt[0];
-  var yDomainMin = yExt[0] - yRange * 0.02;
-  var yDomainMax = yExt[1] + yRange * 0.02;
+  // var yRange = yExt[1] - yExt[0];
+  // var yDomainMin = yExt[0] - yRange * 0.02;
+  // var yDomainMax = yExt[1] + yRange * 0.02;
 
   const selector = "#eval-graph";
   var svg = d3.select(selector);
@@ -235,7 +235,20 @@ export function RegretPlot(props) {
         tooltip.transition().duration(500).style("opacity", 0);
       });
 
-    if (data.length > 0) {
+        var d = x0 - d0.x > d1.x - x0 ? d1 : d0;
+        focus.attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")");
+        focusText
+          .attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")")
+          .text(d.y);
+
+        // console.log(d);
+      }
+
+      var zoomTransform = function () {
+        var t = d3.transition().duration(0);
+        gView.attr("transform", t);
+        gView.attr("stroke-width", 1 / t.k);
+      };
     }
   }, [banditInfoValue]);
 
@@ -302,7 +315,7 @@ export function RegretPlot(props) {
         {/* <LineGraphComponent selector={selector}/> */}
         {/* to the right most within the wrap */}
         <span style={{ display: "flex", justifyContent: "flex-end" }}>
-          {regretPlotDataValue.current_time}
+          {banditInfoValue.cur_step}
         </span>
       </div>
     </Container>

@@ -106,7 +106,6 @@ function Home(props) {
     // console.log(newParam);
     // dont update if it's the first time
     // if (newParam === undefined) return;
-
     console.log("allSettingsParamValue-->", allSettingsParamValue);
     var extra_params = JSON.parse(JSON.stringify(allSettingsParamValue.regretPlotParam));
     var target_mapped = {}
@@ -125,7 +124,7 @@ function Home(props) {
       setBanditInfoValue(d);
     });
   }, [allSettingsParamValue.currentMode, 
-    allSettingsParamValue.reset, 
+    allSettingsParamValue.resetCount, 
     allSettingsParamValue.currentAlgorithm, 
     allSettingsParamValue.regretPlotParam,
     allSettingsParamValue.targetProbability, 
