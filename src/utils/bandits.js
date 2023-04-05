@@ -1011,7 +1011,8 @@ export class GenerateNewBandit {
   };
 
   recordInit = async (callback) => {
-    this.banditInfo.cur_arm = this.banditInfo.model.act();
+    var {cur_arm, _} = this.banditInfo.model.act();
+    this.banditInfo.cur_arm = cur_arm;
     console.log("very first arm is " + this.banditInfo.cur_arm);
     this.banditInfo.cur_step += 1;
 
