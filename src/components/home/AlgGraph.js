@@ -93,7 +93,7 @@ export default function AlgGraph(props) {
     ) {
       //   var index = localBanditInfo.cur_arm;
       var index = arms.old;
-    //   console.log("Updating post dist of arm: " + index);
+      //   console.log("Updating post dist of arm: " + index);
       // console.log(localBanditInfo.parameters);
       var mu = localBanditInfo.parameters[index].mu;
       var sig = Math.sqrt(localBanditInfo.parameters[index].sig2);
@@ -275,7 +275,21 @@ export default function AlgGraph(props) {
         .attr("stroke", "#ebbabf")
         .attr("stroke-width", "3px")
         .attr("banditIndex", index)
-        .attr("class", "actualProbabilityLine");
+        .attr("class", "actualProbabilityLine")
+        .on("mouseover", function (event, d) {
+          d3.select(this).style("cursor", "grab");
+          d3.select(this)
+            .attr("stroke-width", "8px")
+            .transition()
+            .duration(100);
+        })
+        .on("mouseout", function (event, d) {
+          d3.select(this).style("cursor", "default");
+          d3.select(this)
+            .attr("stroke-width", "3px")
+            .transition()
+            .duration(100);
+        });
 
       // add text tooltip for actual probability
       var actualProbText = g
