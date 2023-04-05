@@ -1,4 +1,5 @@
 # Multi-armed bandit visualization for personal sociale media recommendation
+React Flask starter template from [tutorial](https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project)
 
 ## Tech
 - Frontend: **ReactJs**
