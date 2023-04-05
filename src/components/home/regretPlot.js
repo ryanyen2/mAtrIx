@@ -115,193 +115,127 @@ export function RegretPlot(props) {
     // console.log("banditInfoValue.regret_t", banditInfoValue.regret_t);
     var data = banditInfoValue.regret_t;
     // data = random generate 100 data points from 0 to 1
-    data = d3.range(100).map((d) => Math.random());
+    // data = d3.range(100).map((d) => Math.random());
     d3.select(selector).select("svg").remove();
 
     svg = d3
       .select(selector)
-      .on("touchstart", function (e) {
-        // d3.event.preventDefault();
-        e.preventDefault();
-      })
-      .on("touchmove", function (e) {
-        e.preventDefault();
-      })
       .append("svg")
       .attr("width", outerWidth)
       .attr("height", outerHeight)
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .attr(
+        "transform",
+        "translate(" + margin.left + 50 + "," + margin.top + ")"
+      )
       .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight);
 
-    defs = svg.append("defs");
-    defs
-      .append("clipPath")
-      .attr("id", "clip")
-      .append("rect")
-      .attr("width", width)
-      .attr("height", height);
-
-    // outer rectangle
+    // x axis name and label
     svg
-      .append("rect")
-      .attr("class", "outer")
-      .attr("width", innerWidth)
-      .attr("height", innerHeight);
-
-    // outer group (padding around the axes)
-    g = svg
-      .append("g")
-      .attr("transform", "translate(" + padding.left + "," + padding.top + ")");
-
-    // inner rectangle
-    g.append("rect")
-      .attr("class", "inner")
-      .attr("width", width)
-      .attr("height", height);
-
-    // horizontal axis
-    g.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-    // horizontal axis label
-    g.append("text")
-      .attr("text-anchor", "middle")
-      .attr("class", "axis-label")
-      .attr(
-        "transform",
-        "translate(" + 0.95 * width + "," + (height + 40) + ")"
-      )
-      .text("Time");
-    // .text(this.meta.xlabel);
-
-    // vertical axis
-    g.append("g")
-      .attr("class", "axis axis--y")
-      .attr("transform", "translate(0, 0)")
-      .call(yAxis);
-
-    // vertical axis label
-    g.append("text")
-      .attr("text-anchor", "middle")
-      .attr("class", "axis-label")
-      .attr("transform", "rotate(270) translate(-" + height / 2 + ", -50)")
-      .text("Regret");
-    // .text(this.meta.ylabel);
-
-    legend = g.append("g").attr("class", "legend").attr("display", "none");
-    // legend text
-    legend
       .append("text")
-      .attr("class", "legend-text")
-      .attr("y", -8)
-      .attr(
-        "transform",
-        "translate(" + 0.5 * width + "," + (height + 50) + ")"
-      );
+      .attr("x", width / 2)
+      .attr("y", height + margin.top + 30)
+      .style("text-anchor", "middle")
+      .text("Time");
+
+    // y axis name and label
+    svg
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -50 - margin.left)
+      .attr("x", 0 - height / 2)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Regret");
+
+    const x = d3
+      .scaleLinear()
+      .domain([0, data.length - 1])
+      .range([margin.left, width + margin.left]);
+
+    const y = d3
+      .scaleLinear()
+      .domain([d3.min(data), d3.max(data)])
+      .range([height + margin.top, margin.top]);
+
+    const line = d3
+      .line()
+      .x((d, i) => x(i))
+      .y((d) => y(d));
+
+    svg
+      .append("g")
+      .attr("transform", `translate(0, ${height + margin.top})`)
+      .call(d3.axisBottom(x));
+
+    svg
+      .append("g")
+      .attr("transform", `translate(${margin.left}, 0)`)
+      .call(d3.axisLeft(y));
+
+    // const tweenDash = () => {
+    //   const l = this.getTotalLength();
+    //   const i = d3.interpolateString("0," + l, l + "," + l);
+    //   return (t) => i(t);
+    // };
+
+    var path = svg
+      .append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 2)
+      .attr("d", line);
+
+    var totalLength = path.node().getTotalLength();
+    // start from the last point
+    var lastPoint = data[data.length - 1];
+    var lastPointX = x(data.length - 1);
+    var lastPointY = y(lastPoint);
+
+    // add a circle at the last point
+    svg
+      .append("circle")
+      .attr("cx", lastPointX)
+      .attr("cy", lastPointY)
+      .attr("r", 5)
+      .attr("fill", "steelblue");
+
+    path
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+      .duration(200)
+      .ease(d3.easeCircleOut)
+      .attr("stroke-dashoffset", 0);
+
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    svg
+      .selectAll(".dot")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("class", "dot")
+      .attr("cx", (d, i) => x(i))
+      .attr("cy", (d) => y(d))
+      .attr("r", 2)
+      .on("mouseover", (event, d) => {
+        tooltip.transition().duration(200).style("opacity", 0.95);
+        tooltip
+          .html(`Time: ${data.indexOf(d)}, Regret: ${d}`)
+          .style("left", event.pageX + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mouseout", () => {
+        tooltip.transition().duration(500).style("opacity", 0);
+      });
 
     if (data.length > 0) {
-      var x = d3.scaleLinear().domain([0, 100]).range([0, width]);
-
-      var y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
-      var line = d3
-        .line()
-        .x((d, i) => x(i))
-        .y((d) => y(d));
-
-      g = svg
-        .append("g")
-        .attr(
-          "transform",
-          "translate(" + padding.left + "," + padding.top + ")"
-        );
-
-      var gZoom = g.append("g").attr("class", "zoom");
-      // zoom Object
-      var zoomObj = d3
-        .zoom()
-        .scaleExtent([1, 10]) // max zoom
-        .translateExtent([
-          [0, 0],
-          [width, height],
-        ])
-        .extent([
-          [0, 0],
-          [width, height],
-        ])
-        .on("zoom", zoomTransform);
-
-      gZoom.call(zoomObj);
-
-      // var bisect = d3.bisector(function(d) { return d.x; }).left;
-      var bisect = d3.bisector((d) => d.x).left;
-      var focus = gZoom
-        .append("g")
-        .append("circle")
-        .style("fill", "none")
-        .attr("stroke", "black")
-        .attr("r", 8.5)
-        .style("opacity", 0);
-
-      var focusText = gZoom
-        .append("g")
-        .append("text")
-        .style("opacity", 0)
-        .attr("text-anchor", "left")
-        .attr("alignment-baseline", "middle");
-
-      var gView = gZoom.append("g").attr("class", "view");
-      gView
-        .append("path")
-        .attr("class", "line")
-        .attr("d", line(data))
-        .attr("stroke", "steelblue")
-        .attr("fill", "none")
-        .attr("stroke-width", 2);
-
-      gView
-        .append("rect")
-        .attr("class", "overlay")
-        .attr("width", width)
-        .attr("height", height)
-        .on("mouseover", function () {
-          focus.style("opacity", 1);
-          focusText.style("opacity", 1);
-        })
-        .on("mouseout", function () {
-          focus.style("opacity", 0);
-          focusText.style("opacity", 0);
-        })
-        .on("mousemove", mousemove);
-
-      function mousemove() {
-
-        if (data.length <= 1) return;
-        
-        // export 'mouse' (imported as 'd3') was not found in 'd3'
-        // var x0 = x.invert(d3.mouse(this)[0]);
-        var x0 = x.invert(d3.pointer(this)[0]);
-        var i = bisect(data, x0, 1);
-        var d0 = data[i - 1];
-        var d1 = data[i];
-        console.log("mousemove", i, d0, d1);
-
-        var d = x0 - d0.x > d1.x - x0 ? d1 : d0;
-        focus.attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")");
-        focusText
-          .attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")")
-          .text(d.y);
-
-        // console.log(d);
-      }
-
-      var zoomTransform = function () {
-        var t = d3.transition().duration(0);
-        gView.attr("transform", t);
-        gView.attr("stroke-width", 1 / t.k);
-      };
     }
   }, [banditInfoValue]);
 
@@ -363,7 +297,7 @@ export function RegretPlot(props) {
           </div>
         </Box>
       </div> */}
-      <div id="eval-graph-wrap">
+      <div id="eval-graph-wrap" style={{ marginTop: "1.2rem" }}>
         <div id="eval-graph" className="graph" />
         {/* <LineGraphComponent selector={selector}/> */}
         {/* to the right most within the wrap */}

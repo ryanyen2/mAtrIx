@@ -882,3 +882,14 @@ p[class^="code-Method-Name-"] {
   background-color: #f8f8f8;
 }
 
+
+
+.tooltip {
+  position: absolute;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 12px;
+  pointer-events: none;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
+}
