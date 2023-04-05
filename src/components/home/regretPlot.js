@@ -172,12 +172,7 @@ export function RegretPlot(props) {
       .append("g")
       .attr("transform", `translate(${margin.left}, 0)`)
       .call(d3.axisLeft(y));
-
-    // const tweenDash = () => {
-    //   const l = this.getTotalLength();
-    //   const i = d3.interpolateString("0," + l, l + "," + l);
-    //   return (t) => i(t);
-    // };
+      
 
     var path = svg
       .append("path")
@@ -234,22 +229,6 @@ export function RegretPlot(props) {
       .on("mouseout", () => {
         tooltip.transition().duration(500).style("opacity", 0);
       });
-
-        var d = x0 - d0.x > d1.x - x0 ? d1 : d0;
-        focus.attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")");
-        focusText
-          .attr("transform", "translate(" + x(d.x) + "," + y(d.y) + ")")
-          .text(d.y);
-
-        // console.log(d);
-      }
-
-      var zoomTransform = function () {
-        var t = d3.transition().duration(0);
-        gView.attr("transform", t);
-        gView.attr("stroke-width", 1 / t.k);
-      };
-    }
   }, [banditInfoValue]);
 
   useEffect(() => {

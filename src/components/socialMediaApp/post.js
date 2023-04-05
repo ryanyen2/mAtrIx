@@ -14,7 +14,7 @@ import { Swipe, Position } from "react-swipe-component";
 
 // import { allSettingsParam } from "../../state/atoms";
 import { interval } from "d3";
-import { __spectrum } from "../../utils/nouislider";
+// import { __spectrum } from "../../utils/nouislider";
 
 export const Post = forwardRef((props, ref) => {
   const [mode, setMode] = useState("manual");

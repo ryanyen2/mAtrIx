@@ -19,7 +19,7 @@
  */
 
 /* Above copyright notice holds unless otherwise noted */
-import * as noUiSlider from "nouislider";
+// import * as noUiSlider from "nouislider";
 // import 'nouislider/distribute/nouislider.css';
 import { LineGraph } from "./lineGraph.js";
 
